@@ -1,0 +1,34 @@
+version: '{branch}-{build}'
+
+environment:
+  HL2SDK_VERSION: sdk2013
+  MMSOURCE_VERSION: 1.10-dev
+  SOURCEMOD_VERSION: 1.8-dev
+
+install:
+  - '"%VS120COMNTOOLS%vsvars32.bat"'
+  - git clone https://github.com/alliedmodders/sourcemod.git -b %SOURCEMOD_VERSION% --depth 1 --recursive %APPVEYOR_BUILD_FOLDER%\..\sourcemod
+  - git clone https://github.com/alliedmodders/metamod-source.git -b %MMSOURCE_VERSION% --depth 1 %APPVEYOR_BUILD_FOLDER%\..\metamod-source
+  - git clone https://github.com/alliedmodders/hl2sdk.git -b %HL2SDK_VERSION% --depth 1 %APPVEYOR_BUILD_FOLDER%\..\hl2sdk-%HL2SDK_VERSION%
+  - git clone https://github.com/alliedmodders/ambuild.git --depth 1 %APPVEYOR_BUILD_FOLDER%\..\ambuild
+  - cd %APPVEYOR_BUILD_FOLDER%\..\ambuild && python setup.py build && python setup.py install
+  - cd %APPVEYOR_BUILD_FOLDER%\..\sourcemod && mkdir build && cd build && python ..\configure.py --no-mysql --sdks=present && C:\Python27\Scripts\ambuild
+
+build_script:
+  - mkdir %APPVEYOR_BUILD_FOLDER%\build && cd %APPVEYOR_BUILD_FOLDER%\build
+  - python ..\configure.py --sdks=present
+  - C:\Python27\Scripts\ambuild
+
+before_deploy:
+  - 7z a sm-ripext-%APPVEYOR_REPO_TAG_NAME%-windows.zip package\addons\
+
+artifacts:
+  - path: build\sm-ripext-$(appveyor_repo_tag_name)-windows.zip
+
+deploy:
+  - provider: GitHub
+    auth_token:
+      secure: OWd5i64Jk8mOm7arzGh1lZMp7qWM4/x1vrekDhEvXlVAk1yus5BBeoKH8QkI9Yv9
+    artifact: build\sm-ripext-$(appveyor_repo_tag_name)-windows.zip
+    on:
+      appveyor_repo_tag: true

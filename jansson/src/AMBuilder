@@ -1,0 +1,32 @@
+# vim: sts=2 ts=8 sw=2 tw=99 et ft=python:
+import os
+
+builder.SetBuildFolder('libjansson')
+
+binary = builder.compiler.StaticLibrary('jansson')
+binary.compiler.includes += [
+  os.path.join(builder.sourcePath, 'jansson', 'src'),
+  os.path.join(builder.sourcePath, 'jansson', 'include'),
+  os.path.join(builder.sourcePath, 'jansson', 'private_include'),
+]
+binary.compiler.defines += ['HAVE_CONFIG_H']
+
+if binary.compiler.vendor == 'clang':
+  # https://llvm.org/bugs/show_bug.cgi?id=16428
+  binary.compiler.cflags += ['-Wno-attributes']
+
+binary.sources += [
+  'dump.c',
+  'error.c',
+  'hashtable.c',
+  'hashtable_seed.c',
+  'load.c',
+  'memory.c',
+  'pack_unpack.c',
+  'strbuffer.c',
+  'strconv.c',
+  'utf.c',
+  'value.c',
+]
+
+rvalue = builder.Add(binary)

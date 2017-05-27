@@ -1,0 +1,36 @@
+# vim: sts=2 ts=8 sw=2 tw=99 et ft=python:
+import os
+
+builder.SetBuildFolder('libz')
+
+binary = builder.compiler.StaticLibrary('z')
+binary.compiler.includes += [
+  os.path.join(builder.sourcePath, 'zlib'),
+]
+
+if builder.target_platform == 'linux':
+  binary.compiler.defines += ['HAVE_UNISTD_H']
+
+if binary.compiler.vendor == 'clang':
+  # https://llvm.org/bugs/show_bug.cgi?id=16428
+  binary.compiler.cflags += ['-Wno-attributes']
+
+binary.sources += [
+  'adler32.c',
+  'compress.c',
+  'crc32.c',
+  'deflate.c',
+  'gzclose.c',
+  'gzlib.c',
+  'gzread.c',
+  'gzwrite.c',
+  'infback.c',
+  'inffast.c',
+  'inflate.c',
+  'inftrees.c',
+  'trees.c',
+  'uncompr.c',
+  'zutil.c',
+]
+
+rvalue = builder.Add(binary)
