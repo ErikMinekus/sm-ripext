@@ -1,5 +1,5 @@
 #if defined _ripext_included_
-    #endinput
+	#endinput
 #endif
 #define _ripext_included_
 
@@ -11,16 +11,16 @@
  */
 public Extension __ext_rip =
 {
-    name = "REST in Pawn",
-    file = "rip.ext",
+	name = "REST in Pawn",
+	file = "rip.ext",
 #if defined AUTOLOAD_EXTENSIONS
-    autoload = 1,
+	autoload = 1,
 #else
-    autoload = 0,
+	autoload = 0,
 #endif
 #if defined REQUIRE_EXTENSIONS
-    required = 1,
+	required = 1,
 #else
-    required = 0,
+	required = 0,
 #endif
 };

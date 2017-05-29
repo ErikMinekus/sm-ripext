@@ -28,7 +28,7 @@ script:
   - ambuild
 
 before_deploy:
-  - tar -czf sm-ripext-${TRAVIS_TAG}-linux.tar.gz package/addons/
+  - tar -czf sm-ripext-${TRAVIS_TAG}-linux.tar.gz -C package/ addons/
 
 deploy:
   provider: releases

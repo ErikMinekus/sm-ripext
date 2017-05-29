@@ -20,6 +20,7 @@
  */
 
 #include "extension.h"
+#include "curlapi.h"
 
 static cell_t CreateHTTPClientObject(IPluginContext *pContext, const cell_t *params)
 {

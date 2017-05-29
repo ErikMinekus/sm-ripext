@@ -20,7 +20,7 @@ build_script:
   - C:\Python27\Scripts\ambuild
 
 before_deploy:
-  - 7z a sm-ripext-%APPVEYOR_REPO_TAG_NAME%-windows.zip package\addons\
+  - 7z a sm-ripext-%APPVEYOR_REPO_TAG_NAME%-windows.zip .\package\*
 
 artifacts:
   - path: build\sm-ripext-$(appveyor_repo_tag_name)-windows.zip

@@ -20,6 +20,7 @@
  */
 
 #include "extension.h"
+#include "curlapi.h"
 
 RipExt g_RipExt;		/**< Global singleton for extension's main interface */
 
