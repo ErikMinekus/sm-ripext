@@ -34,7 +34,7 @@ deploy:
   provider: releases
   api_key:
     secure: ChnbDcb0/joPrzRCmv23AOe5z9oRLYRNnkalSqwAru9T+MC60kaWtm12wl/XGsrSPGavd3X7Zx4kjjYBrSwKDic7ld2l15e2i2ihvnXVxe1ezR5Y8f5hBEGTzSevYULrKOCV3oKPc9caPcE0KN3Yy0GYKCOIlN2mBdU3VSUtswUyM/1cAqXR8RN+yaZv0MTmS9xRn9ciEEGplZ3ewR/sXe8bLXcg99FHLnKneEqkA8C9kCLWpwEmIY6i9FhAnZO4GDTuqCtlsvNzHsgzmcvxdglJ6jnB4Z2GMlO4dOGlzBeOvDLDpR40dqg8wZoSkBCy6ZdSEGkVcAYkq6bBVrOsT19wQmWe7kynM/+WxdhBOm6o0/5ohWK68syg5rx8QBAP52UNC3U6BlyeyJc377QSW8BaqBoaAZMSh66i0GcnBCz5/stFdU9L2WKTr1pGPltAPTFHRbD+lZRsErjBcu3ayb15UOqM5XxSvfnKn4QpEVA33eBT89rxS/w9uy7qw4ZUocxmgqkxY1/ODbdJXfIf7wtxYYUYAbwmaxU5rWwjAoLpSU9eP8/fXPhDgCb6M1pkA2j/FyFjR4yWg3vT8buLAcOYk8spmdyQVx1x9d6z9w9aH+EyCrEeXQYZHGnoCIcDCKn7+FkmkbYuuVJMSRJvwtRIwcFxMzaCHctaon0Q/Eg=
-  file: build/sm-ripext-${TRAVIS_TAG}-linux.tar.gz
+  file: sm-ripext-${TRAVIS_TAG}-linux.tar.gz
   skip_cleanup: true
   on:
     tags: true
