@@ -22,7 +22,7 @@
 #include "extension.h"
 #include "curlapi.h"
 
-static cell_t CreateHTTPClientObject(IPluginContext *pContext, const cell_t *params)
+static cell_t CreateClient(IPluginContext *pContext, const cell_t *params)
 {
 	char *baseUrl;
 	pContext->LocalToString(params[1], &baseUrl);
@@ -39,7 +39,7 @@ static cell_t CreateHTTPClientObject(IPluginContext *pContext, const cell_t *par
 	return hndl;
 }
 
-static cell_t HTTPGetRequest(IPluginContext *pContext, const cell_t *params)
+static cell_t GetRequest(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
@@ -64,7 +64,7 @@ static cell_t HTTPGetRequest(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
-static cell_t HTTPPostRequest(IPluginContext *pContext, const cell_t *params)
+static cell_t PostRequest(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
@@ -96,7 +96,7 @@ static cell_t HTTPPostRequest(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
-static cell_t HTTPPutRequest(IPluginContext *pContext, const cell_t *params)
+static cell_t PutRequest(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
@@ -128,7 +128,7 @@ static cell_t HTTPPutRequest(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
-static cell_t HTTPPatchRequest(IPluginContext *pContext, const cell_t *params)
+static cell_t PatchRequest(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
@@ -160,7 +160,7 @@ static cell_t HTTPPatchRequest(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
-static cell_t HTTPDeleteRequest(IPluginContext *pContext, const cell_t *params)
+static cell_t DeleteRequest(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
@@ -185,7 +185,7 @@ static cell_t HTTPDeleteRequest(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
-static cell_t GetHTTPResponseData(IPluginContext *pContext, const cell_t *params)
+static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
@@ -217,7 +217,7 @@ static cell_t GetHTTPResponseData(IPluginContext *pContext, const cell_t *params
 	return response->hndlData;
 }
 
-static cell_t GetHTTPResponseStatus(IPluginContext *pContext, const cell_t *params)
+static cell_t GetResponseStatus(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
@@ -235,14 +235,14 @@ static cell_t GetHTTPResponseStatus(IPluginContext *pContext, const cell_t *para
 
 const sp_nativeinfo_t curl_natives[] =
 {
-	{"HTTPClient.HTTPClient",			CreateHTTPClientObject},
-	{"HTTPClient.Get",					HTTPGetRequest},
-	{"HTTPClient.Post",					HTTPPostRequest},
-	{"HTTPClient.Put",					HTTPPutRequest},
-	{"HTTPClient.Patch",				HTTPPatchRequest},
-	{"HTTPClient.Delete",				HTTPDeleteRequest},
-	{"HTTPResponse.Data.get",			GetHTTPResponseData},
-	{"HTTPResponse.Status.get",			GetHTTPResponseStatus},
+	{"HTTPClient.HTTPClient",			CreateClient},
+	{"HTTPClient.Get",					GetRequest},
+	{"HTTPClient.Post",					PostRequest},
+	{"HTTPClient.Put",					PutRequest},
+	{"HTTPClient.Patch",				PatchRequest},
+	{"HTTPClient.Delete",				DeleteRequest},
+	{"HTTPResponse.Data.get",			GetResponseData},
+	{"HTTPResponse.Status.get",			GetResponseStatus},
 
 	{NULL,								NULL}
 };
