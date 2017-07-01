@@ -6,32 +6,8 @@ libjansson = builder.RunScript('jansson/src/AMBuilder')
 libmbedtls = builder.RunScript('mbedtls/library/AMBuilder')
 libz = builder.RunScript('zlib/AMBuilder')
 
-binary = Extension.Library(builder, 'rip.ext')
-binary.compiler.includes += [
-  os.path.join(builder.sourcePath, 'curl', 'include'),
-  os.path.join(builder.sourcePath, 'jansson', 'include'),
-]
-binary.compiler.defines += [
-  'CURL_STATICLIB',
-]
-
-if binary.compiler.vendor == 'gcc' or binary.compiler.vendor == 'clang':
-  binary.compiler.cxxflags += ['-fno-rtti']
-elif binary.compiler.vendor == 'msvc':
-  binary.compiler.cxxflags += ['/GR-']
-
-binary.compiler.postlink += [
-  libcurl.binary,
-  libjansson.binary,
-  libmbedtls.binary,
-  libz.binary,
-]
-if builder.target_platform == 'linux':
-  binary.compiler.postlink += ['-lrt']
-elif builder.target_platform == 'windows':
-  binary.compiler.postlink += ['ws2_32.lib']
-
-binary.sources += [
+project = Extension.HL2Project(builder, 'rip.ext')
+project.sources += [
   'extension.cpp',
   'curlapi.cpp',
   'curlthread.cpp',
@@ -40,4 +16,32 @@ binary.sources += [
   'sdk/smsdk_ext.cpp',
 ]
 
-Extension.extensions += [builder.Add(binary)]
+for sdk_name in Extension.sdks:
+  sdk = Extension.sdks[sdk_name]
+
+  binary = Extension.HL2Config(project, 'rip.ext', sdk)
+  binary.compiler.includes += [
+    os.path.join(builder.sourcePath, 'curl', 'include'),
+    os.path.join(builder.sourcePath, 'jansson', 'include'),
+  ]
+  binary.compiler.defines += [
+    'CURL_STATICLIB',
+  ]
+
+  if binary.compiler.vendor == 'gcc' or binary.compiler.vendor == 'clang':
+    binary.compiler.cxxflags += ['-fno-rtti']
+  elif binary.compiler.vendor == 'msvc':
+    binary.compiler.cxxflags += ['/GR-']
+
+  binary.compiler.postlink += [
+    libcurl.binary,
+    libjansson.binary,
+    libmbedtls.binary,
+    libz.binary,
+  ]
+  if builder.target_platform == 'linux':
+    binary.compiler.postlink += ['-lrt']
+  elif builder.target_platform == 'windows':
+    binary.compiler.postlink += ['ws2_32.lib']
+
+Extension.extensions = builder.Add(project)

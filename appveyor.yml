@@ -12,15 +12,15 @@ install:
   - git clone https://github.com/alliedmodders/hl2sdk.git -b %HL2SDK_VERSION% --depth 1 %APPVEYOR_BUILD_FOLDER%\..\hl2sdk-%HL2SDK_VERSION%
   - git clone https://github.com/alliedmodders/ambuild.git --depth 1 %APPVEYOR_BUILD_FOLDER%\..\ambuild
   - cd %APPVEYOR_BUILD_FOLDER%\..\ambuild && python setup.py build && python setup.py install
-  - cd %APPVEYOR_BUILD_FOLDER%\..\sourcemod && mkdir build && cd build && python ..\configure.py --no-mysql --sdks=present && C:\Python27\Scripts\ambuild
+  - cd %APPVEYOR_BUILD_FOLDER%\..\sourcemod && mkdir build && cd build && python ..\configure.py --enable-optimize --no-mysql --sdks=%HL2SDK_VERSION% && C:\Python27\Scripts\ambuild
 
 build_script:
   - mkdir %APPVEYOR_BUILD_FOLDER%\build && cd %APPVEYOR_BUILD_FOLDER%\build
-  - python ..\configure.py --sdks=present
+  - python ..\configure.py --enable-optimize
   - C:\Python27\Scripts\ambuild
 
-before_deploy:
-  - 7z a sm-ripext-%APPVEYOR_REPO_TAG_NAME%-windows.zip .\package\*
+after_build:
+  - if /i "%APPVEYOR_REPO_TAG%"=="true" 7z a sm-ripext-%APPVEYOR_REPO_TAG_NAME%-windows.zip .\package\*
 
 artifacts:
   - path: build\sm-ripext-$(appveyor_repo_tag_name)-windows.zip
