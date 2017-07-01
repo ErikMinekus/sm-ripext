@@ -32,15 +32,21 @@ char *HTTPClient::BuildURL(const char *endpoint)
 	return url;
 }
 
-struct curl_slist *HTTPClient::GetHeaders(struct HTTPRequest request)
+struct curl_slist *HTTPClient::BuildHeaders(struct HTTPRequest request)
 {
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "Accept: application/json");
 	headers = curl_slist_append(headers, "Content-Type: application/json");
 
-	char header[32];
-	smutils->Format(header, sizeof(header), "Content-Length: %d", request.size);
+	char header[256];
+	snprintf(header, sizeof(header), "Content-Length: %d", request.size);
 	headers = curl_slist_append(headers, header);
+
+	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
+	{
+		snprintf(header, sizeof(header), "%s: %s", iter->key.chars(), iter->value.chars());
+		headers = curl_slist_append(headers, header);
+	}
 
 	return headers;
 }
@@ -52,4 +58,10 @@ void HTTPClient::Request(struct HTTPRequest request, IPluginFunction *function, 
 
 	HTTPRequestThread *thread = new HTTPRequestThread(this, request, forward, value);
 	threader->MakeThread(thread);
+}
+
+void HTTPClient::SetHeader(const char *name, const char *value)
+{
+	ke::AString vstr(value);
+	this->headers.replace(name, ke::Move(vstr));
 }

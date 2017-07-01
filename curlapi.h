@@ -31,12 +31,15 @@ public:
 
 	char *BuildURL(const char *endpoint);
 
-	struct curl_slist *GetHeaders(struct HTTPRequest request);
+	struct curl_slist *BuildHeaders(struct HTTPRequest request);
 
 	void Request(struct HTTPRequest request, IPluginFunction *function, cell_t value);
 
+	void SetHeader(const char *name, const char *value);
+
 private:
 	const char *baseURL;
+	HTTPHeaderMap headers;
 };
 
 #endif // SM_RIPEXT_CURLAPI_H_

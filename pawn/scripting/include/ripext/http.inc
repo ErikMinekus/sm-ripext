@@ -78,6 +78,12 @@ methodmap HTTPClient < Handle
 	// @param baseURL    Base URL to the REST API.
 	public native HTTPClient(const char[] baseURL);
 
+	// Sets a HTTP header to be used for all requests.
+	//
+	// @param name       Header name.
+	// @param value      String value to set.
+	public native void SetHeader(const char[] name, const char[] value);
+
 	// Performs a HTTP GET request.
 	//
 	// @param endpoint   API endpoint to request.

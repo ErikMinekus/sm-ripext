@@ -25,48 +25,51 @@
 #include <curl/curl.h>
 #include <jansson.h>
 #include <queue>
+#include <sm_stringhashmap.h>
 #include <stdlib.h>
 #include <string.h>
 #include "smsdk_ext.h"
 
+typedef StringHashMap<ke::AString> HTTPHeaderMap;
+
 struct HTTPRequest {
-    HTTPRequest(const char *method, const char *endpoint, json_t *data = NULL)
-        : method(method), endpoint(endpoint), data(data), body(NULL), pos(0), size(0)
-    {
-        if (data != NULL)
-        {
-            body = json_dumps(data, 0);
-            size = (body == NULL) ? 0 : strlen(body);
-        }
-    }
+	HTTPRequest(const char *method, const char *endpoint, json_t *data = NULL)
+		: method(method), endpoint(endpoint), data(data), body(NULL), pos(0), size(0)
+	{
+		if (data != NULL)
+		{
+			body = json_dumps(data, 0);
+			size = (body == NULL) ? 0 : strlen(body);
+		}
+	}
 
-    const char *method;
-    const char *endpoint;
-    json_t *data;
+	const char *method;
+	const char *endpoint;
+	json_t *data;
 
-    char *body;
-    size_t pos;
-    size_t size;
+	char *body;
+	size_t pos;
+	size_t size;
 };
 
 struct HTTPResponse {
-    HTTPResponse() : status(0), data(NULL), hndlData(BAD_HANDLE), body((char *)malloc(1)), size(0) {}
+	HTTPResponse() : status(0), data(NULL), hndlData(BAD_HANDLE), body((char *)malloc(1)), size(0) {}
 
-    long status;
-    json_t *data;
-    Handle_t hndlData;
+	long status;
+	json_t *data;
+	Handle_t hndlData;
 
-    char *body;
-    size_t size;
+	char *body;
+	size_t size;
 };
 
 struct HTTPRequestCallback {
-    HTTPRequestCallback(IChangeableForward *forward, struct HTTPResponse response, cell_t value)
-        : forward(forward), response(response), value(value) {}
+	HTTPRequestCallback(IChangeableForward *forward, struct HTTPResponse response, cell_t value)
+		: forward(forward), response(response), value(value) {}
 
-    IChangeableForward *forward;
-    struct HTTPResponse response;
-    cell_t value;
+	IChangeableForward *forward;
+	struct HTTPResponse response;
+	cell_t value;
 };
 
 

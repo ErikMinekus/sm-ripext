@@ -64,7 +64,7 @@ void HTTPRequestThread::RunThread(IThreadHandle *pHandle)
 	char error[CURL_ERROR_SIZE] = {'\0'};
 	char *url = this->client->BuildURL(this->request.endpoint);
 
-	struct curl_slist *headers = this->client->GetHeaders(this->request);
+	struct curl_slist *headers = this->client->BuildHeaders(this->request);
 	struct HTTPResponse response;
 
 	if (strcmp(this->request.method, "POST") == 0)

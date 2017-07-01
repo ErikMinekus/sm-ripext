@@ -24,10 +24,10 @@
 
 static cell_t CreateClient(IPluginContext *pContext, const cell_t *params)
 {
-	char *baseUrl;
-	pContext->LocalToString(params[1], &baseUrl);
+	char *baseURL;
+	pContext->LocalToString(params[1], &baseURL);
 
-	HTTPClient *client = new HTTPClient(baseUrl);
+	HTTPClient *client = new HTTPClient(baseURL);
 
 	Handle_t hndl = handlesys->CreateHandle(htHTTPClientObject, client, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndl == BAD_HANDLE)
@@ -37,6 +37,29 @@ static cell_t CreateClient(IPluginContext *pContext, const cell_t *params)
 	}
 
 	return hndl;
+}
+
+static cell_t SetClientHeader(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	char *name;
+	pContext->LocalToString(params[2], &name);
+
+	char *value;
+	pContext->LocalToString(params[3], &value);
+
+	client->SetHeader(name, value);
+
+	return 1;
 }
 
 static cell_t GetRequest(IPluginContext *pContext, const cell_t *params)
@@ -236,6 +259,7 @@ static cell_t GetResponseStatus(IPluginContext *pContext, const cell_t *params)
 const sp_nativeinfo_t curl_natives[] =
 {
 	{"HTTPClient.HTTPClient",			CreateClient},
+	{"HTTPClient.SetHeader",			SetClientHeader},
 	{"HTTPClient.Get",					GetRequest},
 	{"HTTPClient.Post",					PostRequest},
 	{"HTTPClient.Put",					PutRequest},
