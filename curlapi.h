@@ -29,7 +29,7 @@ class HTTPClient
 public:
 	HTTPClient(const char *baseURL) : baseURL(baseURL) {}
 
-	char *BuildURL(const char *endpoint);
+	const ke::AString BuildURL(const ke::AString &endpoint) const;
 
 	struct curl_slist *BuildHeaders(struct HTTPRequest request);
 
@@ -38,7 +38,7 @@ public:
 	void SetHeader(const char *name, const char *value);
 
 private:
-	const char *baseURL;
+	const ke::AString baseURL;
 	HTTPHeaderMap headers;
 };
 

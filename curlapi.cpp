@@ -22,14 +22,16 @@
 #include "curlapi.h"
 #include "curlthread.h"
 
-char *HTTPClient::BuildURL(const char *endpoint)
+const ke::AString HTTPClient::BuildURL(const ke::AString &endpoint) const
 {
-	char *url = new char[strlen(this->baseURL) + strlen(endpoint) + 2];
-	strcpy(url, this->baseURL);
+	char *url = new char[this->baseURL.length() + endpoint.length() + 2];
+	strcpy(url, this->baseURL.chars());
 	strcat(url, "/");
-	strcat(url, endpoint);
+	strcat(url, endpoint.chars());
 
-	return url;
+	ke::AString ret(url);
+	delete[] url;
+	return ret;
 }
 
 struct curl_slist *HTTPClient::BuildHeaders(struct HTTPRequest request)
