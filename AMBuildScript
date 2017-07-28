@@ -1,27 +1,6 @@
 # vim: set sts=2 ts=8 sw=2 tw=99 et ft=python:
 import os
 
-# Simple extensions do not need to modify this file.
-
-class SDK(object):
-  def __init__(self, sdk, ext, aDef, name, platform, dir):
-    self.folder = 'hl2sdk-' + dir
-    self.envvar = sdk
-    self.ext = ext
-    self.code = aDef
-    self.define = name
-    self.platform = platform
-    self.name = dir
-    self.path = None # Actual path
-
-WinOnly = ['windows']
-WinLinux = ['windows', 'linux']
-WinLinuxMac = ['windows', 'linux', 'mac']
-
-PossibleSDKs = {
-  'sdk2013': SDK('HL2SDK2013', '2.sdk2013', '9', 'SDK2013', WinLinuxMac, 'sdk2013'),
-}
-
 def ResolveEnvPath(env, folder):
   if env in os.environ:
     path = os.environ[env]
@@ -45,11 +24,7 @@ def Normalize(path):
 
 class ExtensionConfig(object):
   def __init__(self):
-    self.sdks = {}
-    self.binaries = []
     self.extensions = []
-    self.generated_headers = None
-    self.mms_root = None
     self.sm_root = None
 
   @property
@@ -58,29 +33,7 @@ class ExtensionConfig(object):
       return 'Debug'
     return 'Release'
 
-  def detectSDKs(self):
-    sdk_list = builder.options.sdks.split(',')
-    use_all = sdk_list[0] == 'all'
-    use_present = sdk_list[0] == 'present'
-
-    for sdk_name in PossibleSDKs:
-      sdk = PossibleSDKs[sdk_name]
-      if builder.target_platform in sdk.platform:
-        if builder.options.hl2sdk_root:
-          sdk_path = os.path.join(builder.options.hl2sdk_root, sdk.folder)
-        else:
-          sdk_path = ResolveEnvPath(sdk.envvar, sdk.folder)
-        if sdk_path is None or not os.path.isdir(sdk_path):
-          if use_all or sdk_name in sdk_list:
-            raise Exception('Could not find a valid path for {0}'.format(sdk.envvar))
-          continue
-        if use_all or use_present or sdk_name in sdk_list:
-          sdk.path = Normalize(sdk_path)
-          self.sdks[sdk_name] = sdk
-
-    if len(self.sdks) < 1:
-      raise Exception('At least one SDK must be available.')
-
+  def detectSourceMod(self):
     if builder.options.sm_path:
       self.sm_root = builder.options.sm_path
     else:
@@ -92,20 +45,8 @@ class ExtensionConfig(object):
 
     if not self.sm_root or not os.path.isdir(self.sm_root):
       raise Exception('Could not find a source copy of SourceMod')
+
     self.sm_root = Normalize(self.sm_root)
-
-    if builder.options.mms_path:
-      self.mms_root = builder.options.mms_path
-    else:
-      self.mms_root = ResolveEnvPath('MMSOURCE110', 'mmsource-1.10')
-      if not self.mms_root:
-        self.mms_root = ResolveEnvPath('MMSOURCE', 'metamod-source')
-      if not self.mms_root:
-        self.mms_root = ResolveEnvPath('MMSOURCE_DEV', 'mmsource-central')
-
-    if not self.mms_root or not os.path.isdir(self.mms_root):
-      raise Exception('Could not find a source copy of Metamod:Source')
-    self.mms_root = Normalize(self.mms_root)
 
   def configure(self):
     cxx = builder.DetectCompilers()
@@ -260,11 +201,10 @@ class ExtensionConfig(object):
 
   def configure_windows(self, cxx):
     cxx.defines += ['WIN32', '_WINDOWS']
-  
+
   def ConfigureForExtension(self, context, compiler):
     compiler.cxxincludes += [
       os.path.join(context.currentSourcePath),
-      os.path.join(context.currentSourcePath, 'sdk'),
       os.path.join(self.sm_root, 'public'),
       os.path.join(self.sm_root, 'public', 'extensions'),
       os.path.join(self.sm_root, 'sourcepawn', 'include'),
@@ -273,146 +213,8 @@ class ExtensionConfig(object):
     ]
     return compiler
 
-  def ConfigureForHL2(self, binary, sdk):
-    compiler = binary.compiler
-
-    if sdk.name == 'episode1':
-      mms_path = os.path.join(self.mms_root, 'core-legacy')
-    else:
-      mms_path = os.path.join(self.mms_root, 'core')
-
-    compiler.cxxincludes += [
-      os.path.join(mms_path),
-      os.path.join(mms_path, 'sourcehook'),
-    ]
-
-    defines = ['SE_' + PossibleSDKs[i].define + '=' + PossibleSDKs[i].code for i in PossibleSDKs]
-    compiler.defines += defines
-
-    paths = [
-      ['public'],
-      ['public', 'engine'],
-      ['public', 'mathlib'],
-      ['public', 'vstdlib'],
-      ['public', 'tier0'],
-      ['public', 'tier1']
-    ]
-    if sdk.name == 'episode1' or sdk.name == 'darkm':
-      paths.append(['public', 'dlls'])
-      paths.append(['game_shared'])
-    else:
-      paths.append(['public', 'game', 'server'])
-      paths.append(['public', 'toolframework'])
-      paths.append(['game', 'shared'])
-      paths.append(['common'])
-
-    compiler.defines += ['SOURCE_ENGINE=' + sdk.code]
-
-    if sdk.name in ['sdk2013', 'bms'] and compiler.like('gcc'):
-      # The 2013 SDK already has these in public/tier0/basetypes.h
-      compiler.defines.remove('stricmp=strcasecmp')
-      compiler.defines.remove('_stricmp=strcasecmp')
-      compiler.defines.remove('_snprintf=snprintf')
-      compiler.defines.remove('_vsnprintf=vsnprintf')
-
-    if compiler.like('msvc'):
-      compiler.defines += ['COMPILER_MSVC', 'COMPILER_MSVC32']
-    else:
-      compiler.defines += ['COMPILER_GCC']
-
-    # For everything after Swarm, this needs to be defined for entity networking
-    # to work properly with sendprop value changes.
-    if sdk.name in ['blade', 'insurgency', 'csgo', 'dota']:
-      compiler.defines += ['NETWORK_VARS_ENABLED']
-
-    if sdk.name in ['css', 'hl2dm', 'dods', 'sdk2013', 'bms', 'tf2', 'l4d', 'nucleardawn', 'l4d2', 'dota']:
-      if builder.target_platform in ['linux', 'mac']:
-        compiler.defines += ['NO_HOOK_MALLOC', 'NO_MALLOC_OVERRIDE']
-
-    if sdk.name == 'csgo' and builder.target_platform == 'linux':
-      compiler.linkflags += ['-lstdc++']
-
-    for path in paths:
-      compiler.cxxincludes += [os.path.join(sdk.path, *path)]
-
-    if builder.target_platform == 'linux':
-      if sdk.name == 'episode1':
-        lib_folder = os.path.join(sdk.path, 'linux_sdk')
-      elif sdk.name in ['sdk2013', 'bms']:
-        lib_folder = os.path.join(sdk.path, 'lib', 'public', 'linux32')
-      else:
-        lib_folder = os.path.join(sdk.path, 'lib', 'linux')
-    elif builder.target_platform == 'mac':
-      if sdk.name in ['sdk2013', 'bms']:
-        lib_folder = os.path.join(sdk.path, 'lib', 'public', 'osx32')
-      else:
-        lib_folder = os.path.join(sdk.path, 'lib', 'mac')
-
-    if builder.target_platform in ['linux', 'mac']:
-      if sdk.name in ['sdk2013', 'bms']:
-        compiler.postlink += [
-          compiler.Dep(os.path.join(lib_folder, 'tier1.a')),
-          compiler.Dep(os.path.join(lib_folder, 'mathlib.a'))
-        ]
-      else:
-        compiler.postlink += [
-          compiler.Dep(os.path.join(lib_folder, 'tier1_i486.a')),
-          compiler.Dep(os.path.join(lib_folder, 'mathlib_i486.a'))
-        ]
-
-      if sdk.name in ['blade', 'insurgency', 'csgo', 'dota']:
-        compiler.postlink += [compiler.Dep(os.path.join(lib_folder, 'interfaces_i486.a'))]
-
-    dynamic_libs = []
-    if builder.target_platform == 'linux':
-      if sdk.name in ['css', 'hl2dm', 'dods', 'tf2', 'sdk2013', 'bms', 'nucleardawn', 'l4d2', 'insurgency']:
-        dynamic_libs = ['libtier0_srv.so', 'libvstdlib_srv.so']
-      elif sdk.name in ['l4d', 'blade', 'insurgency', 'csgo', 'dota']:
-        dynamic_libs = ['libtier0.so', 'libvstdlib.so']
-      else:
-        dynamic_libs = ['tier0_i486.so', 'vstdlib_i486.so']
-    elif builder.target_platform == 'mac':
-      compiler.linkflags.append('-liconv')
-      dynamic_libs = ['libtier0.dylib', 'libvstdlib.dylib']
-    elif builder.target_platform == 'windows':
-      libs = ['tier0', 'tier1', 'vstdlib', 'mathlib']
-      if sdk.name in ['swarm', 'blade', 'insurgency', 'csgo', 'dota']:
-        libs.append('interfaces')
-      for lib in libs:
-        lib_path = os.path.join(sdk.path, 'lib', 'public', lib) + '.lib'
-        compiler.linkflags.append(compiler.Dep(lib_path))
-
-    for library in dynamic_libs:
-      source_path = os.path.join(lib_folder, library)
-      output_path = os.path.join(binary.localFolder, library)
-
-      def make_linker(source_path, output_path):
-        def link(context, binary):
-          cmd_node, (output,) = context.AddSymlink(source_path, output_path)
-          return output
-        return link
-
-      linker = make_linker(source_path, output_path)
-      compiler.linkflags[0:0] = [compiler.Dep(library, linker)]
-
-    return binary
-
-  def HL2Library(self, context, name, sdk):
-    binary = context.compiler.Library(name)
-    self.ConfigureForExtension(context, binary.compiler)
-    return self.ConfigureForHL2(binary, sdk)
-
-  def HL2Project(self, context, name):
-    project = context.compiler.LibraryProject(name)
-    self.ConfigureForExtension(context, project.compiler)
-    return project
-
-  def HL2Config(self, project, name, sdk):
-    binary = project.Configure(name, '{0} - {1}'.format(self.tag, sdk.name))
-    return self.ConfigureForHL2(binary, sdk)
-
 Extension = ExtensionConfig()
-Extension.detectSDKs()
+Extension.detectSourceMod()
 Extension.configure()
 
 # Add additional buildscripts here

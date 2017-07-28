@@ -29,7 +29,7 @@ def CopyFiles(src, dest, files):
     source_path = os.path.join(builder.sourcePath, src, source_file)
     builder.AddCopy(source_path, dest_entry)
 
-# Include files 
+# Include files
 CopyFiles('pawn/scripting/include', 'addons/sourcemod/scripting/include',
   [ 'ripext.inc' ]
 )

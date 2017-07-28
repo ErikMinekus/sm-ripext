@@ -1,18 +1,13 @@
 version: '{branch}-{build}'
 
 environment:
-  HL2SDK_VERSION: sdk2013
-  MMSOURCE_VERSION: 1.10-dev
   SOURCEMOD_VERSION: 1.8-dev
 
 install:
   - '"%VS120COMNTOOLS%vsvars32.bat"'
   - git clone https://github.com/alliedmodders/sourcemod.git -b %SOURCEMOD_VERSION% --depth 1 --recursive %APPVEYOR_BUILD_FOLDER%\..\sourcemod
-  - git clone https://github.com/alliedmodders/metamod-source.git -b %MMSOURCE_VERSION% --depth 1 %APPVEYOR_BUILD_FOLDER%\..\metamod-source
-  - git clone https://github.com/alliedmodders/hl2sdk.git -b %HL2SDK_VERSION% --depth 1 %APPVEYOR_BUILD_FOLDER%\..\hl2sdk-%HL2SDK_VERSION%
   - git clone https://github.com/alliedmodders/ambuild.git --depth 1 %APPVEYOR_BUILD_FOLDER%\..\ambuild
   - cd %APPVEYOR_BUILD_FOLDER%\..\ambuild && python setup.py build && python setup.py install
-  - cd %APPVEYOR_BUILD_FOLDER%\..\sourcemod && mkdir build && cd build && python ..\configure.py --enable-optimize --no-mysql --sdks=%HL2SDK_VERSION% && C:\Python27\Scripts\ambuild
 
 build_script:
   - mkdir %APPVEYOR_BUILD_FOLDER%\build && cd %APPVEYOR_BUILD_FOLDER%\build
