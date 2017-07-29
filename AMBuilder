@@ -6,42 +6,42 @@ libjansson = builder.RunScript('jansson/src/AMBuilder')
 libmbedtls = builder.RunScript('mbedtls/library/AMBuilder')
 libz = builder.RunScript('zlib/AMBuilder')
 
-project = Extension.HL2Project(builder, 'rip.ext')
-project.sources += [
+binary = builder.compiler.Library('rip.ext')
+Extension.ConfigureForExtension(builder, binary.compiler)
+
+binary.sources += [
   'extension.cpp',
   'curlapi.cpp',
   'curlthread.cpp',
   'curl_natives.cpp',
   'json_natives.cpp',
-  'sdk/smsdk_ext.cpp',
+  os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),
 ]
 
-for sdk_name in Extension.sdks:
-  sdk = Extension.sdks[sdk_name]
+binary.compiler.includes += [
+  os.path.join(builder.sourcePath, 'curl', 'include'),
+  os.path.join(builder.sourcePath, 'jansson', 'include'),
+]
 
-  binary = Extension.HL2Config(project, 'rip.ext', sdk)
-  binary.compiler.includes += [
-    os.path.join(builder.sourcePath, 'curl', 'include'),
-    os.path.join(builder.sourcePath, 'jansson', 'include'),
-  ]
-  binary.compiler.defines += [
-    'CURL_STATICLIB',
-  ]
+binary.compiler.defines += [
+  'CURL_STATICLIB',
+]
 
-  if binary.compiler.vendor == 'gcc' or binary.compiler.vendor == 'clang':
-    binary.compiler.cxxflags += ['-fno-rtti']
-  elif binary.compiler.vendor == 'msvc':
-    binary.compiler.cxxflags += ['/GR-']
+if binary.compiler.vendor == 'gcc' or binary.compiler.vendor == 'clang':
+  binary.compiler.cxxflags += ['-fno-rtti']
+elif binary.compiler.vendor == 'msvc':
+  binary.compiler.cxxflags += ['/GR-']
 
-  binary.compiler.postlink += [
-    libcurl.binary,
-    libjansson.binary,
-    libmbedtls.binary,
-    libz.binary,
-  ]
-  if builder.target_platform == 'linux':
-    binary.compiler.postlink += ['-lrt']
-  elif builder.target_platform == 'windows':
-    binary.compiler.postlink += ['ws2_32.lib']
+binary.compiler.postlink += [
+  libcurl.binary,
+  libjansson.binary,
+  libmbedtls.binary,
+  libz.binary,
+]
 
-Extension.extensions = builder.Add(project)
+if builder.target_platform == 'linux':
+  binary.compiler.postlink += ['-lrt']
+elif builder.target_platform == 'windows':
+  binary.compiler.postlink += ['ws2_32.lib']
+
+Extension.extensions += [builder.Add(binary)]

@@ -10,17 +10,12 @@ addons:
 
 env:
   global:
-    - HL2SDK_VERSION=sdk2013
-    - MMSOURCE_VERSION=1.10-dev
     - SOURCEMOD_VERSION=1.8-dev
 
 install:
   - git clone https://github.com/alliedmodders/sourcemod.git -b $SOURCEMOD_VERSION --depth 1 --recursive $TRAVIS_BUILD_DIR/../sourcemod
-  - git clone https://github.com/alliedmodders/metamod-source.git -b $MMSOURCE_VERSION --depth 1 $TRAVIS_BUILD_DIR/../metamod-source
-  - git clone https://github.com/alliedmodders/hl2sdk.git -b $HL2SDK_VERSION --depth 1 $TRAVIS_BUILD_DIR/../hl2sdk-$HL2SDK_VERSION
   - git clone https://github.com/alliedmodders/ambuild.git --depth 1 $TRAVIS_BUILD_DIR/../ambuild
   - cd $TRAVIS_BUILD_DIR/../ambuild && python setup.py build && sudo python setup.py install
-  - cd $TRAVIS_BUILD_DIR/../sourcemod && mkdir build && cd build && python ../configure.py --enable-optimize --no-mysql --sdks=$HL2SDK_VERSION && ambuild
 
 script:
   - mkdir $TRAVIS_BUILD_DIR/build && cd $TRAVIS_BUILD_DIR/build
