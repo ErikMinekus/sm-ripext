@@ -43,8 +43,8 @@ struct HTTPRequest {
 		}
 	}
 
-	const char *method;
-	const char *endpoint;
+	const ke::AString method;
+	const ke::AString endpoint;
 	json_t *data;
 
 	char *body;
