@@ -6,8 +6,7 @@ libjansson = builder.RunScript('jansson/src/AMBuilder')
 libmbedtls = builder.RunScript('mbedtls/library/AMBuilder')
 libz = builder.RunScript('zlib/AMBuilder')
 
-binary = builder.compiler.Library('rip.ext')
-Extension.ConfigureForExtension(builder, binary.compiler)
+binary = Extension.Library(builder, 'rip.ext')
 
 binary.sources += [
   'extension.cpp',

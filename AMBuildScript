@@ -213,6 +213,11 @@ class ExtensionConfig(object):
     ]
     return compiler
 
+  def Library(self, context, name):
+    binary = context.compiler.Library(name)
+    self.ConfigureForExtension(context, binary.compiler)
+    return binary
+
 Extension = ExtensionConfig()
 Extension.detectSourceMod()
 Extension.configure()

@@ -40,7 +40,7 @@ struct curl_slist *HTTPClient::BuildHeaders(struct HTTPRequest request)
 	headers = curl_slist_append(headers, "Accept: application/json");
 	headers = curl_slist_append(headers, "Content-Type: application/json");
 
-	char header[256];
+	char header[8192];
 	snprintf(header, sizeof(header), "Content-Length: %d", request.size);
 	headers = curl_slist_append(headers, header);
 
