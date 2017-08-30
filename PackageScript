@@ -12,6 +12,7 @@ folder_list = [
   'addons/sourcemod/scripting/include/ripext',
   #'addons/sourcemod/gamedata',
   #'addons/sourcemod/configs',
+  'addons/sourcemod/configs/ripext',
 ]
 
 # Create the distribution folder hierarchy.
@@ -50,6 +51,9 @@ CopyFiles('pawn/scripting/include/ripext', 'addons/sourcemod/scripting/include/r
 #  'otherconfig.cfg,
 #  ]
 #)
+CopyFiles(builder.buildPath, 'addons/sourcemod/configs/ripext',
+  [ 'ca-bundle.crt' ]
+)
 
 # Copy binaries.
 for cxx_task in Extension.extensions:

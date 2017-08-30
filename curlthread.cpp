@@ -61,6 +61,9 @@ void HTTPRequestThread::RunThread(IThreadHandle *pHandle)
 		return;
 	}
 
+	char caBundlePath[PLATFORM_MAX_PATH];
+	smutils->BuildPath(Path_SM, caBundlePath, sizeof(caBundlePath), SM_RIPEXT_CA_BUNDLE_PATH);
+
 	char error[CURL_ERROR_SIZE] = {'\0'};
 	const ke::AString url = this->client->BuildURL(this->request.endpoint);
 
@@ -86,6 +89,7 @@ void HTTPRequestThread::RunThread(IThreadHandle *pHandle)
 	}
 
 	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
+	curl_easy_setopt(curl, CURLOPT_CAINFO, caBundlePath);
 	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
 	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);

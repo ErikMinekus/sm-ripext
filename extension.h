@@ -30,6 +30,8 @@
 #include <string.h>
 #include "smsdk_ext.h"
 
+#define SM_RIPEXT_CA_BUNDLE_PATH "configs/ripext/ca-bundle.crt"
+
 typedef StringHashMap<ke::AString> HTTPHeaderMap;
 
 struct HTTPRequest {
