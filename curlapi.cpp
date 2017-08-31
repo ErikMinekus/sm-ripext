@@ -56,7 +56,11 @@ struct curl_slist *HTTPClient::BuildHeaders(struct HTTPRequest request)
 void HTTPClient::Request(struct HTTPRequest request, IPluginFunction *function, cell_t value)
 {
 	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 2, NULL, Param_Cell, Param_Cell);
-	forward->AddFunction(function);
+	if (forward == NULL || !forward->AddFunction(function))
+	{
+		smutils->LogError(myself, "Could not create forward.");
+		return;
+	}
 
 	HTTPRequestThread *thread = new HTTPRequestThread(this, request, forward, value);
 	threader->MakeThread(thread);

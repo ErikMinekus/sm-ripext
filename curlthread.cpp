@@ -57,7 +57,9 @@ void HTTPRequestThread::RunThread(IThreadHandle *pHandle)
 	CURL *curl = curl_easy_init();
 	if (curl == NULL)
 	{
-		smutils->LogError(myself, "Could not create cURL handle.");
+		forwards->ReleaseForward(this->forward);
+
+		smutils->LogError(myself, "Could not initialize cURL session.");
 		return;
 	}
 
@@ -108,6 +110,7 @@ void HTTPRequestThread::RunThread(IThreadHandle *pHandle)
 		curl_easy_cleanup(curl);
 		curl_slist_free_all(headers);
 		free(this->request.body);
+		forwards->ReleaseForward(this->forward);
 
 		smutils->LogError(myself, "HTTP request failed: %s", error);
 		return;

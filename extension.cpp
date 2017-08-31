@@ -114,6 +114,7 @@ void RipExt::RunFrame()
 	/* Return early if the plugin was unloaded while the thread was running */
 	if (forward->GetFunctionCount() == 0)
 	{
+		forwards->ReleaseForward(forward);
 		this->callbackMutex->Unlock();
 
 		return;
@@ -123,6 +124,7 @@ void RipExt::RunFrame()
 	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponseObject, &response, &sec, NULL, NULL);
 	if (hndlResponse == BAD_HANDLE)
 	{
+		forwards->ReleaseForward(forward);
 		this->callbackMutex->Unlock();
 
 		smutils->LogError(myself, "Could not create HTTP response handle.");
@@ -136,6 +138,7 @@ void RipExt::RunFrame()
 	handlesys->FreeHandle(hndlResponse, &sec);
 	handlesys->FreeHandle(response.hndlData, &sec);
 
+	forwards->ReleaseForward(forward);
 	this->callbackMutex->Unlock();
 }
 
