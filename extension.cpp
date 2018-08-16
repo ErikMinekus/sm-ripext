@@ -105,11 +105,11 @@ void RipExt::RunFrame()
 	}
 
 	struct HTTPRequestCallback &callback = this->callbackQueue.front();
-	this->callbackQueue.pop();
-
 	IChangeableForward *forward = callback.forward;
 	struct HTTPResponse response = callback.response;
 	cell_t value = callback.value;
+
+	this->callbackQueue.pop();
 
 	/* Return early if the plugin was unloaded while the thread was running */
 	if (forward->GetFunctionCount() == 0)
