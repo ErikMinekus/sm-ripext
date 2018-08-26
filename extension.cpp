@@ -108,6 +108,7 @@ void RipExt::RunFrame()
 	IChangeableForward *forward = callback.forward;
 	struct HTTPResponse response = callback.response;
 	cell_t value = callback.value;
+	const ke::AString error = callback.error;
 
 	this->callbackQueue.pop();
 
@@ -133,6 +134,7 @@ void RipExt::RunFrame()
 
 	forward->PushCell(hndlResponse);
 	forward->PushCell(value);
+	forward->PushString(error.chars());
 	forward->Execute(NULL);
 
 	handlesys->FreeHandle(hndlResponse, &sec);

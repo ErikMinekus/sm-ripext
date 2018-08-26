@@ -56,6 +56,7 @@ enum HTTPStatus
 typeset HTTPRequestCallback
 {
 	function void (HTTPResponse response, any value);
+	function void (HTTPResponse response, any value, const char[] error);
 };
 
 methodmap HTTPResponse

@@ -105,23 +105,15 @@ void HTTPRequestThread::RunThread(IThreadHandle *pHandle)
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);
 
 	CURLcode res = curl_easy_perform(curl);
-	if (res != CURLE_OK)
+	if (res == CURLE_OK)
 	{
-		curl_easy_cleanup(curl);
-		curl_slist_free_all(headers);
-		free(this->request.body);
-		forwards->ReleaseForward(this->forward);
-
-		smutils->LogError(myself, "HTTP request failed: %s", error);
-		return;
+		response.data = json_loads(response.body, 0, NULL);
+		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.status);
 	}
-
-	response.data = json_loads(response.body, 0, NULL);
-	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.status);
 
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
 	free(this->request.body);
 
-	g_RipExt.AddCallbackToQueue(HTTPRequestCallback(this->forward, response, this->value));
+	g_RipExt.AddCallbackToQueue(HTTPRequestCallback(this->forward, response, this->value, error));
 }
