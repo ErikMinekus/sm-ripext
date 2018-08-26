@@ -837,7 +837,7 @@ static cell_t FromString(IPluginContext *pContext, const cell_t *params)
 	json_t *object = json_loads(buffer, 0, &error);
 	if (object == NULL)
 	{
-		smutils->LogError(myself, "Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
+		pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
 		return BAD_HANDLE;
 	}
 
@@ -860,7 +860,7 @@ static cell_t FromFile(IPluginContext *pContext, const cell_t *params)
 	json_t *object = json_load_file(file, 0, &error);
 	if (object == NULL)
 	{
-		smutils->LogError(myself, "Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
+		pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
 		return BAD_HANDLE;
 	}
 
