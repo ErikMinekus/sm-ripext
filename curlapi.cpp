@@ -71,3 +71,33 @@ void HTTPClient::SetHeader(const char *name, const char *value)
 	ke::AString vstr(value);
 	this->headers.replace(name, ke::Move(vstr));
 }
+
+int HTTPClient::GetConnectTimeout() const
+{
+	return this->connectTimeout;
+}
+
+void HTTPClient::SetConnectTimeout(int connectTimeout)
+{
+	this->connectTimeout = connectTimeout;
+}
+
+bool HTTPClient::GetFollowLocation() const
+{
+	return this->followLocation;
+}
+
+void HTTPClient::SetFollowLocation(bool followLocation)
+{
+	this->followLocation = followLocation;
+}
+
+int HTTPClient::GetTimeout() const
+{
+	return this->timeout;
+}
+
+void HTTPClient::SetTimeout(int timeout)
+{
+	this->timeout = timeout;
+}

@@ -37,9 +37,21 @@ public:
 
 	void SetHeader(const char *name, const char *value);
 
+	int GetConnectTimeout() const;
+	void SetConnectTimeout(int connectTimeout);
+
+	bool GetFollowLocation() const;
+	void SetFollowLocation(bool followLocation);
+
+	int GetTimeout() const;
+	void SetTimeout(int timeout);
+
 private:
 	const ke::AString baseURL;
 	HTTPHeaderMap headers;
+	int connectTimeout = 10;
+	bool followLocation = true;
+	int timeout = 30;
 };
 
 #endif // SM_RIPEXT_CURLAPI_H_
