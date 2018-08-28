@@ -19,25 +19,39 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SM_RIPEXT_CURLTHREAD_H_
-#define SM_RIPEXT_CURLTHREAD_H_
+#ifndef SM_RIPEXT_HTTPCLIENT_H_
+#define SM_RIPEXT_HTTPCLIENT_H_
 
 #include "extension.h"
 
-class HTTPRequestThread : public IThread
+class HTTPClient
 {
 public:
-	HTTPRequestThread(HTTPClient *client, struct HTTPRequest request, IChangeableForward *forward, cell_t value)
-		: client(client), request(request), forward(forward), value(value) {}
+	HTTPClient(const char *baseURL) : baseURL(baseURL) {}
 
-	void RunThread(IThreadHandle *pThread);
-	void OnTerminate(IThreadHandle *pThread, bool cancel) {}
+	const ke::AString BuildURL(const ke::AString &endpoint) const;
+
+	struct curl_slist *BuildHeaders(struct HTTPRequest request);
+
+	void Request(struct HTTPRequest request, IPluginFunction *function, cell_t value);
+
+	void SetHeader(const char *name, const char *value);
+
+	int GetConnectTimeout() const;
+	void SetConnectTimeout(int connectTimeout);
+
+	bool GetFollowLocation() const;
+	void SetFollowLocation(bool followLocation);
+
+	int GetTimeout() const;
+	void SetTimeout(int timeout);
 
 private:
-	HTTPClient *client;
-	struct HTTPRequest request;
-	IChangeableForward *forward;
-	cell_t value;
+	const ke::AString baseURL;
+	HTTPHeaderMap headers;
+	int connectTimeout = 10;
+	bool followLocation = true;
+	int timeout = 30;
 };
 
-#endif // SM_RIPEXT_CURLTHREAD_H_
+#endif // SM_RIPEXT_HTTPCLIENT_H_

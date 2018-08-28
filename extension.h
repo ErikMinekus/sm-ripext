@@ -187,7 +187,7 @@ extern HandleType_t					htHTTPResponseObject;
 extern JSONObjectHandler	g_JSONObjectHandler;
 extern HandleType_t			htJSONObject;
 
-extern const sp_nativeinfo_t curl_natives[];
+extern const sp_nativeinfo_t http_natives[];
 extern const sp_nativeinfo_t json_natives[];
 
 #endif // _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_

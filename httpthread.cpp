@@ -19,8 +19,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "curlapi.h"
-#include "curlthread.h"
+#include "httpclient.h"
+#include "httpthread.h"
 
 static size_t ReadRequestBody(void *body, size_t size, size_t nmemb, void *userdata)
 {

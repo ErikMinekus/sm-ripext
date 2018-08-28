@@ -19,8 +19,8 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "curlapi.h"
-#include "curlthread.h"
+#include "httpclient.h"
+#include "httpthread.h"
 
 const ke::AString HTTPClient::BuildURL(const ke::AString &endpoint) const
 {

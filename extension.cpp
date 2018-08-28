@@ -20,7 +20,7 @@
  */
 
 #include "extension.h"
-#include "curlapi.h"
+#include "httpclient.h"
 
 RipExt g_RipExt;		/**< Global singleton for extension's main interface */
 
@@ -42,7 +42,7 @@ static void FrameHook(bool simulating)
 
 bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 {
-	sharesys->AddNatives(myself, curl_natives);
+	sharesys->AddNatives(myself, http_natives);
 	sharesys->AddNatives(myself, json_natives);
 	sharesys->RegisterLibrary(myself, "ripext");
 

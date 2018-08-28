@@ -20,7 +20,7 @@
  */
 
 #include "extension.h"
-#include "curlapi.h"
+#include "httpclient.h"
 
 static cell_t CreateClient(IPluginContext *pContext, const cell_t *params)
 {
@@ -352,7 +352,7 @@ static cell_t GetResponseStatus(IPluginContext *pContext, const cell_t *params)
 }
 
 
-const sp_nativeinfo_t curl_natives[] =
+const sp_nativeinfo_t http_natives[] =
 {
 	{"HTTPClient.HTTPClient",			CreateClient},
 	{"HTTPClient.SetHeader",			SetClientHeader},
