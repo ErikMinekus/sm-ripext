@@ -55,7 +55,7 @@ struct HTTPRequest {
 };
 
 struct HTTPResponse {
-	HTTPResponse() : status(0), data(NULL), hndlData(BAD_HANDLE), body((char *)malloc(1)), size(0) {}
+	HTTPResponse() : status(0), data(NULL), hndlData(BAD_HANDLE), body(NULL), size(0) {}
 
 	long status;
 	json_t *data;

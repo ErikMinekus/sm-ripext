@@ -39,12 +39,13 @@ static size_t WriteResponseBody(void *body, size_t size, size_t nmemb, void *use
 	size_t total = size * nmemb;
 	struct HTTPResponse *response = (struct HTTPResponse *)userdata;
 
-	response->body = (char *)realloc(response->body, response->size + total + 1);
-	if (response->body == NULL)
+	char *temp = (char *)realloc(response->body, response->size + total + 1);
+	if (temp == NULL)
 	{
 		return 0;
 	}
 
+	response->body = temp;
 	memcpy(&(response->body[response->size]), body, total);
 	response->size += total;
 	response->body[response->size] = '\0';
