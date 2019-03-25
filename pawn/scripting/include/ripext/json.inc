@@ -86,6 +86,12 @@ methodmap JSONObject < JSON
 	// @return           True if the value is null, false otherwise.
 	public native bool IsNull(const char[] key);
 
+	// Returns whether or not a key in the object exists
+	//
+	// @param key        Key string.
+	// @return           True if the key exists, false otherwise.
+	public native bool HasKey(const char[] key);
+	
 	// Sets an array or object value in the object, either inserting a new entry or replacing an old one.
 	//
 	// @param key        Key string.
