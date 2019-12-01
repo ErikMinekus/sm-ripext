@@ -1,0 +1,87 @@
+# vim: sts=2 ts=8 sw=2 tw=99 et ft=python:
+import os
+
+builder.SetBuildFolder('libuv')
+
+binary = builder.compiler.StaticLibrary('uv')
+binary.compiler.includes += [
+  os.path.join(builder.sourcePath, 'libuv', 'src'),
+  os.path.join(builder.sourcePath, 'libuv', 'include'),
+]
+
+if binary.compiler.vendor == 'clang':
+  # https://llvm.org/bugs/show_bug.cgi?id=16428
+  binary.compiler.cflags += ['-Wno-attributes']
+
+binary.sources += [
+  'fs-poll.c',
+  'idna.c',
+  'inet.c',
+  'random.c',
+  'strscpy.c',
+  'threadpool.c',
+  'timer.c',
+  'uv-common.c',
+  'uv-data-getter-setters.c',
+  'version.c',
+]
+
+if builder.target_platform == 'windows':
+  binary.sources += [
+    'win/async.c',
+    'win/core.c',
+    'win/detect-wakeup.c',
+    'win/dl.c',
+    'win/error.c',
+    'win/fs.c',
+    'win/fs-event.c',
+    'win/getaddrinfo.c',
+    'win/getnameinfo.c',
+    'win/handle.c',
+    'win/loop-watcher.c',
+    'win/pipe.c',
+    'win/thread.c',
+    'win/poll.c',
+    'win/process.c',
+    'win/process-stdio.c',
+    'win/signal.c',
+    'win/snprintf.c',
+    'win/stream.c',
+    'win/tcp.c',
+    'win/tty.c',
+    'win/udp.c',
+    'win/util.c',
+    'win/winapi.c',
+    'win/winsock.c',
+  ]
+else:
+  binary.sources += [
+    'unix/async.c',
+    'unix/core.c',
+    'unix/dl.c',
+    'unix/fs.c',
+    'unix/getaddrinfo.c',
+    'unix/getnameinfo.c',
+    'unix/loop-watcher.c',
+    'unix/loop.c',
+    'unix/pipe.c',
+    'unix/poll.c',
+    'unix/process.c',
+    'unix/random-devurandom.c',
+    'unix/signal.c',
+    'unix/stream.c',
+    'unix/tcp.c',
+    'unix/thread.c',
+    'unix/tty.c',
+    'unix/udp.c',
+    'unix/linux-core.c',
+    'unix/linux-inotify.c',
+    'unix/linux-syscalls.c',
+    'unix/procfs-exepath.c',
+    'unix/proctitle.c',
+    'unix/random-getrandom.c',
+    'unix/random-sysctl.c',
+    'unix/sysinfo-loadavg.c',
+  ]
+
+rvalue = builder.Add(binary)

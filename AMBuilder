@@ -4,6 +4,7 @@ import os
 libcurl = builder.RunScript('curl/lib/AMBuilder')
 libjansson = builder.RunScript('jansson/src/AMBuilder')
 libmbedtls = builder.RunScript('mbedtls/library/AMBuilder')
+libuv = builder.RunScript('libuv/src/AMBuilder')
 libz = builder.RunScript('zlib/AMBuilder')
 
 binary = Extension.Library(builder, 'rip.ext')
@@ -20,6 +21,7 @@ binary.sources += [
 binary.compiler.includes += [
   os.path.join(builder.sourcePath, 'curl', 'include'),
   os.path.join(builder.sourcePath, 'jansson', 'include'),
+  os.path.join(builder.sourcePath, 'libuv', 'include'),
 ]
 
 binary.compiler.defines += [
@@ -35,12 +37,18 @@ binary.compiler.postlink += [
   libcurl.binary,
   libjansson.binary,
   libmbedtls.binary,
+  libuv.binary,
   libz.binary,
 ]
 
 if builder.target_platform == 'linux':
   binary.compiler.postlink += ['-lrt']
 elif builder.target_platform == 'windows':
-  binary.compiler.postlink += ['ws2_32.lib']
+  binary.compiler.postlink += [
+    'iphlpapi.lib',
+    'psapi.lib',
+    'userenv.lib',
+    'ws2_32.lib',
+  ]
 
 Extension.extensions += [builder.Add(binary)]
