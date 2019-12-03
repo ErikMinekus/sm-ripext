@@ -19,41 +19,57 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SM_RIPEXT_HTTPCLIENT_H_
-#define SM_RIPEXT_HTTPCLIENT_H_
+#ifndef SM_RIPEXT_QUEUE_H_
+#define SM_RIPEXT_QUEUE_H_
 
-#include "extension.h"
+#include <queue>
+#include <uv.h>
 
-class HTTPContext;
-
-class HTTPClient
+template <class T>
+class LockedQueue
 {
 public:
-	HTTPClient(const char *baseURL) : baseURL(baseURL) {}
+	LockedQueue()
+	{
+		uv_mutex_init(&mutex);
+	}
 
-	const ke::AString BuildURL(const ke::AString &endpoint) const;
+	~LockedQueue()
+	{
+		uv_mutex_destroy(&mutex);
+	}
 
-	struct curl_slist *BuildHeaders();
+	void Lock()
+	{
+		uv_mutex_lock(&mutex);
+	}
 
-	void Request(const char *method, const char *endpoint, json_t *data, IPluginFunction *callback, cell_t value);
+	void Unlock()
+	{
+		uv_mutex_unlock(&mutex);
+	}
 
-	void SetHeader(const char *name, const char *value);
+	T Pop()
+	{
+		T item = queue.front();
+		queue.pop();
 
-	int GetConnectTimeout() const;
-	void SetConnectTimeout(int connectTimeout);
+		return item;
+	}
 
-	bool GetFollowLocation() const;
-	void SetFollowLocation(bool followLocation);
+	void Push(T item)
+	{
+		queue.push(item);
+	}
 
-	int GetTimeout() const;
-	void SetTimeout(int timeout);
+	bool Empty()
+	{
+		return queue.empty();
+	}
 
 private:
-	const ke::AString baseURL;
-	HTTPHeaderMap headers;
-	int connectTimeout = 10;
-	bool followLocation = true;
-	int timeout = 30;
+	uv_mutex_t mutex;
+	std::queue<T> queue;
 };
 
-#endif // SM_RIPEXT_HTTPCLIENT_H_
+#endif // SM_RIPEXT_QUEUE_H_

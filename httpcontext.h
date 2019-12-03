@@ -19,25 +19,30 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SM_RIPEXT_HTTPTHREAD_H_
-#define SM_RIPEXT_HTTPTHREAD_H_
+#ifndef SM_RIPEXT_HTTPCONTEXT_H_
+#define SM_RIPEXT_HTTPCONTEXT_H_
 
 #include "extension.h"
 
-class HTTPRequestThread : public IThread
+class HTTPContext
 {
 public:
-	HTTPRequestThread(HTTPClient *client, struct HTTPRequest request, IChangeableForward *forward, cell_t value)
-		: client(client), request(request), forward(forward), value(value) {}
+	HTTPContext(const ke::AString &method, const ke::AString &url, json_t *data,
+		struct curl_slist *headers, IChangeableForward *forward, cell_t value,
+		long connectTimeout, long followLocation, long timeout);
+	~HTTPContext();
 
-	void RunThread(IThreadHandle *pThread);
-	void OnTerminate(IThreadHandle *pThread, bool cancel) {}
+	void OnCompleted();
+
+	CURL *curl;
+	struct HTTPRequest request;
+	struct HTTPResponse response;
 
 private:
-	HTTPClient *client;
-	struct HTTPRequest request;
+	struct curl_slist *headers;
 	IChangeableForward *forward;
 	cell_t value;
+	char error[CURL_ERROR_SIZE] = {'\0'};
 };
 
-#endif // SM_RIPEXT_HTTPTHREAD_H_
+#endif // SM_RIPEXT_HTTPCONTEXT_H_

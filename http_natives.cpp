@@ -82,9 +82,7 @@ static cell_t GetRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
 	cell_t value = params[4];
 
-	struct HTTPRequest request("GET", endpoint);
-
-	client->Request(request, callback, value);
+	client->Request("GET", endpoint, NULL, callback, value);
 
 	return 1;
 }
@@ -114,9 +112,7 @@ static cell_t PostRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[4]);
 	cell_t value = params[5];
 
-	struct HTTPRequest request("POST", endpoint, data);
-
-	client->Request(request, callback, value);
+	client->Request("POST", endpoint, data, callback, value);
 
 	return 1;
 }
@@ -146,9 +142,7 @@ static cell_t PutRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[4]);
 	cell_t value = params[5];
 
-	struct HTTPRequest request("PUT", endpoint, data);
-
-	client->Request(request, callback, value);
+	client->Request("PUT", endpoint, data, callback, value);
 
 	return 1;
 }
@@ -178,9 +172,7 @@ static cell_t PatchRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[4]);
 	cell_t value = params[5];
 
-	struct HTTPRequest request("PATCH", endpoint, data);
-
-	client->Request(request, callback, value);
+	client->Request("PATCH", endpoint, data, callback, value);
 
 	return 1;
 }
@@ -203,9 +195,7 @@ static cell_t DeleteRequest(IPluginContext *pContext, const cell_t *params)
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
 	cell_t value = params[4];
 
-	struct HTTPRequest request("DELETE", endpoint);
-
-	client->Request(request, callback, value);
+	client->Request("DELETE", endpoint, NULL, callback, value);
 
 	return 1;
 }

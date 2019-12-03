@@ -24,19 +24,45 @@
 
 #include <curl/curl.h>
 #include <jansson.h>
-#include <queue>
 #include <sm_stringhashmap.h>
 #include <stdlib.h>
 #include <string.h>
+#include <uv.h>
 #include "smsdk_ext.h"
 
 #define SM_RIPEXT_CA_BUNDLE_PATH "configs/ripext/ca-bundle.crt"
 
+class HTTPContext;
+
+extern uv_loop_t *g_Loop;
+
 typedef StringHashMap<ke::AString> HTTPHeaderMap;
 
+struct CurlContext {
+	CurlContext(curl_socket_t socket) : socket(socket)
+	{
+		uv_poll_init_socket(g_Loop, &poll_handle, socket);
+		poll_handle.data = this;
+	}
+
+	void Destroy()
+	{
+		uv_poll_stop(&poll_handle);
+		uv_close((uv_handle_t *)&poll_handle, OnClosed);
+	}
+
+	static void OnClosed(uv_handle_t *handle)
+	{
+		delete (CurlContext *)handle->data;
+	}
+
+	curl_socket_t socket;
+	uv_poll_t poll_handle;
+};
+
 struct HTTPRequest {
-	HTTPRequest(const char *method, const char *endpoint, json_t *data = NULL)
-		: method(method), endpoint(endpoint), data(data), body(NULL), pos(0), size(0)
+	HTTPRequest(const ke::AString &method, const ke::AString &url, json_t *data = NULL)
+		: method(method), url(url), data(data), body(NULL), pos(0), size(0)
 	{
 		if (data != NULL)
 		{
@@ -46,7 +72,7 @@ struct HTTPRequest {
 	}
 
 	const ke::AString method;
-	const ke::AString endpoint;
+	const ke::AString url;
 	json_t *data;
 
 	char *body;
@@ -63,16 +89,6 @@ struct HTTPResponse {
 
 	char *body;
 	size_t size;
-};
-
-struct HTTPRequestCallback {
-	HTTPRequestCallback(IChangeableForward *forward, struct HTTPResponse response, cell_t value, const char *error)
-		: forward(forward), response(response), value(value), error(error) {}
-
-	IChangeableForward *forward;
-	struct HTTPResponse response;
-	cell_t value;
-	const ke::AString error;
 };
 
 
@@ -151,11 +167,7 @@ public:
 	//virtual bool SDK_OnMetamodPauseChange(bool paused, char *error, size_t maxlength);
 #endif
 public:
-	void AddCallbackToQueue(const struct HTTPRequestCallback &callback);
-	void RunFrame();
-private:
-	IMutex *callbackMutex;
-	std::queue<struct HTTPRequestCallback> callbackQueue;
+	void AddRequestToQueue(HTTPContext *context);
 };
 
 class HTTPClientObjectHandler : public IHandleTypeDispatch

@@ -20,7 +20,7 @@
  */
 
 #include "httpclient.h"
-#include "httpthread.h"
+#include "httpcontext.h"
 
 const ke::AString HTTPClient::BuildURL(const ke::AString &endpoint) const
 {
@@ -34,16 +34,13 @@ const ke::AString HTTPClient::BuildURL(const ke::AString &endpoint) const
 	return ret;
 }
 
-struct curl_slist *HTTPClient::BuildHeaders(struct HTTPRequest request)
+struct curl_slist *HTTPClient::BuildHeaders()
 {
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "Accept: application/json");
 	headers = curl_slist_append(headers, "Content-Type: application/json");
 
 	char header[8192];
-	snprintf(header, sizeof(header), "Content-Length: %d", request.size);
-	headers = curl_slist_append(headers, header);
-
 	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
 	{
 		snprintf(header, sizeof(header), "%s: %s", iter->key.chars(), iter->value.chars());
@@ -53,17 +50,21 @@ struct curl_slist *HTTPClient::BuildHeaders(struct HTTPRequest request)
 	return headers;
 }
 
-void HTTPClient::Request(struct HTTPRequest request, IPluginFunction *function, cell_t value)
+void HTTPClient::Request(const char *method, const char *endpoint, json_t *data, IPluginFunction *callback, cell_t value)
 {
 	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
-	if (forward == NULL || !forward->AddFunction(function))
+	if (forward == NULL || !forward->AddFunction(callback))
 	{
 		smutils->LogError(myself, "Could not create forward.");
 		return;
 	}
 
-	HTTPRequestThread *thread = new HTTPRequestThread(this, request, forward, value);
-	threader->MakeThread(thread);
+	const ke::AString url = this->BuildURL(ke::AString(endpoint));
+	struct curl_slist *headers = this->BuildHeaders();
+	HTTPContext *context = new HTTPContext(ke::AString(method), url, data, headers, forward, value,
+		this->connectTimeout, this->followLocation, this->timeout);
+
+	g_RipExt.AddRequestToQueue(context);
 }
 
 void HTTPClient::SetHeader(const char *name, const char *value)

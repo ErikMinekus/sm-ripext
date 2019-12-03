@@ -19,8 +19,7 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "httpclient.h"
-#include "httpthread.h"
+#include "httpcontext.h"
 
 static size_t ReadRequestBody(void *body, size_t size, size_t nmemb, void *userdata)
 {
@@ -53,46 +52,39 @@ static size_t WriteResponseBody(void *body, size_t size, size_t nmemb, void *use
 	return total;
 }
 
-void HTTPRequestThread::RunThread(IThreadHandle *pHandle)
+HTTPContext::HTTPContext(const ke::AString &method, const ke::AString &url, json_t *data,
+	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
+	long connectTimeout, long followLocation, long timeout)
+	: request(method, url, data), headers(headers), forward(forward), value(value)
 {
-	CURL *curl = curl_easy_init();
+	curl = curl_easy_init();
 	if (curl == NULL)
 	{
-		forwards->ReleaseForward(this->forward);
+		forwards->ReleaseForward(forward);
 
 		smutils->LogError(myself, "Could not initialize cURL session.");
 		return;
 	}
 
-	long connectTimeout = this->client->GetConnectTimeout();
-	long followLocation = this->client->GetFollowLocation();
-	long timeout = this->client->GetTimeout();
-
 	char caBundlePath[PLATFORM_MAX_PATH];
 	smutils->BuildPath(Path_SM, caBundlePath, sizeof(caBundlePath), SM_RIPEXT_CA_BUNDLE_PATH);
 
-	char error[CURL_ERROR_SIZE] = {'\0'};
-	const ke::AString url = this->client->BuildURL(this->request.endpoint);
-
-	struct curl_slist *headers = this->client->BuildHeaders(this->request);
-	struct HTTPResponse response;
-
-	if (this->request.method.compare("POST") == 0)
+	if (request.method.compare("POST") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
 	}
-	else if (this->request.method.compare("PUT") == 0)
+	else if (request.method.compare("PUT") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 	}
-	else if (this->request.method.compare("PATCH") == 0)
+	else if (request.method.compare("PATCH") == 0)
 	{
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, this->request.method.chars());
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, request.method.chars());
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
 	}
-	else if (this->request.method.compare("DELETE") == 0)
+	else if (request.method.compare("DELETE") == 0)
 	{
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, this->request.method.chars());
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, request.method.chars());
 	}
 
 	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
@@ -102,23 +94,54 @@ void HTTPRequestThread::RunThread(IThreadHandle *pHandle)
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, followLocation);
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
-	curl_easy_setopt(curl, CURLOPT_READDATA, &this->request);
+	curl_easy_setopt(curl, CURLOPT_PRIVATE, this);
+	curl_easy_setopt(curl, CURLOPT_READDATA, &request);
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, &ReadRequestBody);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
-	curl_easy_setopt(curl, CURLOPT_URL, url.chars());
+	curl_easy_setopt(curl, CURLOPT_URL, request.url.chars());
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);
+}
 
-	CURLcode res = curl_easy_perform(curl);
-	if (res == CURLE_OK)
-	{
-		response.data = json_loads(response.body, 0, NULL);
-		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.status);
-	}
-
+HTTPContext::~HTTPContext()
+{
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
-	free(this->request.body);
+	free(request.body);
+}
 
-	g_RipExt.AddCallbackToQueue(HTTPRequestCallback(this->forward, response, this->value, error));
+void HTTPContext::OnCompleted()
+{
+	/* Return early if the plugin was unloaded while the thread was running */
+	if (forward->GetFunctionCount() == 0)
+	{
+		free(response.body);
+		json_decref(response.data);
+
+		forwards->ReleaseForward(forward);
+		return;
+	}
+
+	HandleSecurity sec(NULL, myself->GetIdentity());
+	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponseObject, &response, &sec, NULL, NULL);
+	if (hndlResponse == BAD_HANDLE)
+	{
+		free(response.body);
+		json_decref(response.data);
+
+		forwards->ReleaseForward(forward);
+
+		smutils->LogError(myself, "Could not create HTTP response handle.");
+		return;
+	}
+
+	forward->PushCell(hndlResponse);
+	forward->PushCell(value);
+	forward->PushString(error);
+	forward->Execute(NULL);
+
+	handlesys->FreeHandle(hndlResponse, &sec);
+	handlesys->FreeHandle(response.hndlData, &sec);
+
+	forwards->ReleaseForward(forward);
 }
