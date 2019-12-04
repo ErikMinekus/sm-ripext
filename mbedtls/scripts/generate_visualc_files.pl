@@ -1,8 +1,7 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
-# Generate files for MS Visual Studio:
-# - for VS6: main project (library) file, individual app files, workspace
-# - for VS2010: main file, individual apps, solution file
+# Generate main file, individual apps and solution files for MS Visual Studio
+# 2010
 #
 # Must be run from mbedTLS root or scripts directory.
 # Takes no argument.
@@ -94,8 +93,14 @@ sub gen_app {
     $path =~ s!/!\\!g;
     (my $appname = $path) =~ s/.*\\//;
 
+    my $srcs = "\n    <ClCompile Include=\"..\\..\\programs\\$path.c\" \/>\r";
+    if( $appname eq "ssl_client2" or $appname eq "ssl_server2" or
+        $appname eq "query_compile_time_config" ) {
+        $srcs .= "\n    <ClCompile Include=\"..\\..\\programs\\ssl\\query_config.c\" \/>\r";
+    }
+
     my $content = $template;
-    $content =~ s/<PATHNAME>/$path/g;
+    $content =~ s/<SOURCES>/$srcs/g;
     $content =~ s/<APPNAME>/$appname/g;
     $content =~ s/<GUID>/$guid/g;
 
@@ -171,11 +176,21 @@ sub gen_vsx_solution {
     content_to_file( $out, $vsx_sln_file );
 }
 
+sub del_vsx_files {
+    unlink glob "'$vsx_dir/*.$vsx_ext'";
+    unlink $vsx_main_file;
+    unlink $vsx_sln_file;
+}
+
 sub main {
     if( ! check_dirs() ) {
         chdir '..' or die;
         check_dirs or die "Must but run from mbedTLS root or scripts dir\n";
     }
+
+    # Remove old files to ensure that, for example, project files from deleted
+    # apps are not kept
+    del_vsx_files();
 
     my @app_list = get_app_list();
     my @headers = <$header_dir/*.h>;

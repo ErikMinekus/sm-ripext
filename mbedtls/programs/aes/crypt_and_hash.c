@@ -20,6 +20,11 @@
  *  This file is part of mbed TLS (https://tls.mbed.org)
  */
 
+/* Enable definition of fileno() even when compiling with -std=c99. Must be
+ * set before config.h, which pulls in glibc's features.h indirectly.
+ * Harmless on other platforms. */
+#define _POSIX_C_SOURCE 1
+
 #if !defined(MBEDTLS_CONFIG_FILE)
 #include "mbedtls/config.h"
 #else
@@ -30,14 +35,19 @@
 #include "mbedtls/platform.h"
 #else
 #include <stdio.h>
-#define mbedtls_fprintf    fprintf
-#define mbedtls_printf     printf
-#endif
+#include <stdlib.h>
+#define mbedtls_fprintf         fprintf
+#define mbedtls_printf          printf
+#define mbedtls_exit            exit
+#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+#endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_CIPHER_C) && defined(MBEDTLS_MD_C) && \
  defined(MBEDTLS_FS_IO)
 #include "mbedtls/cipher.h"
 #include "mbedtls/md.h"
+#include "mbedtls/platform_util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,9 +81,12 @@ int main( void )
     return( 0 );
 }
 #else
+
+
 int main( int argc, char *argv[] )
 {
     int ret = 1, i, n;
+    int exit_code = MBEDTLS_EXIT_FAILURE;
     int mode;
     size_t keylen, ilen, olen;
     FILE *fkey, *fin = NULL, *fout = NULL;
@@ -192,7 +205,7 @@ int main( int argc, char *argv[] )
     }
 
     /*
-     * Read the secret key and clean the command line.
+     * Read the secret key from file or command line
      */
     if( ( fkey = fopen( argv[6], "rb" ) ) != NULL )
     {
@@ -223,8 +236,6 @@ int main( int argc, char *argv[] )
             memcpy( key, argv[6], keylen );
         }
     }
-
-    memset( argv[6], 0, strlen( argv[6] ) );
 
 #if defined(_WIN32_WCE)
     filesize = fseek( fin, 0L, SEEK_END );
@@ -302,8 +313,6 @@ int main( int argc, char *argv[] )
             mbedtls_md_finish( &md_ctx, digest );
 
         }
-
-        memset( key, 0, sizeof( key ) );
 
         if( mbedtls_cipher_setkey( &cipher_ctx, digest, cipher_info->key_bitlen,
                            MBEDTLS_ENCRYPT ) != 0 )
@@ -444,8 +453,6 @@ int main( int argc, char *argv[] )
             mbedtls_md_finish( &md_ctx, digest );
         }
 
-        memset( key, 0, sizeof( key ) );
-
         if( mbedtls_cipher_setkey( &cipher_ctx, digest, cipher_info->key_bitlen,
                            MBEDTLS_DECRYPT ) != 0 )
         {
@@ -532,7 +539,7 @@ int main( int argc, char *argv[] )
         }
     }
 
-    ret = 0;
+    exit_code = MBEDTLS_EXIT_SUCCESS;
 
 exit:
     if( fin )
@@ -540,12 +547,21 @@ exit:
     if( fout )
         fclose( fout );
 
-    memset( buffer, 0, sizeof( buffer ) );
-    memset( digest, 0, sizeof( digest ) );
+    /* Zeroize all command line arguments to also cover
+       the case when the user has missed or reordered some,
+       in which case the key might not be in argv[6]. */
+    for( i = 0; i < argc; i++ )
+        mbedtls_platform_zeroize( argv[i], strlen( argv[i] ) );
+
+    mbedtls_platform_zeroize( IV,     sizeof( IV ) );
+    mbedtls_platform_zeroize( key,    sizeof( key ) );
+    mbedtls_platform_zeroize( buffer, sizeof( buffer ) );
+    mbedtls_platform_zeroize( output, sizeof( output ) );
+    mbedtls_platform_zeroize( digest, sizeof( digest ) );
 
     mbedtls_cipher_free( &cipher_ctx );
     mbedtls_md_free( &md_ctx );
 
-    return( ret );
+    return( exit_code );
 }
 #endif /* MBEDTLS_CIPHER_C && MBEDTLS_MD_C && MBEDTLS_FS_IO */

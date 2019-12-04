@@ -29,8 +29,12 @@
 #include "mbedtls/platform.h"
 #else
 #include <stdio.h>
-#define mbedtls_printf     printf
-#endif
+#include <stdlib.h>
+#define mbedtls_printf          printf
+#define mbedtls_exit            exit
+#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+#endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_PK_WRITE_C) && defined(MBEDTLS_FS_IO) && \
     defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
@@ -132,6 +136,8 @@ int main( void )
     return( 0 );
 }
 #else
+
+
 /*
  * global options
  */
@@ -186,11 +192,13 @@ static int write_private_key( mbedtls_pk_context *key, const char *output_file )
 
 int main( int argc, char *argv[] )
 {
-    int ret = 0;
+    int ret = 1;
+    int exit_code = MBEDTLS_EXIT_FAILURE;
     mbedtls_pk_context key;
     char buf[1024];
     int i;
     char *p, *q;
+    mbedtls_mpi N, P, Q, D, E, DP, DQ, QP;
     mbedtls_entropy_context entropy;
     mbedtls_ctr_drbg_context ctr_drbg;
     const char *pers = "gen_key";
@@ -201,6 +209,11 @@ int main( int argc, char *argv[] )
     /*
      * Set to sane values
      */
+
+    mbedtls_mpi_init( &N ); mbedtls_mpi_init( &P ); mbedtls_mpi_init( &Q );
+    mbedtls_mpi_init( &D ); mbedtls_mpi_init( &E ); mbedtls_mpi_init( &DP );
+    mbedtls_mpi_init( &DQ ); mbedtls_mpi_init( &QP );
+
     mbedtls_pk_init( &key );
     mbedtls_ctr_drbg_init( &ctr_drbg );
     memset( buf, 0, sizeof( buf ) );
@@ -208,7 +221,6 @@ int main( int argc, char *argv[] )
     if( argc == 0 )
     {
     usage:
-        ret = 1;
         mbedtls_printf( USAGE );
 #if defined(MBEDTLS_ECP_C)
         mbedtls_printf( " available ec_curve values:\n" );
@@ -216,7 +228,7 @@ int main( int argc, char *argv[] )
         mbedtls_printf( "    %s (default)\n", curve_info->name );
         while( ( ++curve_info )->name != NULL )
             mbedtls_printf( "    %s\n", curve_info->name );
-#endif
+#endif /* MBEDTLS_ECP_C */
         goto exit;
     }
 
@@ -313,7 +325,8 @@ int main( int argc, char *argv[] )
     mbedtls_printf( "\n  . Generating the private key ..." );
     fflush( stdout );
 
-    if( ( ret = mbedtls_pk_setup( &key, mbedtls_pk_info_from_type( opt.type ) ) ) != 0 )
+    if( ( ret = mbedtls_pk_setup( &key,
+            mbedtls_pk_info_from_type( (mbedtls_pk_type_t) opt.type ) ) ) != 0 )
     {
         mbedtls_printf( " failed\n  !  mbedtls_pk_setup returned -0x%04x", -ret );
         goto exit;
@@ -323,7 +336,7 @@ int main( int argc, char *argv[] )
     if( opt.type == MBEDTLS_PK_RSA )
     {
         ret = mbedtls_rsa_gen_key( mbedtls_pk_rsa( key ), mbedtls_ctr_drbg_random, &ctr_drbg,
-                           opt.rsa_keysize, 65537 );
+                                   opt.rsa_keysize, 65537 );
         if( ret != 0 )
         {
             mbedtls_printf( " failed\n  !  mbedtls_rsa_gen_key returned -0x%04x", -ret );
@@ -335,11 +348,12 @@ int main( int argc, char *argv[] )
 #if defined(MBEDTLS_ECP_C)
     if( opt.type == MBEDTLS_PK_ECKEY )
     {
-        ret = mbedtls_ecp_gen_key( opt.ec_curve, mbedtls_pk_ec( key ),
-                          mbedtls_ctr_drbg_random, &ctr_drbg );
+        ret = mbedtls_ecp_gen_key( (mbedtls_ecp_group_id) opt.ec_curve,
+                                   mbedtls_pk_ec( key ),
+                                   mbedtls_ctr_drbg_random, &ctr_drbg );
         if( ret != 0 )
         {
-            mbedtls_printf( " failed\n  !  mbedtls_rsa_gen_key returned -0x%04x", -ret );
+            mbedtls_printf( " failed\n  !  mbedtls_ecp_gen_key returned -0x%04x", -ret );
             goto exit;
         }
     }
@@ -359,14 +373,22 @@ int main( int argc, char *argv[] )
     if( mbedtls_pk_get_type( &key ) == MBEDTLS_PK_RSA )
     {
         mbedtls_rsa_context *rsa = mbedtls_pk_rsa( key );
-        mbedtls_mpi_write_file( "N:  ",  &rsa->N,  16, NULL );
-        mbedtls_mpi_write_file( "E:  ",  &rsa->E,  16, NULL );
-        mbedtls_mpi_write_file( "D:  ",  &rsa->D,  16, NULL );
-        mbedtls_mpi_write_file( "P:  ",  &rsa->P,  16, NULL );
-        mbedtls_mpi_write_file( "Q:  ",  &rsa->Q,  16, NULL );
-        mbedtls_mpi_write_file( "DP: ",  &rsa->DP, 16, NULL );
-        mbedtls_mpi_write_file( "DQ:  ", &rsa->DQ, 16, NULL );
-        mbedtls_mpi_write_file( "QP:  ", &rsa->QP, 16, NULL );
+
+        if( ( ret = mbedtls_rsa_export    ( rsa, &N, &P, &Q, &D, &E ) ) != 0 ||
+            ( ret = mbedtls_rsa_export_crt( rsa, &DP, &DQ, &QP ) )      != 0 )
+        {
+            mbedtls_printf( " failed\n  ! could not export RSA parameters\n\n" );
+            goto exit;
+        }
+
+        mbedtls_mpi_write_file( "N:  ",  &N,  16, NULL );
+        mbedtls_mpi_write_file( "E:  ",  &E,  16, NULL );
+        mbedtls_mpi_write_file( "D:  ",  &D,  16, NULL );
+        mbedtls_mpi_write_file( "P:  ",  &P,  16, NULL );
+        mbedtls_mpi_write_file( "Q:  ",  &Q,  16, NULL );
+        mbedtls_mpi_write_file( "DP: ",  &DP, 16, NULL );
+        mbedtls_mpi_write_file( "DQ:  ", &DQ, 16, NULL );
+        mbedtls_mpi_write_file( "QP:  ", &QP, 16, NULL );
     }
     else
 #endif
@@ -397,9 +419,11 @@ int main( int argc, char *argv[] )
 
     mbedtls_printf( " ok\n" );
 
+    exit_code = MBEDTLS_EXIT_SUCCESS;
+
 exit:
 
-    if( ret != 0 && ret != 1)
+    if( exit_code != MBEDTLS_EXIT_SUCCESS )
     {
 #ifdef MBEDTLS_ERROR_C
         mbedtls_strerror( ret, buf, sizeof( buf ) );
@@ -408,6 +432,10 @@ exit:
         mbedtls_printf("\n");
 #endif
     }
+
+    mbedtls_mpi_free( &N ); mbedtls_mpi_free( &P ); mbedtls_mpi_free( &Q );
+    mbedtls_mpi_free( &D ); mbedtls_mpi_free( &E ); mbedtls_mpi_free( &DP );
+    mbedtls_mpi_free( &DQ ); mbedtls_mpi_free( &QP );
 
     mbedtls_pk_free( &key );
     mbedtls_ctr_drbg_free( &ctr_drbg );
@@ -418,8 +446,7 @@ exit:
     fflush( stdout ); getchar();
 #endif
 
-    return( ret );
+    return( exit_code );
 }
 #endif /* MBEDTLS_PK_WRITE_C && MBEDTLS_PEM_WRITE_C && MBEDTLS_FS_IO &&
         * MBEDTLS_ENTROPY_C && MBEDTLS_CTR_DRBG_C */
-

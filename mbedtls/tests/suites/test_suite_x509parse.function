@@ -1,4 +1,5 @@
 /* BEGIN_HEADER */
+#include "mbedtls/bignum.h"
 #include "mbedtls/x509.h"
 #include "mbedtls/x509_crt.h"
 #include "mbedtls/x509_crl.h"
@@ -6,7 +7,25 @@
 #include "mbedtls/pem.h"
 #include "mbedtls/oid.h"
 #include "mbedtls/base64.h"
+#include "string.h"
 
+#if MBEDTLS_X509_MAX_INTERMEDIATE_CA > 19
+#error "The value of MBEDTLS_X509_MAX_INTERMEDIATE_C is larger \
+than the current threshold 19. To test larger values, please \
+adapt the script tests/data_files/dir-max/long.sh."
+#endif
+
+/* Test-only profile allowing all digests, PK algorithms, and curves. */
+const mbedtls_x509_crt_profile profile_all =
+{
+    0xFFFFFFFF, /* Any MD        */
+    0xFFFFFFFF, /* Any PK alg    */
+    0xFFFFFFFF, /* Any curve     */
+    1024,
+};
+
+/* Profile for backward compatibility. Allows SHA-1, unlike the default
+   profile. */
 const mbedtls_x509_crt_profile compat_profile =
 {
     MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA1 ) |
@@ -14,6 +33,24 @@ const mbedtls_x509_crt_profile compat_profile =
     MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA224 ) |
     MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA256 ) |
     MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
+    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
+    0xFFFFFFF, /* Any PK alg    */
+    0xFFFFFFF, /* Any curve     */
+    1024,
+};
+
+const mbedtls_x509_crt_profile profile_rsa3072 =
+{
+    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA256 ) |
+    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
+    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
+    MBEDTLS_X509_ID_FLAG( MBEDTLS_PK_RSA ),
+    0,
+    3072,
+};
+
+const mbedtls_x509_crt_profile profile_sha512 =
+{
     MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
     0xFFFFFFF, /* Any PK alg    */
     0xFFFFFFF, /* Any curve     */
@@ -38,6 +75,23 @@ int verify_all( void *data, mbedtls_x509_crt *crt, int certificate_depth, uint32
     *flags = 0;
 
     return 0;
+}
+
+int verify_fatal( void *data, mbedtls_x509_crt *crt, int certificate_depth, uint32_t *flags )
+{
+    int *levels = (int *) data;
+
+    ((void) crt);
+    ((void) certificate_depth);
+
+    /* Simulate a fatal error in the callback */
+    if( *levels & ( 1 << certificate_depth ) )
+    {
+        *flags |= ( 1 << certificate_depth );
+        return( -1 - certificate_depth );
+    }
+
+    return( 0 );
 }
 
 /* strsep() not available on Windows */
@@ -102,7 +156,7 @@ int verify_print( void *data, mbedtls_x509_crt *crt, int certificate_depth, uint
     ret = mbedtls_x509_dn_gets( p, n, &crt->subject );
     MBEDTLS_X509_SAFE_SNPRINTF;
 
-    ret = mbedtls_snprintf( p, n, "\n" );
+    ret = mbedtls_snprintf( p, n, " - flags 0x%08x\n", *flags );
     MBEDTLS_X509_SAFE_SNPRINTF;
 
     ctx->p = p;
@@ -118,7 +172,7 @@ int verify_print( void *data, mbedtls_x509_crt *crt, int certificate_depth, uint
  */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C */
-void x509_cert_info( char *crt_file, char *result_str )
+void x509_cert_info( char * crt_file, char * result_str )
 {
     mbedtls_x509_crt   crt;
     char buf[2000];
@@ -141,7 +195,7 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRL_PARSE_C */
-void mbedtls_x509_crl_info( char *crl_file, char *result_str )
+void mbedtls_x509_crl_info( char * crl_file, char * result_str )
 {
     mbedtls_x509_crl   crl;
     char buf[2000];
@@ -164,7 +218,7 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRL_PARSE_C */
-void mbedtls_x509_crl_parse( char *crl_file, int result )
+void mbedtls_x509_crl_parse( char * crl_file, int result )
 {
     mbedtls_x509_crl   crl;
     char buf[2000];
@@ -180,7 +234,7 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CSR_PARSE_C */
-void mbedtls_x509_csr_info( char *csr_file, char *result_str )
+void mbedtls_x509_csr_info( char * csr_file, char * result_str )
 {
     mbedtls_x509_csr   csr;
     char buf[2000];
@@ -203,7 +257,7 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_X509_CRT_PARSE_C */
-void x509_verify_info( int flags, char *prefix, char *result_str )
+void x509_verify_info( int flags, char * prefix, char * result_str )
 {
     char buf[2000];
     int res;
@@ -218,9 +272,66 @@ void x509_verify_info( int flags, char *prefix, char *result_str )
 }
 /* END_CASE */
 
+/* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C:MBEDTLS_X509_CRL_PARSE_C:MBEDTLS_ECP_RESTARTABLE:MBEDTLS_ECDSA_C */
+void x509_verify_restart( char *crt_file, char *ca_file,
+                          int result, int flags_result,
+                          int max_ops, int min_restart, int max_restart )
+{
+    int ret, cnt_restart;
+    mbedtls_x509_crt_restart_ctx rs_ctx;
+    mbedtls_x509_crt crt;
+    mbedtls_x509_crt ca;
+    uint32_t flags = 0;
+
+    /*
+     * See comments on ecp_test_vect_restart() for op count precision.
+     *
+     * For reference, with mbed TLS 2.6 and default settings:
+     * - ecdsa_verify() for P-256:  ~  6700
+     * - ecdsa_verify() for P-384:  ~ 18800
+     * - x509_verify() for server5 -> test-ca2:             ~ 18800
+     * - x509_verify() for server10 -> int-ca3 -> int-ca2:  ~ 25500
+     */
+
+    mbedtls_x509_crt_restart_init( &rs_ctx );
+    mbedtls_x509_crt_init( &crt );
+    mbedtls_x509_crt_init( &ca );
+
+    TEST_ASSERT( mbedtls_x509_crt_parse_file( &crt, crt_file ) == 0 );
+    TEST_ASSERT( mbedtls_x509_crt_parse_file( &ca, ca_file ) == 0 );
+
+    mbedtls_ecp_set_max_ops( max_ops );
+
+    cnt_restart = 0;
+    do {
+        ret = mbedtls_x509_crt_verify_restartable( &crt, &ca, NULL,
+                &mbedtls_x509_crt_profile_default, NULL, &flags,
+                NULL, NULL, &rs_ctx );
+    } while( ret == MBEDTLS_ERR_ECP_IN_PROGRESS && ++cnt_restart );
+
+    TEST_ASSERT( ret == result );
+    TEST_ASSERT( flags == (uint32_t) flags_result );
+
+    TEST_ASSERT( cnt_restart >= min_restart );
+    TEST_ASSERT( cnt_restart <= max_restart );
+
+    /* Do we leak memory when aborting? */
+    ret = mbedtls_x509_crt_verify_restartable( &crt, &ca, NULL,
+            &mbedtls_x509_crt_profile_default, NULL, &flags,
+            NULL, NULL, &rs_ctx );
+    TEST_ASSERT( ret == result || ret == MBEDTLS_ERR_ECP_IN_PROGRESS );
+
+exit:
+    mbedtls_x509_crt_restart_free( &rs_ctx );
+    mbedtls_x509_crt_free( &crt );
+    mbedtls_x509_crt_free( &ca );
+}
+/* END_CASE */
+
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C:MBEDTLS_X509_CRL_PARSE_C */
 void x509_verify( char *crt_file, char *ca_file, char *crl_file,
                   char *cn_name_str, int result, int flags_result,
+                  char *profile_str,
                   char *verify_callback )
 {
     mbedtls_x509_crt   crt;
@@ -230,6 +341,7 @@ void x509_verify( char *crt_file, char *ca_file, char *crl_file,
     int         res;
     int (*f_vrfy)(void *, mbedtls_x509_crt *, int, uint32_t *) = NULL;
     char *      cn_name = NULL;
+    const mbedtls_x509_crt_profile *profile;
 
     mbedtls_x509_crt_init( &crt );
     mbedtls_x509_crt_init( &ca );
@@ -237,6 +349,19 @@ void x509_verify( char *crt_file, char *ca_file, char *crl_file,
 
     if( strcmp( cn_name_str, "NULL" ) != 0 )
         cn_name = cn_name_str;
+
+    if( strcmp( profile_str, "" ) == 0 )
+        profile = &mbedtls_x509_crt_profile_default;
+    else if( strcmp( profile_str, "next" ) == 0 )
+        profile = &mbedtls_x509_crt_profile_next;
+    else if( strcmp( profile_str, "suite_b" ) == 0 )
+        profile = &mbedtls_x509_crt_profile_suiteb;
+    else if( strcmp( profile_str, "compat" ) == 0 )
+        profile = &compat_profile;
+    else if( strcmp( profile_str, "all" ) == 0 )
+        profile = &profile_all;
+    else
+        TEST_ASSERT( "Unknown algorithm profile" == 0 );
 
     if( strcmp( verify_callback, "NULL" ) == 0 )
         f_vrfy = NULL;
@@ -251,7 +376,7 @@ void x509_verify( char *crt_file, char *ca_file, char *crl_file,
     TEST_ASSERT( mbedtls_x509_crt_parse_file( &ca, ca_file ) == 0 );
     TEST_ASSERT( mbedtls_x509_crl_parse_file( &crl, crl_file ) == 0 );
 
-    res = mbedtls_x509_crt_verify_with_profile( &crt, &ca, &crl, &compat_profile, cn_name, &flags, f_vrfy, NULL );
+    res = mbedtls_x509_crt_verify_with_profile( &crt, &ca, &crl, profile, cn_name, &flags, f_vrfy, NULL );
 
     TEST_ASSERT( res == ( result ) );
     TEST_ASSERT( flags == (uint32_t)( flags_result ) );
@@ -264,7 +389,7 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C */
-void x509_verify_callback( char *crt_file, char *ca_file,
+void x509_verify_callback( char *crt_file, char *ca_file, char *name,
                            int exp_ret, char *exp_vrfy_out )
 {
     int ret;
@@ -280,8 +405,13 @@ void x509_verify_callback( char *crt_file, char *ca_file,
     TEST_ASSERT( mbedtls_x509_crt_parse_file( &crt, crt_file ) == 0 );
     TEST_ASSERT( mbedtls_x509_crt_parse_file( &ca, ca_file ) == 0 );
 
-    ret = mbedtls_x509_crt_verify( &crt, &ca, NULL, NULL, &flags,
-                                   verify_print, &vrfy_ctx );
+    if( strcmp( name, "NULL" ) == 0 )
+        name = NULL;
+
+    ret = mbedtls_x509_crt_verify_with_profile( &crt, &ca, NULL,
+                                                &compat_profile,
+                                                name, &flags,
+                                                verify_print, &vrfy_ctx );
 
     TEST_ASSERT( ret == exp_ret );
     TEST_ASSERT( strcmp( vrfy_ctx.buf, exp_vrfy_out ) == 0 );
@@ -293,7 +423,7 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C */
-void mbedtls_x509_dn_gets( char *crt_file, char *entity, char *result_str )
+void mbedtls_x509_dn_gets( char * crt_file, char * entity, char * result_str )
 {
     mbedtls_x509_crt   crt;
     char buf[2000];
@@ -321,7 +451,7 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C */
-void mbedtls_x509_time_is_past( char *crt_file, char *entity, int result )
+void mbedtls_x509_time_is_past( char * crt_file, char * entity, int result )
 {
     mbedtls_x509_crt   crt;
 
@@ -342,7 +472,7 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C */
-void mbedtls_x509_time_is_future( char *crt_file, char *entity, int result )
+void mbedtls_x509_time_is_future( char * crt_file, char * entity, int result )
 {
     mbedtls_x509_crt   crt;
 
@@ -363,7 +493,7 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_X509_CRT_PARSE_C:MBEDTLS_FS_IO */
-void x509parse_crt_file( char *crt_file, int result )
+void x509parse_crt_file( char * crt_file, int result )
 {
     mbedtls_x509_crt crt;
 
@@ -377,20 +507,17 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_X509_CRT_PARSE_C */
-void x509parse_crt( char *crt_data, char *result_str, int result )
+void x509parse_crt( data_t * buf, char * result_str, int result )
 {
     mbedtls_x509_crt   crt;
-    unsigned char buf[2000];
     unsigned char output[2000];
-    int data_len, res;
+    int res;
 
     mbedtls_x509_crt_init( &crt );
-    memset( buf, 0, 2000 );
     memset( output, 0, 2000 );
 
-    data_len = unhexify( buf, crt_data );
 
-    TEST_ASSERT( mbedtls_x509_crt_parse( &crt, buf, data_len ) == ( result ) );
+    TEST_ASSERT( mbedtls_x509_crt_parse( &crt, buf->x, buf->len ) == ( result ) );
     if( ( result ) == 0 )
     {
         res = mbedtls_x509_crt_info( (char *) output, 2000, "", &crt );
@@ -407,20 +534,17 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_X509_CRL_PARSE_C */
-void x509parse_crl( char *crl_data, char *result_str, int result )
+void x509parse_crl( data_t * buf, char * result_str, int result )
 {
     mbedtls_x509_crl   crl;
-    unsigned char buf[2000];
     unsigned char output[2000];
-    int data_len, res;
+    int res;
 
     mbedtls_x509_crl_init( &crl );
-    memset( buf, 0, 2000 );
     memset( output, 0, 2000 );
 
-    data_len = unhexify( buf, crl_data );
 
-    TEST_ASSERT( mbedtls_x509_crl_parse( &crl, buf, data_len ) == ( result ) );
+    TEST_ASSERT( mbedtls_x509_crl_parse( &crl, buf->x, buf->len ) == ( result ) );
     if( ( result ) == 0 )
     {
         res = mbedtls_x509_crl_info( (char *) output, 2000, "", &crl );
@@ -437,19 +561,16 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_X509_CSR_PARSE_C */
-void mbedtls_x509_csr_parse( char *csr_der_hex, char *ref_out, int ref_ret )
+void mbedtls_x509_csr_parse( data_t * csr_der, char * ref_out, int ref_ret )
 {
     mbedtls_x509_csr csr;
-    unsigned char *csr_der = NULL;
     char my_out[1000];
-    size_t csr_der_len;
     int my_ret;
 
     mbedtls_x509_csr_init( &csr );
     memset( my_out, 0, sizeof( my_out ) );
-    csr_der = unhexify_alloc( csr_der_hex, &csr_der_len );
 
-    my_ret = mbedtls_x509_csr_parse_der( &csr, csr_der, csr_der_len );
+    my_ret = mbedtls_x509_csr_parse_der( &csr, csr_der->x, csr_der->len );
     TEST_ASSERT( my_ret == ref_ret );
 
     if( ref_ret == 0 )
@@ -461,12 +582,11 @@ void mbedtls_x509_csr_parse( char *csr_der_hex, char *ref_out, int ref_ret )
 
 exit:
     mbedtls_x509_csr_free( &csr );
-    mbedtls_free( csr_der );
 }
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C */
-void mbedtls_x509_crt_parse_path( char *crt_path, int ret, int nb_crt )
+void mbedtls_x509_crt_parse_path( char * crt_path, int ret, int nb_crt )
 {
     mbedtls_x509_crt chain, *cur;
     int i;
@@ -488,14 +608,54 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C */
-void mbedtls_x509_crt_verify_chain(  char *chain_paths, char *trusted_ca, int flags_result )
+void mbedtls_x509_crt_verify_max( char *ca_file, char *chain_dir, int nb_int,
+                                  int ret_chk, int flags_chk )
+{
+    char file_buf[128];
+    int ret;
+    uint32_t flags;
+    mbedtls_x509_crt trusted, chain;
+
+    /*
+     * We expect chain_dir to contain certificates 00.crt, 01.crt, etc.
+     * with NN.crt signed by NN-1.crt
+     */
+
+    mbedtls_x509_crt_init( &trusted );
+    mbedtls_x509_crt_init( &chain );
+
+    /* Load trusted root */
+    TEST_ASSERT( mbedtls_x509_crt_parse_file( &trusted, ca_file ) == 0 );
+
+    /* Load a chain with nb_int intermediates (from 01 to nb_int),
+     * plus one "end-entity" cert (nb_int + 1) */
+    ret = mbedtls_snprintf( file_buf, sizeof file_buf, "%s/c%02d.pem", chain_dir,
+                                                            nb_int + 1 );
+    TEST_ASSERT( ret > 0 && (size_t) ret < sizeof file_buf );
+    TEST_ASSERT( mbedtls_x509_crt_parse_file( &chain, file_buf ) == 0 );
+
+    /* Try to verify that chain */
+    ret = mbedtls_x509_crt_verify( &chain, &trusted, NULL, NULL, &flags,
+                                   NULL, NULL );
+    TEST_ASSERT( ret == ret_chk );
+    TEST_ASSERT( flags == (uint32_t) flags_chk );
+
+exit:
+    mbedtls_x509_crt_free( &chain );
+    mbedtls_x509_crt_free( &trusted );
+}
+/* END_CASE */
+
+/* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C */
+void mbedtls_x509_crt_verify_chain(  char *chain_paths, char *trusted_ca,
+                                     int flags_result, int result,
+                                     char *profile_name, int vrfy_fatal_lvls )
 {
     char* act;
     uint32_t flags;
-    int result, res;
+    int res;
     mbedtls_x509_crt trusted, chain;
-
-    result= flags_result?MBEDTLS_ERR_X509_CERT_VERIFY_FAILED:0;
+    const mbedtls_x509_crt_profile *profile = NULL;
 
     mbedtls_x509_crt_init( &chain );
     mbedtls_x509_crt_init( &trusted );
@@ -504,7 +664,19 @@ void mbedtls_x509_crt_verify_chain(  char *chain_paths, char *trusted_ca, int fl
         TEST_ASSERT( mbedtls_x509_crt_parse_file( &chain, act ) == 0 );
     TEST_ASSERT( mbedtls_x509_crt_parse_file( &trusted, trusted_ca ) == 0 );
 
-    res = mbedtls_x509_crt_verify( &chain, &trusted, NULL, NULL, &flags, NULL, NULL );
+    if( strcmp( profile_name, "" ) == 0 )
+        profile = &mbedtls_x509_crt_profile_default;
+    else if( strcmp( profile_name, "next" ) == 0 )
+        profile = &mbedtls_x509_crt_profile_next;
+    else if( strcmp( profile_name, "suiteb" ) == 0 )
+        profile = &mbedtls_x509_crt_profile_suiteb;
+    else if( strcmp( profile_name, "rsa3072" ) == 0 )
+        profile = &profile_rsa3072;
+    else if( strcmp( profile_name, "sha512" ) == 0 )
+        profile = &profile_sha512;
+
+    res = mbedtls_x509_crt_verify_with_profile( &chain, &trusted, NULL, profile,
+            NULL, &flags, verify_fatal, &vrfy_fatal_lvls );
 
     TEST_ASSERT( res == ( result ) );
     TEST_ASSERT( flags == (uint32_t)( flags_result ) );
@@ -516,18 +688,16 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_X509_USE_C */
-void x509_oid_desc( char *oid_str, char *ref_desc )
+void x509_oid_desc( data_t * buf, char * ref_desc )
 {
     mbedtls_x509_buf oid;
     const char *desc = NULL;
-    unsigned char buf[20];
     int ret;
 
-    memset( buf, 0, sizeof buf );
 
     oid.tag = MBEDTLS_ASN1_OID;
-    oid.len = unhexify( buf, oid_str );
-    oid.p   = buf;
+    oid.p   = buf->x;
+    oid.len   = buf->len;
 
     ret = mbedtls_oid_get_extended_key_usage( &oid, &desc );
 
@@ -546,18 +716,16 @@ void x509_oid_desc( char *oid_str, char *ref_desc )
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_X509_USE_C */
-void x509_oid_numstr( char *oid_str, char *numstr, int blen, int ret )
+void x509_oid_numstr( data_t * oid_buf, char * numstr, int blen, int ret )
 {
     mbedtls_x509_buf oid;
-    unsigned char oid_buf[20];
     char num_buf[100];
 
-    memset( oid_buf, 0x00, sizeof oid_buf );
     memset( num_buf, 0x2a, sizeof num_buf );
 
     oid.tag = MBEDTLS_ASN1_OID;
-    oid.len = unhexify( oid_buf, oid_str );
-    oid.p   = oid_buf;
+    oid.p   = oid_buf->x;
+    oid.len   = oid_buf->len;
 
     TEST_ASSERT( (size_t) blen <= sizeof num_buf );
 
@@ -572,7 +740,7 @@ void x509_oid_numstr( char *oid_str, char *numstr, int blen, int ret )
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C:MBEDTLS_X509_CHECK_KEY_USAGE */
-void x509_check_key_usage( char *crt_file, int usage, int ret )
+void x509_check_key_usage( char * crt_file, int usage, int ret )
 {
     mbedtls_x509_crt crt;
 
@@ -588,19 +756,17 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_FS_IO:MBEDTLS_X509_CRT_PARSE_C:MBEDTLS_X509_CHECK_EXTENDED_KEY_USAGE */
-void x509_check_extended_key_usage( char *crt_file, char *usage_hex, int ret )
+void x509_check_extended_key_usage( char * crt_file, data_t * oid, int ret
+                                    )
 {
     mbedtls_x509_crt crt;
-    char oid[50];
-    size_t len;
 
     mbedtls_x509_crt_init( &crt );
 
-    len = unhexify( (unsigned char *) oid, usage_hex );
 
     TEST_ASSERT( mbedtls_x509_crt_parse_file( &crt, crt_file ) == 0 );
 
-    TEST_ASSERT( mbedtls_x509_crt_check_extended_key_usage( &crt, oid, len ) == ret );
+    TEST_ASSERT( mbedtls_x509_crt_check_extended_key_usage( &crt, (const char *)oid->x, oid->len ) == ret );
 
 exit:
     mbedtls_x509_crt_free( &crt );
@@ -608,9 +774,8 @@ exit:
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_X509_USE_C */
-void x509_get_time( int tag,  char *time_str, int ret,
-                    int year, int mon, int day,
-                    int hour, int min, int sec )
+void x509_get_time( int tag, char * time_str, int ret, int year, int mon,
+                    int day, int hour, int min, int sec )
 {
     mbedtls_x509_time time;
     unsigned char buf[21];
@@ -639,7 +804,7 @@ void x509_get_time( int tag,  char *time_str, int ret,
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_X509_CRT_PARSE_C:MBEDTLS_X509_RSASSA_PSS_SUPPORT */
-void x509_parse_rsassa_pss_params( char *hex_params, int params_tag,
+void x509_parse_rsassa_pss_params( data_t * hex_params, int params_tag,
                                    int ref_msg_md, int ref_mgf_md,
                                    int ref_salt_len, int ref_ret )
 {
@@ -648,7 +813,8 @@ void x509_parse_rsassa_pss_params( char *hex_params, int params_tag,
     mbedtls_md_type_t my_msg_md, my_mgf_md;
     int my_salt_len;
 
-    params.p = unhexify_alloc( hex_params, &params.len );
+    params.p = hex_params->x;
+    params.len = hex_params->len;
     params.tag = params_tag;
 
     my_ret = mbedtls_x509_get_rsassa_pss_params( &params, &my_msg_md, &my_mgf_md,
@@ -664,12 +830,12 @@ void x509_parse_rsassa_pss_params( char *hex_params, int params_tag,
     }
 
 exit:
-    mbedtls_free( params.p );
+    ;;
 }
 /* END_CASE */
 
 /* BEGIN_CASE depends_on:MBEDTLS_X509_CRT_PARSE_C:MBEDTLS_SELF_TEST */
-void x509_selftest()
+void x509_selftest(  )
 {
     TEST_ASSERT( mbedtls_x509_self_test( 1 ) == 0 );
 }
