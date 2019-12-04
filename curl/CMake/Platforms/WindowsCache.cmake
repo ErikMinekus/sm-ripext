@@ -7,7 +7,6 @@ if(NOT UNIX)
     set(HAVE_LIBNSL 0)
     set(HAVE_GETHOSTNAME 1)
     set(HAVE_LIBZ 0)
-    set(HAVE_LIBCRYPTO 0)
 
     set(HAVE_DLOPEN 0)
 
@@ -118,8 +117,7 @@ if(NOT UNIX)
 
     set(HAVE_SIGACTION 0)
     set(HAVE_MACRO_SIGSETJMP 0)
-  else(WIN32)
+  else()
     message("This file should be included on Windows platform only")
-  endif(WIN32)
-endif(NOT UNIX)
-
+  endif()
+endif()

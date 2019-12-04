@@ -6,7 +6,7 @@
 #                            | (__| |_| |  _ <| |___
 #                             \___|\___/|_| \_\_____|
 #
-# Copyright (C) 2016, Daniel Stenberg, <daniel@haxx.se>, et al.
+# Copyright (C) 2016 - 2019, Daniel Stenberg, <daniel@haxx.se>, et al.
 #
 # This software is licensed as described in the file COPYING, which
 # you should have received as part of this distribution. The terms
@@ -138,6 +138,7 @@ my %opts = (
     '-N, --no-buffer' => 1,
     '--no-sessionid' => 1,
     '--no-keepalive' => 1,
+    '--no-progress-meter' => 1,
 
     # pretend these options without -no exist in curl.1 and tool_help.c
     '--alpn' => 6,
@@ -147,6 +148,7 @@ my %opts = (
     '--keepalive' => 6,
     '-N, --buffer' => 6,
     '--sessionid' => 6,
+    '--progress-meter' => 6,
 
     # deprecated options do not need to be in tool_help.c nor curl.1
     '--krb4' => 6,
@@ -232,7 +234,7 @@ my @toolhelp; # store all parsed parameters
 while(<R>) {
     chomp;
     my $l= $_;
-    if(/^  \" *(.*)/) {
+    if(/^  \{\" *(.*)/) {
         my $str=$1;
         my $combo;
         if($str =~ /^-(.), --([a-z0-9.-]*)/) {

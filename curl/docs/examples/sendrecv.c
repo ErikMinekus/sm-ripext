@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2016, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2019, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -36,7 +36,7 @@ static int wait_on_socket(curl_socket_t sockfd, int for_recv, long timeout_ms)
   int res;
 
   tv.tv_sec = timeout_ms / 1000;
-  tv.tv_usec= (timeout_ms % 1000) * 1000;
+  tv.tv_usec = (timeout_ms % 1000) * 1000;
 
   FD_ZERO(&infd);
   FD_ZERO(&outfd);
@@ -52,19 +52,16 @@ static int wait_on_socket(curl_socket_t sockfd, int for_recv, long timeout_ms)
   }
 
   /* select() returns the number of signalled sockets or -1 */
-  res = select(sockfd + 1, &infd, &outfd, &errfd, &tv);
+  res = select((int)sockfd + 1, &infd, &outfd, &errfd, &tv);
   return res;
 }
 
 int main(void)
 {
   CURL *curl;
-  CURLcode res;
   /* Minimalistic http request */
   const char *request = "GET / HTTP/1.0\r\nHost: example.com\r\n\r\n";
   size_t request_len = strlen(request);
-  curl_socket_t sockfd;
-  size_t nsent_total = 0;
 
   /* A general note of caution here: if you're using curl_easy_recv() or
      curl_easy_send() to implement HTTP or _any_ other protocol libcurl
@@ -76,7 +73,11 @@ int main(void)
 
   curl = curl_easy_init();
   if(curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, "http://example.com");
+    CURLcode res;
+    curl_socket_t sockfd;
+    size_t nsent_total = 0;
+
+    curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");
     /* Do not do the transfer - only connect to host */
     curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
     res = curl_easy_perform(curl);

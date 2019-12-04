@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2017, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2019, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -20,6 +20,8 @@
  *
  ***************************************************************************/
 #include "test.h"
+
+#include <string.h>
 
 /*
  * This test uses these funny custom memory callbacks for the only purpose
@@ -36,11 +38,11 @@
 #include "memdebug.h"
 */
 
-int seen_malloc = 0;
-int seen_free = 0;
-int seen_realloc = 0;
-int seen_strdup = 0;
-int seen_calloc = 0;
+static int seen_malloc = 0;
+static int seen_free = 0;
+static int seen_realloc = 0;
+static int seen_strdup = 0;
+static int seen_calloc = 0;
 
 void *custom_malloc(size_t size);
 void custom_free(void *ptr);
@@ -144,4 +146,3 @@ test_cleanup:
 
   return (int)res;
 }
-

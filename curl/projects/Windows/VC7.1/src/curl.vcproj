@@ -1362,6 +1362,9 @@
 			Name="Source Files"
 			Filter="">
 			<File
+				RelativePath="..\..\..\..\lib\curl_ctype.c">
+			</File>
+			<File
 				RelativePath="..\..\..\..\lib\nonblock.c">
 			</File>
 			<File
@@ -1413,6 +1416,9 @@
 				RelativePath="..\..\..\..\src\tool_easysrc.c">
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\tool_filetime.c">
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\tool_formparse.c">
 			</File>
 			<File
@@ -1443,9 +1449,6 @@
 				RelativePath="..\..\..\..\src\tool_metalink.c">
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\tool_mfiles.c">
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\tool_msgs.c">
 			</File>
 			<File
@@ -1462,6 +1465,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\tool_parsecfg.c">
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\tool_progress.c">
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\tool_setopt.c">
@@ -1482,9 +1488,6 @@
 				RelativePath="..\..\..\..\src\tool_vms.c">
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\tool_writeenv.c">
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\tool_writeout.c">
 			</File>
 			<File
@@ -1496,6 +1499,9 @@
 			Filter="">
 			<File
 				RelativePath="..\..\..\..\lib\config-win32.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\lib\curl_ctype.h">
 			</File>
 			<File
 				RelativePath="..\..\..\..\lib\curl_setup.h">
@@ -1552,6 +1558,9 @@
 				RelativePath="..\..\..\..\src\tool_easysrc.h">
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\tool_filetime.h">
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\tool_formparse.h">
 			</File>
 			<File
@@ -1582,9 +1591,6 @@
 				RelativePath="..\..\..\..\src\tool_metalink.h">
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\tool_mfiles.h">
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\tool_msgs.h">
 			</File>
 			<File
@@ -1601,6 +1607,9 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\tool_parsecfg.h">
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\tool_progress.h">
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\tool_sdecls.h">
@@ -1628,9 +1637,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\tool_vms.h">
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\tool_writeenv.h">
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\tool_writeout.h">

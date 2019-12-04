@@ -5,7 +5,7 @@
 #                            | (__| |_| |  _ <| |___
 #                             \___|\___/|_| \_\_____|
 #
-# Copyright (C) 1998 - 2013, Daniel Stenberg, <daniel@haxx.se>, et al.
+# Copyright (C) 1998 - 2019, Daniel Stenberg, <daniel@haxx.se>, et al.
 #
 # This software is licensed as described in the file COPYING, which
 # you should have received as part of this distribution. The terms
@@ -37,13 +37,13 @@ AC_HELP_STRING([--enable-threaded-resolver],[Enable threaded resolver])
 AC_HELP_STRING([--disable-threaded-resolver],[Disable threaded resolver]),
   OPT_THRES=$enableval)
   case "$OPT_THRES" in
-    yes)
-      dnl --enable-threaded-resolver option used
-      want_thres="yes"
+    no)
+      dnl --disable-threaded-resolver option used
+      want_thres="no"
       ;;
     *)
       dnl configure option not specified
-      want_thres="no"
+      want_thres="yes"
       ;;
   esac
   AC_MSG_RESULT([$want_thres])
@@ -114,6 +114,7 @@ AC_HELP_STRING([--disable-curldebug],[Disable curl debug memory tracking]),
       dnl as a request to disable curldebug.
       if test "$want_debug" = "yes"; then
         AC_MSG_RESULT([(assumed) yes])
+        AC_DEFINE(CURLDEBUG, 1, [to enable curl debug memory tracking])
       else
         AC_MSG_RESULT([no])
       fi
@@ -130,6 +131,7 @@ AC_HELP_STRING([--disable-curldebug],[Disable curl debug memory tracking]),
       dnl --disable-curldebug had been given setting shell variable
       dnl want_curldebug to 'no'.
       want_curldebug="yes"
+      AC_DEFINE(CURLDEBUG, 1, [to enable curl debug memory tracking])
       AC_MSG_RESULT([yes])
       ;;
   esac
@@ -164,6 +166,7 @@ AC_HELP_STRING([--disable-debug],[Disable debug build options]),
     *)
       dnl --enable-debug option used
       want_debug="yes"
+      AC_DEFINE(DEBUGBUILD, 1, [enable debug build options])
       ;;
   esac
   AC_MSG_RESULT([$want_debug])
@@ -318,7 +321,7 @@ dnl ])
 
 dnl CURL_CHECK_OPTION_RT
 dnl -------------------------------------------------
-dnl Verify if configure has been involed with option
+dnl Verify if configure has been invoked with option
 dnl --disable-rt and set shell variable dontwant_rt
 dnl as appropriate.
 
@@ -347,7 +350,6 @@ AC_DEFUN([CURL_CHECK_OPTION_RT], [
       ;;
   esac
 ])
- 
 
 dnl CURL_CHECK_OPTION_WARNINGS
 dnl -------------------------------------------------
@@ -494,9 +496,24 @@ AC_DEFUN([CURL_CHECK_LIB_ARES], [
     embedded_ares_builddir="$configure_runpath/ares"
     if test -n "$want_ares_path"; then
       dnl c-ares library path has been specified
-      ares_CPPFLAGS="-I$want_ares_path/include"
-      ares_LDFLAGS="-L$want_ares_path/lib"
-      ares_LIBS="-lcares"
+      ARES_PCDIR="$want_ares_path/lib/pkgconfig"
+      CURL_CHECK_PKGCONFIG(libcares, [$ARES_PCDIR])
+      if test "$PKGCONFIG" != "no" ; then
+        ares_LIBS=`CURL_EXPORT_PCDIR([$ARES_PCDIR])
+          $PKGCONFIG --libs-only-l libcares`
+        ares_LDFLAGS=`CURL_EXPORT_PCDIR([$ARES_PCDIR])
+          $PKGCONFIG --libs-only-L libcares`
+        ares_CPPFLAGS=`CURL_EXPORT_PCDIR([$ARES_PCDIR])
+          $PKGCONFIG --cflags-only-I libcares`
+        AC_MSG_NOTICE([pkg-config: ares LIBS: "$ares_LIBS"])
+        AC_MSG_NOTICE([pkg-config: ares LDFLAGS: "$ares_LDFLAGS"])
+        AC_MSG_NOTICE([pkg-config: ares CPPFLAGS: "$ares_CPPFLAGS"])
+      else
+        dnl ... path without pkg-config
+        ares_CPPFLAGS="-I$want_ares_path/include"
+        ares_LDFLAGS="-L$want_ares_path/lib"
+        ares_LIBS="-lcares"
+      fi
     else
       dnl c-ares library path has not been given
       if test -d "$srcdir/ares"; then
@@ -510,14 +527,24 @@ AC_DEFUN([CURL_CHECK_LIB_ARES], [
         ares_LIBS="-lcares"
       else
         dnl c-ares path not specified, use defaults
-        ares_CPPFLAGS=""
-        ares_LDFLAGS=""
-        ares_LIBS="-lcares"
+        CURL_CHECK_PKGCONFIG(libcares)
+        if test "$PKGCONFIG" != "no" ; then
+          ares_LIBS=`$PKGCONFIG --libs-only-l libcares`
+          ares_LDFLAGS=`$PKGCONFIG --libs-only-L libcares`
+          ares_CPPFLAGS=`$PKGCONFIG --cflags-only-I libcares`
+          AC_MSG_NOTICE([pkg-config: ares_LIBS: "$ares_LIBS"])
+          AC_MSG_NOTICE([pkg-config: ares_LDFLAGS: "$ares_LDFLAGS"])
+          AC_MSG_NOTICE([pkg-config: ares_CPPFLAGS: "$ares_CPPFLAGS"])
+        else
+          ares_CPPFLAGS=""
+          ares_LDFLAGS=""
+          ares_LIBS="-lcares"
+        fi
       fi
     fi
     #
-    CPPFLAGS="$ares_CPPFLAGS $clean_CPPFLAGS"
-    LDFLAGS="$ares_LDFLAGS $clean_LDFLAGS"
+    CPPFLAGS="$clean_CPPFLAGS $ares_CPPFLAGS"
+    LDFLAGS="$clean_LDFLAGS $ares_LDFLAGS"
     LIBS="$ares_LIBS $clean_LIBS"
     #
     if test "$embedded_ares" != "yes"; then
@@ -622,3 +649,38 @@ AC_DEFUN([CURL_CHECK_NTLM_WB], [
   fi
 ])
 
+dnl CURL_CHECK_OPTION_ESNI
+dnl -----------------------------------------------------
+dnl Verify whether configure has been invoked with option
+dnl --enable-esni or --disable-esni, and set
+dnl shell variable want_esni as appropriate.
+
+AC_DEFUN([CURL_CHECK_OPTION_ESNI], [
+  AC_MSG_CHECKING([whether to enable ESNI support])
+  OPT_ESNI="default"
+  AC_ARG_ENABLE(esni,
+AC_HELP_STRING([--enable-esni],[Enable ESNI support])
+AC_HELP_STRING([--disable-esni],[Disable ESNI support]),
+  OPT_ESNI=$enableval)
+  case "$OPT_ESNI" in
+    no)
+      dnl --disable-esni option used
+      want_esni="no"
+      curl_esni_msg="no      (--enable-esni)"
+      AC_MSG_RESULT([no])
+      ;;
+    default)
+      dnl configure option not specified
+      want_esni="no"
+      curl_esni_msg="no      (--enable-esni)"
+      AC_MSG_RESULT([no])
+      ;;
+    *)
+      dnl --enable-esni option used
+      want_esni="yes"
+      curl_esni_msg="enabled (--disable-esni)"
+      experimental="esni"
+      AC_MSG_RESULT([yes])
+      ;;
+  esac
+])

@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2016, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2019, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -37,11 +37,10 @@ int test(char *URL)
   CURL *curl;
   char *stream_uri = NULL;
   char *rtsp_session_id;
-  int request=1;
+  int request = 1;
   int i;
-  FILE *idfile = NULL;
 
-  idfile = fopen(libtest_arg2, "wb");
+  FILE *idfile = fopen(libtest_arg2, "wb");
   if(idfile == NULL) {
     fprintf(stderr, "couldn't open the Session ID File\n");
     return TEST_ERR_MAJOR_BAD;
@@ -125,4 +124,3 @@ test_cleanup:
 
   return res;
 }
-
