@@ -863,7 +863,7 @@ static cell_t FromFile(IPluginContext *pContext, const cell_t *params)
 	pContext->LocalToString(params[1], &path);
 
 	char realpath[PLATFORM_MAX_PATH];
-	smutils->BuildPath(Path_Game, realpath, sizeof(realpath), path);
+	smutils->BuildPath(Path_Game, realpath, sizeof(realpath), "%s", path);
 
 	json_error_t error;
 	json_t *object = json_load_file(realpath, 0, &error);
@@ -927,7 +927,7 @@ static cell_t ToFile(IPluginContext *pContext, const cell_t *params)
 	pContext->LocalToString(params[2], &path);
 
 	char realpath[PLATFORM_MAX_PATH];
-	smutils->BuildPath(Path_Game, realpath, sizeof(realpath), path);
+	smutils->BuildPath(Path_Game, realpath, sizeof(realpath), "%s", path);
 
 	size_t flags = (size_t)params[3];
 
