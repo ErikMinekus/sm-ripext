@@ -217,6 +217,25 @@ static cell_t IsObjectNullValue(IPluginContext *pContext, const cell_t *params)
 	return json_is_null(value);
 }
 
+static cell_t IsObjectKeyValid(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	json_t *object;
+	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	{
+		pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
+		return BAD_HANDLE;
+	}
+
+	char *key;
+	pContext->LocalToString(params[2], &key);
+
+	return json_object_get(object, key) != NULL;
+}
+
 static cell_t SetObjectValue(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -946,6 +965,7 @@ const sp_nativeinfo_t json_natives[] =
 	{"JSONObject.GetInt",				GetObjectIntValue},
 	{"JSONObject.GetString",			GetObjectStringValue},
 	{"JSONObject.IsNull",				IsObjectNullValue},
+	{"JSONObject.HasKey",				IsObjectKeyValid},
 	{"JSONObject.Set",					SetObjectValue},
 	{"JSONObject.SetBool",				SetObjectBoolValue},
 	{"JSONObject.SetFloat",				SetObjectFloatValue},
