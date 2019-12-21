@@ -32,6 +32,8 @@ static cell_t CreateClient(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndl = handlesys->CreateHandle(htHTTPClientObject, client, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndl == BAD_HANDLE)
 	{
+		delete client;
+
 		pContext->ThrowNativeError("Could not create HTTP client handle.");
 		return BAD_HANDLE;
 	}

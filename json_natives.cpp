@@ -28,6 +28,8 @@ static cell_t CreateObject(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndl = handlesys->CreateHandle(htJSONObject, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndl == BAD_HANDLE)
 	{
+		json_decref(object);
+
 		pContext->ThrowNativeError("Could not create object handle.");
 		return BAD_HANDLE;
 	}
@@ -383,6 +385,8 @@ static cell_t CreateArray(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndl = handlesys->CreateHandle(htJSONObject, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndl == BAD_HANDLE)
 	{
+		json_decref(object);
+
 		pContext->ThrowNativeError("Could not create array handle.");
 		return BAD_HANDLE;
 	}
@@ -844,6 +848,8 @@ static cell_t FromString(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndlObject = handlesys->CreateHandle(htJSONObject, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndlObject == BAD_HANDLE)
 	{
+		json_decref(object);
+
 		pContext->ThrowNativeError("Could not create object handle.");
 		return BAD_HANDLE;
 	}
@@ -870,6 +876,8 @@ static cell_t FromFile(IPluginContext *pContext, const cell_t *params)
 	Handle_t hndlObject = handlesys->CreateHandle(htJSONObject, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndlObject == BAD_HANDLE)
 	{
+		json_decref(object);
+
 		pContext->ThrowNativeError("Could not create object handle.");
 		return BAD_HANDLE;
 	}
