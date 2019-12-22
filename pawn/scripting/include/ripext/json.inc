@@ -40,36 +40,42 @@ methodmap JSONObject < JSON
 	//
 	// @param file       File to read from.
 	// @return           Object handle, or null on failure.
+	// @error            Invalid JSON.
 	public static native JSONObject FromFile(const char[] file);
 
 	// Loads a JSON object from a string.
 	//
 	// @param buffer     String buffer to load into the JSON object.
 	// @return           Object handle, or null on failure.
+	// @error            Invalid JSON.
 	public static native JSONObject FromString(const char[] buffer);
 
 	// Retrieves an array or object value from the object.
 	//
 	// @param key        Key string.
 	// @return           Value read.
+	// @error            Invalid key.
 	public native JSON Get(const char[] key);
 
 	// Retrieves a boolean value from the object.
 	//
 	// @param key        Key string.
 	// @return           Value read.
+	// @error            Invalid key.
 	public native bool GetBool(const char[] key);
 
 	// Retrieves a float value from the object.
 	//
 	// @param key        Key string.
 	// @return           Value read.
+	// @error            Invalid key.
 	public native float GetFloat(const char[] key);
 
 	// Retrieves an integer value from the object.
 	//
 	// @param key        Key string.
 	// @return           Value read.
+	// @error            Invalid key.
 	public native int GetInt(const char[] key);
 
 	// Retrieves a string value from the object.
@@ -84,6 +90,7 @@ methodmap JSONObject < JSON
 	//
 	// @param key        Key string.
 	// @return           True if the value is null, false otherwise.
+	// @error            Invalid key.
 	public native bool IsNull(const char[] key);
 
 	// Returns whether or not a key in the object exists
@@ -160,36 +167,42 @@ methodmap JSONArray < JSON
 	//
 	// @param file       File to read from.
 	// @return           Array handle, or null on failure.
+	// @error            Invalid JSON.
 	public static native JSONArray FromFile(const char[] file);
 
 	// Loads a JSON array from a string.
 	//
 	// @param buffer     String buffer to load into the JSON array.
 	// @return           Array handle, or null on failure.
+	// @error            Invalid JSON.
 	public static native JSONArray FromString(const char[] buffer);
 
 	// Retrieves an array or object value from the array.
 	//
 	// @param index      Index in the array.
 	// @return           Value read.
+	// @error            Invalid index.
 	public native JSON Get(int index);
 
 	// Retrieves a boolean value from the array.
 	//
 	// @param index      Index in the array.
 	// @return           Value read.
+	// @error            Invalid index.
 	public native bool GetBool(int index);
 
 	// Retrieves a float value from the array.
 	//
 	// @param index      Index in the array.
 	// @return           Value read.
+	// @error            Invalid index.
 	public native float GetFloat(int index);
 
 	// Retrieves an integer value from the array.
 	//
 	// @param index      Index in the array.
 	// @return           Value read.
+	// @error            Invalid index.
 	public native int GetInt(int index);
 
 	// Retrieves a string value from the array.
@@ -198,12 +211,14 @@ methodmap JSONArray < JSON
 	// @param buffer     Buffer to copy to.
 	// @param maxlength  Maximum size of the buffer.
 	// @return           True on success, false if the value is not a string.
+	// @error            Invalid index.
 	public native bool GetString(int index, char[] buffer, int maxlength);
 
 	// Returns whether or not a value in the array is null.
 	//
 	// @param index      Index in the array.
 	// @return           True if the value is null, false otherwise.
+	// @error            Invalid index.
 	public native bool IsNull(int index);
 
 	// Sets an array or object value in the array.
