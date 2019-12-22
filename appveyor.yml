@@ -26,7 +26,7 @@ artifacts:
 deploy:
   - provider: GitHub
     auth_token:
-      secure: OWd5i64Jk8mOm7arzGh1lZMp7qWM4/x1vrekDhEvXlVAk1yus5BBeoKH8QkI9Yv9
+      secure: W5NLiQPcN6s71QOYkqmv7UjmHzHI8NFNuPPBnBajdipPN4wl1jt7ecGUpSb9f9nO
     artifact: build\sm-ripext-$(appveyor_repo_tag_name)-windows.zip
     on:
       appveyor_repo_tag: true
