@@ -179,7 +179,7 @@ static cell_t GetObjectStringValue(IPluginContext *pContext, const cell_t *param
 	json_t *value = json_object_get(object, key);
 	if (value == NULL)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
+		return 0;
 	}
 
 	const char *result = json_string_value(value);

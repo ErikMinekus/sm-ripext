@@ -77,7 +77,7 @@ methodmap JSONObject < JSON
 	// @param key        Key string.
 	// @param buffer     String buffer to store value.
 	// @param maxlength  Maximum length of the string buffer.
-	// @return           True on success, false if the key was not found.
+	// @return           True on success. False if the key was not found, or the value is not a string.
 	public native bool GetString(const char[] key, char[] buffer, int maxlength);
 
 	// Returns whether or not a value in the object is null.
@@ -91,7 +91,7 @@ methodmap JSONObject < JSON
 	// @param key        Key string.
 	// @return           True if the key exists, false otherwise.
 	public native bool HasKey(const char[] key);
-	
+
 	// Sets an array or object value in the object, either inserting a new entry or replacing an old one.
 	//
 	// @param key        Key string.
@@ -197,7 +197,7 @@ methodmap JSONArray < JSON
 	// @param index      Index in the array.
 	// @param buffer     Buffer to copy to.
 	// @param maxlength  Maximum size of the buffer.
-	// @return           True on success, false on invalid index.
+	// @return           True on success, false if the value is not a string.
 	public native bool GetString(int index, char[] buffer, int maxlength);
 
 	// Returns whether or not a value in the array is null.
