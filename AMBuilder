@@ -4,6 +4,7 @@ import os
 libcurl = builder.RunScript('curl/lib/AMBuilder')
 libjansson = builder.RunScript('jansson/src/AMBuilder')
 libmbedtls = builder.RunScript('mbedtls/library/AMBuilder')
+libnghttp2 = builder.RunScript('nghttp2/lib/AMBuilder')
 libuv = builder.RunScript('libuv/src/AMBuilder')
 libz = builder.RunScript('zlib/AMBuilder')
 
@@ -37,6 +38,7 @@ binary.compiler.postlink += [
   libcurl.binary,
   libjansson.binary,
   libmbedtls.binary,
+  libnghttp2.binary,
   libuv.binary,
   libz.binary,
 ]

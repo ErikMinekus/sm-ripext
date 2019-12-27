@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+libdir="/mnt/nghttp2/lib"
+if [ -d "$libdir/.libs" ]; then
+    libdir="$libdir/.libs"
+fi
+
+export CGO_CFLAGS="-I/mnt/nghttp2/lib/includes -I/mnt/nghttp2/lib/includes"
+export CGO_LDFLAGS="-L$libdir"
+export LD_LIBRARY_PATH="$libdir"
+export GODEBUG=cgocheck=0
+"$@"

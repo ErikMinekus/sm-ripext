@@ -26,7 +26,7 @@ char sHTTPTags[][] = {
 
 public void OnPluginStart()
 {
-    HTTPClient hHTTPClient = new HTTPClient("https://httpbin.org");
+    HTTPClient hHTTPClient = new HTTPClient("https://nghttp2.org/httpbin");
     JSONObject hJSONObject = CreateJSONObject();
 
     hHTTPClient.Get("get", OnHTTPResponse, 0);

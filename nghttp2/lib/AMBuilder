@@ -1,0 +1,50 @@
+# vim: sts=2 ts=8 sw=2 tw=99 et ft=python:
+import os
+
+builder.SetBuildFolder('libnghttp2')
+
+binary = builder.compiler.StaticLibrary('nghttp2')
+binary.compiler.includes += [
+  os.path.join(builder.sourcePath, 'nghttp2', 'lib'),
+  os.path.join(builder.sourcePath, 'nghttp2', 'lib', 'includes'),
+]
+binary.compiler.defines += [
+  'BUILDING_NGHTTP2',
+  'NGHTTP2_STATICLIB',
+]
+
+if builder.target_platform == 'linux':
+  binary.compiler.defines += ['HAVE_NETINET_IN_H']
+elif builder.target_platform == 'windows':
+  binary.compiler.defines += ['ssize_t=int']
+
+if binary.compiler.vendor == 'clang':
+  # https://llvm.org/bugs/show_bug.cgi?id=16428
+  binary.compiler.cflags += ['-Wno-attributes']
+
+binary.sources += [
+  'nghttp2_pq.c',
+  'nghttp2_map.c',
+  'nghttp2_queue.c',
+  'nghttp2_frame.c',
+  'nghttp2_buf.c',
+  'nghttp2_stream.c',
+  'nghttp2_outbound_item.c',
+  'nghttp2_session.c',
+  'nghttp2_submit.c',
+  'nghttp2_helper.c',
+  'nghttp2_npn.c',
+  'nghttp2_hd.c',
+  'nghttp2_hd_huffman.c',
+  'nghttp2_hd_huffman_data.c',
+  'nghttp2_version.c',
+  'nghttp2_priority_spec.c',
+  'nghttp2_option.c',
+  'nghttp2_callbacks.c',
+  'nghttp2_mem.c',
+  'nghttp2_http.c',
+  'nghttp2_rcbuf.c',
+  'nghttp2_debug.c',
+]
+
+rvalue = builder.Add(binary)

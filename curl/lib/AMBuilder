@@ -8,12 +8,14 @@ binary.compiler.includes += [
   os.path.join(builder.sourcePath, 'curl', 'lib'),
   os.path.join(builder.sourcePath, 'curl', 'include'),
   os.path.join(builder.sourcePath, 'mbedtls', 'include'),
+  os.path.join(builder.sourcePath, 'nghttp2', 'lib', 'includes'),
   os.path.join(builder.sourcePath, 'zlib'),
 ]
 binary.compiler.defines += [
   'BUILDING_LIBCURL',
   'CURL_STATICLIB',
   'HTTP_ONLY',
+  'NGHTTP2_STATICLIB',
 ]
 
 if builder.target_platform == 'linux':

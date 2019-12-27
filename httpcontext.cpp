@@ -118,6 +118,7 @@ HTTPContext::HTTPContext(const ke::AString &method, const ke::AString &url, json
 	curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, &ReceiveResponseHeader);
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+	curl_easy_setopt(curl, CURLOPT_PIPEWAIT, 1L);
 	curl_easy_setopt(curl, CURLOPT_PRIVATE, this);
 	curl_easy_setopt(curl, CURLOPT_READDATA, &request);
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, &ReadRequestBody);
