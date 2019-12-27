@@ -343,6 +343,33 @@ static cell_t GetResponseStatus(IPluginContext *pContext, const cell_t *params)
 	return response->status;
 }
 
+static cell_t GetResponseHeader(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	struct HTTPResponse *response;
+	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponseObject, &sec, (void **)&response)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
+	}
+
+	char *name;
+	pContext->LocalToString(params[2], &name);
+	const ke::AString lowercaseName = ke::AString(name).lowercase();
+
+	HTTPHeaderMap::Result header = response->headers.find(lowercaseName.chars());
+	if (!header.found())
+	{
+		return 0;
+	}
+
+	pContext->StringToLocalUTF8(params[3], params[4], header->value.chars(), NULL);
+
+	return 1;
+}
+
 
 const sp_nativeinfo_t http_natives[] =
 {
@@ -361,6 +388,7 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.Timeout.set",			SetClientTimeout},
 	{"HTTPResponse.Data.get",			GetResponseData},
 	{"HTTPResponse.Status.get",			GetResponseStatus},
+	{"HTTPResponse.GetHeader",			GetResponseHeader},
 
 	{NULL,								NULL}
 };

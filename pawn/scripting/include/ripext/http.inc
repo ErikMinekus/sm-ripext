@@ -61,6 +61,14 @@ typeset HTTPRequestCallback
 
 methodmap HTTPResponse
 {
+	// Retrieves a HTTP header from the response.
+	//
+	// @param name       Header name.
+	// @param buffer     String buffer to store value.
+	// @param maxlength  Maximum length of the string buffer.
+	// @return           True on success, false if the header was not found.
+	public native bool GetHeader(const char[] name, char[] buffer, int maxlength);
+
 	// Retrieves the JSON data of the response.
 	property JSON Data {
 		public native get();

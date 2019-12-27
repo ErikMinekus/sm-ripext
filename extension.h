@@ -86,6 +86,7 @@ struct HTTPResponse {
 	long status;
 	json_t *data;
 	Handle_t hndlData;
+	HTTPHeaderMap headers;
 
 	char *body;
 	size_t size;
