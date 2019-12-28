@@ -169,6 +169,8 @@ public:
 #endif
 public:
 	void AddRequestToQueue(HTTPContext *context);
+
+	char caBundlePath[PLATFORM_MAX_PATH];
 };
 
 class HTTPClientObjectHandler : public IHandleTypeDispatch

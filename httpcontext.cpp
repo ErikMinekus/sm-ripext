@@ -88,9 +88,6 @@ HTTPContext::HTTPContext(const ke::AString &method, const ke::AString &url, json
 		return;
 	}
 
-	char caBundlePath[PLATFORM_MAX_PATH];
-	smutils->BuildPath(Path_SM, caBundlePath, sizeof(caBundlePath), SM_RIPEXT_CA_BUNDLE_PATH);
-
 	if (request.method.compare("POST") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
@@ -110,7 +107,7 @@ HTTPContext::HTTPContext(const ke::AString &method, const ke::AString &url, json
 	}
 
 	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
-	curl_easy_setopt(curl, CURLOPT_CAINFO, caBundlePath);
+	curl_easy_setopt(curl, CURLOPT_CAINFO, g_RipExt.caBundlePath);
 	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, connectTimeout);
 	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error);
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, followLocation);

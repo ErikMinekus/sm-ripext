@@ -248,6 +248,7 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	htJSONObject = handlesys->CreateType("JSONObject", &g_JSONObjectHandler, 0, NULL, &haJSONObject, myself->GetIdentity(), NULL);
 
 	smutils->AddGameFrameHook(&FrameHook);
+	smutils->BuildPath(Path_SM, caBundlePath, sizeof(caBundlePath), SM_RIPEXT_CA_BUNDLE_PATH);
 
 	return true;
 }
