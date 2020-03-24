@@ -309,17 +309,22 @@ static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 		return BAD_HANDLE;
 	}
 
-	if (response->data == NULL)
-	{
-		return BAD_HANDLE;
-	}
-
 	/* Return the same handle every time we get the HTTP response data */
 	if (response->hndlData == BAD_HANDLE)
 	{
+		json_error_t error;
+		response->data = json_loads(response->body, 0, &error);
+		if (response->data == NULL)
+		{
+			pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
+			return BAD_HANDLE;
+		}
+
 		response->hndlData = handlesys->CreateHandleEx(htJSONObject, response->data, &sec, NULL, NULL);
 		if (response->hndlData == BAD_HANDLE)
 		{
+			json_decref(response->data);
+
 			pContext->ThrowNativeError("Could not create data handle.");
 			return BAD_HANDLE;
 		}

@@ -69,7 +69,6 @@ static void CheckCompletedRequests()
 
 		if (res == CURLE_OK)
 		{
-			context->response.data = json_loads(context->response.body, 0, NULL);
 			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &context->response.status);
 		}
 
@@ -283,9 +282,7 @@ void HTTPClientObjectHandler::OnHandleDestroy(HandleType_t type, void *object)
 
 void HTTPResponseObjectHandler::OnHandleDestroy(HandleType_t type, void *object)
 {
-	struct HTTPResponse *response = (struct HTTPResponse *)object;
-
-	free(response->body);
+	/* Response objects are automatically cleaned up */
 }
 
 void JSONObjectHandler::OnHandleDestroy(HandleType_t type, void *object)

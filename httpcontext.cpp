@@ -130,6 +130,7 @@ HTTPContext::~HTTPContext()
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
 	free(request.body);
+	free(response.body);
 }
 
 void HTTPContext::OnCompleted()
@@ -137,7 +138,6 @@ void HTTPContext::OnCompleted()
 	/* Return early if the plugin was unloaded while the thread was running */
 	if (forward->GetFunctionCount() == 0)
 	{
-		free(response.body);
 		json_decref(response.data);
 
 		forwards->ReleaseForward(forward);
@@ -148,7 +148,6 @@ void HTTPContext::OnCompleted()
 	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponseObject, &response, &sec, NULL, NULL);
 	if (hndlResponse == BAD_HANDLE)
 	{
-		free(response.body);
 		json_decref(response.data);
 
 		forwards->ReleaseForward(forward);
