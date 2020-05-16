@@ -82,6 +82,8 @@ HTTPContext::HTTPContext(const ke::AString &method, const ke::AString &url, json
 
 HTTPContext::~HTTPContext()
 {
+	forwards->ReleaseForward(forward);
+
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
 	free(request.body);
@@ -94,8 +96,6 @@ void HTTPContext::InitCurl()
 	curl = curl_easy_init();
 	if (curl == NULL)
 	{
-		forwards->ReleaseForward(forward);
-
 		smutils->LogError(myself, "Could not initialize cURL session.");
 		return;
 	}
@@ -142,9 +142,6 @@ void HTTPContext::OnCompleted()
 	/* Return early if the plugin was unloaded while the thread was running */
 	if (forward->GetFunctionCount() == 0)
 	{
-		json_decref(response.data);
-
-		forwards->ReleaseForward(forward);
 		return;
 	}
 
@@ -154,10 +151,6 @@ void HTTPContext::OnCompleted()
 	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponseObject, &response, &sec, NULL, NULL);
 	if (hndlResponse == BAD_HANDLE)
 	{
-		json_decref(response.data);
-
-		forwards->ReleaseForward(forward);
-
 		smutils->LogError(myself, "Could not create HTTP response handle.");
 		return;
 	}
@@ -169,6 +162,4 @@ void HTTPContext::OnCompleted()
 
 	handlesys->FreeHandle(hndlResponse, &sec);
 	handlesys->FreeHandle(response.hndlData, &sec);
-
-	forwards->ReleaseForward(forward);
 }

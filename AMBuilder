@@ -14,6 +14,7 @@ binary.sources += [
   'extension.cpp',
   'httpclient.cpp',
   'httpcontext.cpp',
+  'httpfilecontext.cpp',
   'http_natives.cpp',
   'json_natives.cpp',
   os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),

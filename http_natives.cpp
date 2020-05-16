@@ -200,6 +200,58 @@ static cell_t DeleteRequest(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
+static cell_t DownloadFile(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	char *endpoint;
+	pContext->LocalToString(params[2], &endpoint);
+
+	char *path;
+	pContext->LocalToString(params[3], &path);
+
+	IPluginFunction *callback = pContext->GetFunctionById(params[4]);
+	cell_t value = params[5];
+
+	client->DownloadFile(endpoint, path, callback, value);
+
+	return 1;
+}
+
+static cell_t UploadFile(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	char *endpoint;
+	pContext->LocalToString(params[2], &endpoint);
+
+	char *path;
+	pContext->LocalToString(params[3], &path);
+
+	IPluginFunction *callback = pContext->GetFunctionById(params[4]);
+	cell_t value = params[5];
+
+	client->UploadFile(endpoint, path, callback, value);
+
+	return 1;
+}
+
 static cell_t GetClientConnectTimeout(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -385,6 +437,8 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.Put",					PutRequest},
 	{"HTTPClient.Patch",				PatchRequest},
 	{"HTTPClient.Delete",				DeleteRequest},
+	{"HTTPClient.DownloadFile",			DownloadFile},
+	{"HTTPClient.UploadFile",			UploadFile},
 	{"HTTPClient.ConnectTimeout.get",	GetClientConnectTimeout},
 	{"HTTPClient.ConnectTimeout.set",	SetClientConnectTimeout},
 	{"HTTPClient.FollowLocation.get",	GetClientFollowLocation},

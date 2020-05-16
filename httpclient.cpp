@@ -21,6 +21,7 @@
 
 #include "httpclient.h"
 #include "httpcontext.h"
+#include "httpfilecontext.h"
 
 const ke::AString HTTPClient::BuildURL(const ke::AString &endpoint) const
 {
@@ -34,13 +35,17 @@ const ke::AString HTTPClient::BuildURL(const ke::AString &endpoint) const
 	return ret;
 }
 
-struct curl_slist *HTTPClient::BuildHeaders()
+struct curl_slist *HTTPClient::BuildHeaders(const char *acceptTypes, const char *contentType)
 {
 	struct curl_slist *headers = NULL;
-	headers = curl_slist_append(headers, "Accept: application/json");
-	headers = curl_slist_append(headers, "Content-Type: application/json");
-
 	char header[8192];
+
+	snprintf(header, sizeof(header), "Accept: %s", acceptTypes);
+	headers = curl_slist_append(headers, header);
+
+	snprintf(header, sizeof(header), "Content-Type: %s", contentType);
+	headers = curl_slist_append(headers, header);
+
 	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
 	{
 		snprintf(header, sizeof(header), "%s: %s", iter->key.chars(), iter->value.chars());
@@ -60,8 +65,42 @@ void HTTPClient::Request(const char *method, const char *endpoint, json_t *data,
 	}
 
 	const ke::AString url = this->BuildURL(ke::AString(endpoint));
-	struct curl_slist *headers = this->BuildHeaders();
+	struct curl_slist *headers = this->BuildHeaders("application/json", "application/json");
 	HTTPContext *context = new HTTPContext(ke::AString(method), url, data, headers, forward, value,
+		this->connectTimeout, this->followLocation, this->timeout);
+
+	g_RipExt.AddRequestToQueue(context);
+}
+
+void HTTPClient::DownloadFile(const char *endpoint, const char *path, IPluginFunction *callback, cell_t value)
+{
+	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
+	if (forward == NULL || !forward->AddFunction(callback))
+	{
+		smutils->LogError(myself, "Could not create forward.");
+		return;
+	}
+
+	const ke::AString url = this->BuildURL(ke::AString(endpoint));
+	struct curl_slist *headers = this->BuildHeaders("*/*", "application/octet-stream");
+	HTTPFileContext *context = new HTTPFileContext(false, url, ke::AString(path), headers, forward, value,
+		this->connectTimeout, this->followLocation, this->timeout);
+
+	g_RipExt.AddRequestToQueue(context);
+}
+
+void HTTPClient::UploadFile(const char *endpoint, const char *path, IPluginFunction *callback, cell_t value)
+{
+	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
+	if (forward == NULL || !forward->AddFunction(callback))
+	{
+		smutils->LogError(myself, "Could not create forward.");
+		return;
+	}
+
+	const ke::AString url = this->BuildURL(ke::AString(endpoint));
+	struct curl_slist *headers = this->BuildHeaders("*/*", "application/octet-stream");
+	HTTPFileContext *context = new HTTPFileContext(true, url, ke::AString(path), headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout);
 
 	g_RipExt.AddRequestToQueue(context);

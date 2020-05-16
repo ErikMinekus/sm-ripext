@@ -31,9 +31,12 @@ public:
 
 	const ke::AString BuildURL(const ke::AString &endpoint) const;
 
-	struct curl_slist *BuildHeaders();
+	struct curl_slist *BuildHeaders(const char *acceptTypes, const char *contentType);
 
 	void Request(const char *method, const char *endpoint, json_t *data, IPluginFunction *callback, cell_t value);
+
+	void DownloadFile(const char *endpoint, const char *path, IPluginFunction *callback, cell_t value);
+	void UploadFile(const char *endpoint, const char *path, IPluginFunction *callback, cell_t value);
 
 	void SetHeader(const char *name, const char *value);
 

@@ -59,6 +59,12 @@ typeset HTTPRequestCallback
 	function void (HTTPResponse response, any value, const char[] error);
 };
 
+typeset HTTPFileCallback
+{
+	function void (HTTPStatus status, any value);
+	function void (HTTPStatus status, any value, const char[] error);
+};
+
 methodmap HTTPResponse
 {
 	// Retrieves a HTTP header from the response.
@@ -130,6 +136,24 @@ methodmap HTTPClient < Handle
 	// @param callback   A function to use as a callback when the request has finished.
 	// @param value      Optional value to pass to the callback function.
 	public native void Delete(const char[] endpoint, HTTPRequestCallback callback, any value = 0);
+
+	// Downloads a file.
+	//
+	// @param endpoint   API endpoint to download from.
+	// @param path       File to write to.
+	// @param callback   A function to use as a callback when the download has finished.
+	// @param value      Optional value to pass to the callback function.
+	public native void DownloadFile(const char[] endpoint, const char[] path, HTTPFileCallback callback, any value = 0);
+
+	// Uploads a file.
+	//
+	// This performs a HTTP PUT request. The file contents are in the request body.
+	//
+	// @param endpoint   API endpoint to upload to.
+	// @param path       File to read from.
+	// @param callback   A function to use as a callback when the upload has finished.
+	// @param value      Optional value to pass to the callback function.
+	public native void UploadFile(const char[] endpoint, const char[] path, HTTPFileCallback callback, any value = 0);
 
 	// Connect timeout in seconds.
 	property int ConnectTimeout {
