@@ -24,8 +24,6 @@
 
 #include "extension.h"
 
-class HTTPContext;
-
 class HTTPClient
 {
 public:

@@ -32,11 +32,18 @@
 
 #define SM_RIPEXT_CA_BUNDLE_PATH "configs/ripext/ca-bundle.crt"
 
-class HTTPContext;
-
 extern uv_loop_t *g_Loop;
 
 typedef StringHashMap<ke::AString> HTTPHeaderMap;
+
+class IHTTPContext
+{
+public:
+	virtual void InitCurl() = 0;
+	virtual void OnCompleted() = 0;
+
+	CURL *curl;
+};
 
 struct CurlContext {
 	CurlContext(curl_socket_t socket) : socket(socket)
@@ -168,7 +175,7 @@ public:
 	//virtual bool SDK_OnMetamodPauseChange(bool paused, char *error, size_t maxlength);
 #endif
 public:
-	void AddRequestToQueue(HTTPContext *context);
+	void AddRequestToQueue(IHTTPContext *context);
 
 	char caBundlePath[PLATFORM_MAX_PATH];
 };

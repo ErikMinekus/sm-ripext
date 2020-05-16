@@ -148,6 +148,8 @@ void HTTPContext::OnCompleted()
 		return;
 	}
 
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.status);
+
 	HandleSecurity sec(NULL, myself->GetIdentity());
 	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponseObject, &response, &sec, NULL, NULL);
 	if (hndlResponse == BAD_HANDLE)

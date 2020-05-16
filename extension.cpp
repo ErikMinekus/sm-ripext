@@ -21,7 +21,6 @@
 
 #include "extension.h"
 #include "httpclient.h"
-#include "httpcontext.h"
 #include "queue.h"
 
 // Limit the max processing request per tick
@@ -31,8 +30,8 @@ RipExt g_RipExt;		/**< Global singleton for extension's main interface */
 
 SMEXT_LINK(&g_RipExt);
 
-LockedQueue<HTTPContext *> g_RequestQueue;
-LockedQueue<HTTPContext *> g_CompletedRequestQueue;
+LockedQueue<IHTTPContext *> g_RequestQueue;
+LockedQueue<IHTTPContext *> g_CompletedRequestQueue;
 
 CURLM *g_Curl;
 uv_loop_t *g_Loop;
@@ -64,16 +63,10 @@ static void CheckCompletedRequests()
 		}
 
 		CURL *curl = message->easy_handle;
-		CURLcode res = message->data.result;
 		curl_multi_remove_handle(g_Curl, curl);
 
-		HTTPContext *context;
+		IHTTPContext *context;
 		curl_easy_getinfo(curl, CURLINFO_PRIVATE, &context);
-
-		if (res == CURLE_OK)
-		{
-			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &context->response.status);
-		}
 
 		g_CompletedRequestQueue.Lock();
 		g_CompletedRequestQueue.Push(context);
@@ -167,7 +160,7 @@ static void EventLoop(void *data)
 static void AsyncPerformRequests(uv_async_t *handle)
 {
 	g_RequestQueue.Lock();
-	HTTPContext *context;
+	IHTTPContext *context;
 	// Limiter
 	int count = 0;
 
@@ -200,7 +193,7 @@ static void FrameHook(bool simulating)
 	if (!g_CompletedRequestQueue.Empty())
 	{
 		g_CompletedRequestQueue.Lock();
-		HTTPContext *context;
+		IHTTPContext *context;
 		// Limiter
 		int count = 0;
 
@@ -280,7 +273,7 @@ void RipExt::SDK_OnUnload()
 	smutils->RemoveGameFrameHook(&FrameHook);
 }
 
-void RipExt::AddRequestToQueue(HTTPContext *context)
+void RipExt::AddRequestToQueue(IHTTPContext *context)
 {
 	g_RequestQueue.Lock();
 	g_RequestQueue.Push(context);
