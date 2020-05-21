@@ -99,6 +99,24 @@ struct HTTPResponse {
 	size_t size;
 };
 
+struct JSONObjectKeys {
+	JSONObjectKeys(json_t *object) : object(object), iter(json_object_iter(object)) {}
+
+	const char *GetKey()
+	{
+		return json_object_iter_key(iter);
+	}
+
+	void Next()
+	{
+		iter = json_object_iter_next(object, iter);
+	}
+
+private:
+	json_t *object;
+	void *iter;
+};
+
 
 /**
  * @brief Implementation of the REST in Pawn Extension.
@@ -198,6 +216,12 @@ public:
 	void OnHandleDestroy(HandleType_t type, void *object);
 };
 
+class JSONObjectKeysHandler : public IHandleTypeDispatch
+{
+public:
+	void OnHandleDestroy(HandleType_t type, void *object);
+};
+
 extern RipExt g_RipExt;
 
 extern HTTPClientObjectHandler	g_HTTPClientObjectHandler;
@@ -208,6 +232,9 @@ extern HandleType_t					htHTTPResponseObject;
 
 extern JSONObjectHandler	g_JSONObjectHandler;
 extern HandleType_t			htJSONObject;
+
+extern JSONObjectKeysHandler	g_JSONObjectKeysHandler;
+extern HandleType_t				htJSONObjectKeys;
 
 extern const sp_nativeinfo_t http_natives[];
 extern const sp_nativeinfo_t json_natives[];

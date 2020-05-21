@@ -50,6 +50,9 @@ HandleType_t				htHTTPResponseObject;
 JSONObjectHandler		g_JSONObjectHandler;
 HandleType_t			htJSONObject;
 
+JSONObjectKeysHandler	g_JSONObjectKeysHandler;
+HandleType_t			htJSONObjectKeys;
+
 static void CheckCompletedRequests()
 {
 	CURLMsg *message;
@@ -250,6 +253,7 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	htHTTPClientObject = handlesys->CreateType("HTTPClientObject", &g_HTTPClientObjectHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
 	htHTTPResponseObject = handlesys->CreateType("HTTPResponseObject", &g_HTTPResponseObjectHandler, 0, NULL, &haHTTPResponseObject, myself->GetIdentity(), NULL);
 	htJSONObject = handlesys->CreateType("JSONObject", &g_JSONObjectHandler, 0, NULL, &haJSONObject, myself->GetIdentity(), NULL);
+	htJSONObjectKeys = handlesys->CreateType("JSONObjectKeys", &g_JSONObjectKeysHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
 
 	smutils->AddGameFrameHook(&FrameHook);
 	smutils->BuildPath(Path_SM, caBundlePath, sizeof(caBundlePath), SM_RIPEXT_CA_BUNDLE_PATH);
@@ -269,6 +273,7 @@ void RipExt::SDK_OnUnload()
 	handlesys->RemoveType(htHTTPClientObject, myself->GetIdentity());
 	handlesys->RemoveType(htHTTPResponseObject, myself->GetIdentity());
 	handlesys->RemoveType(htJSONObject, myself->GetIdentity());
+	handlesys->RemoveType(htJSONObjectKeys, myself->GetIdentity());
 
 	smutils->RemoveGameFrameHook(&FrameHook);
 }
@@ -293,4 +298,9 @@ void HTTPResponseObjectHandler::OnHandleDestroy(HandleType_t type, void *object)
 void JSONObjectHandler::OnHandleDestroy(HandleType_t type, void *object)
 {
 	json_decref((json_t *)object);
+}
+
+void JSONObjectKeysHandler::OnHandleDestroy(HandleType_t type, void *object)
+{
+	delete (struct JSONObjectKeys *)object;
 }

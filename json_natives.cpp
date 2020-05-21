@@ -397,6 +397,56 @@ static cell_t ClearObject(IPluginContext *pContext, const cell_t *params)
 	return (json_object_clear(object) == 0);
 }
 
+static cell_t CreateObjectKeys(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	json_t *object;
+	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
+	}
+
+	struct JSONObjectKeys *keys = new struct JSONObjectKeys(object);
+
+	Handle_t hndlKeys = handlesys->CreateHandleEx(htJSONObjectKeys, keys, &sec, NULL, NULL);
+	if (hndlKeys == BAD_HANDLE)
+	{
+		delete keys;
+
+		pContext->ThrowNativeError("Could not create object keys handle.");
+		return BAD_HANDLE;
+	}
+
+	return hndlKeys;
+}
+
+static cell_t ReadObjectKey(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	struct JSONObjectKeys *keys;
+	Handle_t hndlKeys = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlKeys, htJSONObjectKeys, &sec, (void **)&keys)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid object keys handle %x (error %d)", hndlKeys, err);
+	}
+
+	const char *key = keys->GetKey();
+	if (key == NULL)
+	{
+		return 0;
+	}
+
+	pContext->StringToLocalUTF8(params[2], params[3], key, NULL);
+	keys->Next();
+
+	return 1;
+}
+
 static cell_t CreateArray(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = json_array();
@@ -974,6 +1024,9 @@ const sp_nativeinfo_t json_natives[] =
 	{"JSONObject.SetString",			SetObjectStringValue},
 	{"JSONObject.Remove",				RemoveFromObject},
 	{"JSONObject.Clear",				ClearObject},
+
+	{"JSONObject.Keys",					CreateObjectKeys},
+	{"JSONObjectKeys.ReadKey",			ReadObjectKey},
 
 	// Arrays
 	{"JSONArray.JSONArray",				CreateArray},

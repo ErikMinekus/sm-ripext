@@ -40,6 +40,14 @@ public void OnPluginStart()
     hHTTPClient.Get("gzip", OnHTTPResponse, 5);
     hHTTPClient.DownloadFile("image/jpeg", sImagePath, OnImageDownloaded);
 
+    JSONObjectKeys hJSONObjectKeys = hJSONObject.Keys();
+    char sKey[64];
+
+    while (hJSONObjectKeys.ReadKey(sKey, sizeof(sKey))) {
+        PrintToServer("[JSON] Object Key: %s", sKey);
+    }
+
+    delete hJSONObjectKeys;
     delete hJSONObject;
 }
 
