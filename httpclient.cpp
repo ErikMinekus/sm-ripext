@@ -20,7 +20,7 @@
  */
 
 #include "httpclient.h"
-#include "httpcontext.h"
+#include "httprequestcontext.h"
 #include "httpfilecontext.h"
 
 const ke::AString HTTPClient::BuildURL(const ke::AString &endpoint) const
@@ -66,7 +66,7 @@ void HTTPClient::Request(const char *method, const char *endpoint, json_t *data,
 
 	const ke::AString url = this->BuildURL(ke::AString(endpoint));
 	struct curl_slist *headers = this->BuildHeaders("application/json", "application/json");
-	HTTPContext *context = new HTTPContext(ke::AString(method), url, data, headers, forward, value,
+	HTTPRequestContext *context = new HTTPRequestContext(ke::AString(method), url, data, headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout);
 
 	g_RipExt.AddRequestToQueue(context);

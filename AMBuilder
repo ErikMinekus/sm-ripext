@@ -13,7 +13,7 @@ binary = Extension.Library(builder, 'rip.ext')
 binary.sources += [
   'extension.cpp',
   'httpclient.cpp',
-  'httpcontext.cpp',
+  'httprequestcontext.cpp',
   'httpfilecontext.cpp',
   'http_natives.cpp',
   'json_natives.cpp',

@@ -19,18 +19,18 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SM_RIPEXT_HTTPCONTEXT_H_
-#define SM_RIPEXT_HTTPCONTEXT_H_
+#ifndef SM_RIPEXT_HTTPREQUESTCONTEXT_H_
+#define SM_RIPEXT_HTTPREQUESTCONTEXT_H_
 
 #include "extension.h"
 
-class HTTPContext : public IHTTPContext
+class HTTPRequestContext : public IHTTPContext
 {
 public:
-	HTTPContext(const ke::AString &method, const ke::AString &url, json_t *data,
+	HTTPRequestContext(const ke::AString &method, const ke::AString &url, json_t *data,
 		struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 		long connectTimeout, long followLocation, long timeout);
-	~HTTPContext();
+	~HTTPRequestContext();
 
 public: // IHTTPContext
 	void InitCurl();
@@ -49,4 +49,4 @@ private:
 	long timeout;
 };
 
-#endif // SM_RIPEXT_HTTPCONTEXT_H_
+#endif // SM_RIPEXT_HTTPREQUESTCONTEXT_H_

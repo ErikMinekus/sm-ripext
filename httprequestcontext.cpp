@@ -19,7 +19,7 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "httpcontext.h"
+#include "httprequestcontext.h"
 
 static size_t ReadRequestBody(void *body, size_t size, size_t nmemb, void *userdata)
 {
@@ -74,13 +74,13 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 	return total;
 }
 
-HTTPContext::HTTPContext(const ke::AString &method, const ke::AString &url, json_t *data,
+HTTPRequestContext::HTTPRequestContext(const ke::AString &method, const ke::AString &url, json_t *data,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 	long connectTimeout, long followLocation, long timeout)
 	: request(method, url, data), headers(headers), forward(forward), value(value), connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout)
 {}
 
-HTTPContext::~HTTPContext()
+HTTPRequestContext::~HTTPRequestContext()
 {
 	forwards->ReleaseForward(forward);
 
@@ -90,8 +90,7 @@ HTTPContext::~HTTPContext()
 	free(response.body);
 }
 
-// Init curl for http context
-void HTTPContext::InitCurl()
+void HTTPRequestContext::InitCurl()
 {
 	curl = curl_easy_init();
 	if (curl == NULL)
@@ -137,7 +136,7 @@ void HTTPContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);
 }
 
-void HTTPContext::OnCompleted()
+void HTTPRequestContext::OnCompleted()
 {
 	/* Return early if the plugin was unloaded while the thread was running */
 	if (forward->GetFunctionCount() == 0)
