@@ -88,6 +88,7 @@ HTTPContext::~HTTPContext()
 	free(response.body);
 }
 
+// Init curl for http context
 void HTTPContext::InitCurl()
 {
 	curl = curl_easy_init();
