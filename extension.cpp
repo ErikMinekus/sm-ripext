@@ -170,7 +170,7 @@ static void AsyncPerformRequests(uv_async_t *handle)
 	{
 		context = g_RequestQueue.Pop();
 
-		context.InitCurl();
+		context->InitCurl();
 		curl_multi_add_handle(g_Curl, context->curl);
 	}
 
