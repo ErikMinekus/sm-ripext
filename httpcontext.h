@@ -32,6 +32,7 @@ public:
 		long connectTimeout, long followLocation, long timeout);
 	~HTTPContext();
 
+	void InitCurl();
 	void OnCompleted();
 
 	CURL *curl;
@@ -43,6 +44,9 @@ private:
 	IChangeableForward *forward;
 	cell_t value;
 	char error[CURL_ERROR_SIZE] = {'\0'};
+	long connectTimeout;
+	long followLocation;
+	long timeout;
 };
 
 #endif // SM_RIPEXT_HTTPCONTEXT_H_
