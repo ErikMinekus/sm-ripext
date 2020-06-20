@@ -24,6 +24,9 @@
 #include "httpcontext.h"
 #include "queue.h"
 
+// Limit the max processing request per tick
+#define MAX_PROCESS 50
+
 RipExt g_RipExt;		/**< Global singleton for extension's main interface */
 
 SMEXT_LINK(&g_RipExt);
@@ -165,12 +168,18 @@ static void AsyncPerformRequests(uv_async_t *handle)
 {
 	g_RequestQueue.Lock();
 	HTTPContext *context;
+	// Limiter
+	int count = 0;
 
-	while (!g_RequestQueue.Empty())
+	while (!g_RequestQueue.Empty() && count < MAX_PROCESS)
 	{
 		context = g_RequestQueue.Pop();
 
+		// Initialize here
+		// to reduce the impact on frame rendering time
+		context->InitCurl();
 		curl_multi_add_handle(g_Curl, context->curl);
+		count++;
 	}
 
 	g_RequestQueue.Unlock();
@@ -192,13 +201,16 @@ static void FrameHook(bool simulating)
 	{
 		g_CompletedRequestQueue.Lock();
 		HTTPContext *context;
+		// Limiter
+		int count = 0;
 
-		while (!g_CompletedRequestQueue.Empty())
+		while (!g_CompletedRequestQueue.Empty() && count < MAX_PROCESS)
 		{
 			context = g_CompletedRequestQueue.Pop();
 			context->OnCompleted();
 
 			delete context;
+			count++;
 		}
 
 		g_CompletedRequestQueue.Unlock();

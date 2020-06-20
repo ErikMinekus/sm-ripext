@@ -77,7 +77,19 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 HTTPContext::HTTPContext(const ke::AString &method, const ke::AString &url, json_t *data,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 	long connectTimeout, long followLocation, long timeout)
-	: request(method, url, data), headers(headers), forward(forward), value(value)
+	: request(method, url, data), headers(headers), forward(forward), value(value), connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout)
+{}
+
+HTTPContext::~HTTPContext()
+{
+	curl_easy_cleanup(curl);
+	curl_slist_free_all(headers);
+	free(request.body);
+	free(response.body);
+}
+
+// Init curl for http context
+void HTTPContext::InitCurl()
 {
 	curl = curl_easy_init();
 	if (curl == NULL)
@@ -123,14 +135,6 @@ HTTPContext::HTTPContext(const ke::AString &method, const ke::AString &url, json
 	curl_easy_setopt(curl, CURLOPT_URL, request.url.chars());
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);
-}
-
-HTTPContext::~HTTPContext()
-{
-	curl_easy_cleanup(curl);
-	curl_slist_free_all(headers);
-	free(request.body);
-	free(response.body);
 }
 
 void HTTPContext::OnCompleted()
