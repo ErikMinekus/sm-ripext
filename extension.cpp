@@ -24,7 +24,7 @@
 #include "queue.h"
 
 // Limit the max processing request per tick
-#define MAX_PROCESS 50
+#define MAX_PROCESS 10
 
 RipExt g_RipExt;		/**< Global singleton for extension's main interface */
 
@@ -196,18 +196,10 @@ static void FrameHook(bool simulating)
 	if (!g_CompletedRequestQueue.Empty())
 	{
 		g_CompletedRequestQueue.Lock();
-		IHTTPContext *context;
-		// Limiter
-		int count = 0;
+		IHTTPContext *context = g_CompletedRequestQueue.Pop();
 
-		while (!g_CompletedRequestQueue.Empty() && count < MAX_PROCESS)
-		{
-			context = g_CompletedRequestQueue.Pop();
-			context->OnCompleted();
-
-			delete context;
-			count++;
-		}
+		context->OnCompleted();
+		delete context;
 
 		g_CompletedRequestQueue.Unlock();
 	}
