@@ -90,6 +90,8 @@ methodmap HTTPClient < Handle
 {
 	// Creates a HTTP client.
 	//
+	// The HTTPClient must be freed via delete or CloseHandle().
+	//
 	// @param baseURL    Base URL to the REST API.
 	public native HTTPClient(const char[] baseURL);
 

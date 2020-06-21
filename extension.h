@@ -68,8 +68,7 @@ struct CurlContext {
 };
 
 struct HTTPRequest {
-	HTTPRequest(const ke::AString &method, const ke::AString &url, json_t *data = NULL)
-		: method(method), url(url), data(data), body(NULL), pos(0), size(0)
+	HTTPRequest(json_t *data = NULL)
 	{
 		if (data != NULL)
 		{
@@ -78,25 +77,19 @@ struct HTTPRequest {
 		}
 	}
 
-	const ke::AString method;
-	const ke::AString url;
-	json_t *data;
-
-	char *body;
-	size_t pos;
-	size_t size;
+	char *body = NULL;
+	size_t pos = 0;
+	size_t size = 0;
 };
 
 struct HTTPResponse {
-	HTTPResponse() : status(0), data(NULL), hndlData(BAD_HANDLE), body(NULL), size(0) {}
-
-	long status;
-	json_t *data;
-	Handle_t hndlData;
+	long status = 0;
+	json_t *data = NULL;
+	Handle_t hndlData = BAD_HANDLE;
 	HTTPHeaderMap headers;
 
-	char *body;
-	size_t size;
+	char *body = NULL;
+	size_t size = 0;
 };
 
 struct JSONObjectKeys {

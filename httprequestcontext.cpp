@@ -77,7 +77,8 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 HTTPRequestContext::HTTPRequestContext(const ke::AString &method, const ke::AString &url, json_t *data,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 	long connectTimeout, long followLocation, long timeout)
-	: request(method, url, data), headers(headers), forward(forward), value(value), connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout)
+	: request(data), method(method), url(url), headers(headers), forward(forward), value(value),
+	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout)
 {}
 
 HTTPRequestContext::~HTTPRequestContext()
@@ -99,22 +100,22 @@ void HTTPRequestContext::InitCurl()
 		return;
 	}
 
-	if (request.method.compare("POST") == 0)
+	if (method.compare("POST") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
 	}
-	else if (request.method.compare("PUT") == 0)
+	else if (method.compare("PUT") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 	}
-	else if (request.method.compare("PATCH") == 0)
+	else if (method.compare("PATCH") == 0)
 	{
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, request.method.chars());
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.chars());
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
 	}
-	else if (request.method.compare("DELETE") == 0)
+	else if (method.compare("DELETE") == 0)
 	{
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, request.method.chars());
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.chars());
 	}
 
 	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
@@ -131,7 +132,7 @@ void HTTPRequestContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_READDATA, &request);
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, &ReadRequestBody);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
-	curl_easy_setopt(curl, CURLOPT_URL, request.url.chars());
+	curl_easy_setopt(curl, CURLOPT_URL, url.chars());
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);
 }

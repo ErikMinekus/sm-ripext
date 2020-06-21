@@ -40,6 +40,8 @@ private:
 	struct HTTPRequest request;
 	struct HTTPResponse response;
 
+	const ke::AString method;
+	const ke::AString url;
 	struct curl_slist *headers;
 	IChangeableForward *forward;
 	cell_t value;

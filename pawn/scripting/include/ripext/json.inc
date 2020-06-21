@@ -1,13 +1,26 @@
 // Encoding flags
-#define JSON_MAX_INDENT         0x1F		/**< Maximum indentation */
-#define JSON_INDENT(%1)         ((%1) & JSON_MAX_INDENT)		/**< Pretty-print the result and indent with n spaces */
-#define JSON_COMPACT            0x20		/**< Compact representation */
-#define JSON_ENSURE_ASCII       0x40		/**< Escape all Unicode characters outside the ASCII range */
-#define JSON_SORT_KEYS          0x80		/**< Sort object keys */
-#define JSON_ENCODE_ANY         0x200		/**< Encode any value */
-#define JSON_ESCAPE_SLASH       0x400		/**< Escape / with \/ */
-#define JSON_REAL_PRECISION(%1) (((%1) & 0x1F) << 11)		/**< Output floats with at most n digits of precision */
-#define JSON_EMBED              0x10000		/**< Omit opening and closing braces of the top-level object */
+enum
+{
+	JSON_MAX_INDENT   = 0x1F,		/**< Maximum indentation */
+	JSON_COMPACT      = 0x20,		/**< Compact representation */
+	JSON_ENSURE_ASCII = 0x40,		/**< Escape all Unicode characters outside the ASCII range */
+	JSON_SORT_KEYS    = 0x80,		/**< Sort object keys */
+	JSON_ENCODE_ANY   = 0x200,		/**< Encode any value */
+	JSON_ESCAPE_SLASH = 0x400,		/**< Escape / with \/ */
+	JSON_EMBED        = 0x10000		/**< Omit opening and closing braces of the top-level object */
+};
+
+// Pretty-print the result and indent with n spaces
+stock int JSON_INDENT(int n)
+{
+	return n & JSON_MAX_INDENT;
+}
+
+// Output floats with at most n digits of precision
+stock int JSON_REAL_PRECISION(int n)
+{
+	return (n & 0x1F) << 11;
+}
 
 // Generic type for encoding JSON.
 methodmap JSON < Handle
@@ -17,7 +30,7 @@ methodmap JSON < Handle
 	// @param file       File to write to.
 	// @param flags      Encoding flags.
 	// @return           True on success, false on failure.
-	public native bool ToFile(const char[] file, int flags = JSON_INDENT(4));
+	public native bool ToFile(const char[] file, int flags = 0);
 
 	// Retrieves the JSON string representation of the object.
 	//
@@ -51,6 +64,8 @@ methodmap JSONObject < JSON
 	public static native JSONObject FromString(const char[] buffer);
 
 	// Retrieves an array or object value from the object.
+	//
+	// The JSON must be freed via delete or CloseHandle().
 	//
 	// @param key        Key string.
 	// @return           Value read.
@@ -196,6 +211,8 @@ methodmap JSONArray < JSON
 	public static native JSONArray FromString(const char[] buffer);
 
 	// Retrieves an array or object value from the array.
+	//
+	// The JSON must be freed via delete or CloseHandle().
 	//
 	// @param index      Index in the array.
 	// @return           Value read.
