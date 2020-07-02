@@ -135,7 +135,7 @@ static cell_t GetObjectFloatValue(IPluginContext *pContext, const cell_t *params
 		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
 	}
 
-	return sp_ftoc(json_real_value(value));
+	return sp_ftoc(static_cast<float>(json_real_value(value)));
 }
 
 static cell_t GetObjectIntValue(IPluginContext *pContext, const cell_t *params)
@@ -159,7 +159,7 @@ static cell_t GetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
 	}
 
-	return json_integer_value(value);
+	return static_cast<cell_t>(json_integer_value(value));
 }
 
 static cell_t GetObjectInt64Value(IPluginContext *pContext, const cell_t *params)
@@ -609,7 +609,7 @@ static cell_t GetArrayFloatValue(IPluginContext *pContext, const cell_t *params)
 		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
 	}
 
-	return sp_ftoc(json_real_value(value));
+	return sp_ftoc(static_cast<float>(json_real_value(value)));
 }
 
 static cell_t GetArrayIntValue(IPluginContext *pContext, const cell_t *params)
@@ -632,7 +632,7 @@ static cell_t GetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
 	}
 
-	return json_integer_value(value);
+	return static_cast<cell_t>(json_integer_value(value));
 }
 
 static cell_t GetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
