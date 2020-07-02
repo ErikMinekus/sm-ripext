@@ -93,6 +93,14 @@ methodmap JSONObject < JSON
 	// @error            Invalid key.
 	public native int GetInt(const char[] key);
 
+	// Retrieves a 64-bit integer value from the object.
+	//
+	// @param key        Key string.
+	// @param buffer     String buffer to store value.
+	// @param maxlength  Maximum length of the string buffer.
+	// @return           True on success. False if the key was not found.
+	public native bool GetInt64(const char[] key, char[] buffer, int maxlength);
+
 	// Retrieves a string value from the object.
 	//
 	// @param key        Key string.
@@ -141,6 +149,13 @@ methodmap JSONObject < JSON
 	// @param value      Value to store at this key.
 	// @return           True on success, false on failure.
 	public native bool SetInt(const char[] key, int value);
+
+	// Sets a 64-bit integer value in the object, either inserting a new entry or replacing an old one.
+	//
+	// @param key        Key string.
+	// @param value      Value to store at this key.
+	// @return           True on success, false on failure.
+	public native bool SetInt64(const char[] key, const char[] value);
 
 	// Sets a null value in the object, either inserting a new entry or replacing an old one.
 	//
@@ -240,6 +255,15 @@ methodmap JSONArray < JSON
 	// @error            Invalid index.
 	public native int GetInt(int index);
 
+	// Retrieves an 64-bit integer value from the array.
+	//
+	// @param index      Index in the array.
+	// @param buffer     Buffer to copy to.
+	// @param maxlength  Maximum size of the buffer.
+	// @return           True on success, false if the index out of range.
+	// @error            Invalid index.
+	public native bool GetInt64(int index, char[] buffer, int maxlength);
+
 	// Retrieves a string value from the array.
 	//
 	// @param index      Index in the array.
@@ -283,6 +307,13 @@ methodmap JSONArray < JSON
 	// @param value      Value to set.
 	// @return           True on success, false on failure.
 	public native bool SetInt(int index, int value);
+
+	// Sets a 64 bit integer value in the array.
+	//
+	// @param index      Index in the array.
+	// @param value      64-bit integer value to set.
+	// @return           True on success, false on failure.
+	public native bool SetString(int index, const char[] value);
 
 	// Sets a null value in the array.
 	//

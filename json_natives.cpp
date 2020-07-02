@@ -20,6 +20,7 @@
  */
 
 #include "extension.h"
+#include <cinttypes>
 
 static cell_t CreateObject(IPluginContext *pContext, const cell_t *params)
 {
@@ -159,6 +160,34 @@ static cell_t GetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 	}
 
 	return json_integer_value(value);
+}
+
+static cell_t GetObjectInt64Value(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	json_t *object;
+	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
+	}
+
+	char *key;
+	pContext->LocalToString(params[2], &key);
+
+	json_t *value = json_object_get(object, key);
+	if (value == NULL)
+	{
+		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
+	}
+
+	char result[20];
+	snprintf(result, sizeof(result), "%" PRId64, json_integer_value(value));
+	pContext->StringToLocalUTF8(params[3], params[4], result, NULL);
+
+	return 1;
 }
 
 static cell_t GetObjectStringValue(IPluginContext *pContext, const cell_t *params)
@@ -317,6 +346,29 @@ static cell_t SetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 	pContext->LocalToString(params[2], &key);
 
 	json_t *value = json_integer(params[3]);
+
+	return (json_object_set_new(object, key, value) == 0);
+}
+
+static cell_t SetObjectInt64Value(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	json_t *object;
+	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
+	}
+
+	char *key;
+	pContext->LocalToString(params[2], &key);
+
+	char *val;
+	pContext->LocalToString(params[3], &val);
+
+	json_t *value = json_integer(strtoll(val, NULL, 10));
 
 	return (json_object_set_new(object, key, value) == 0);
 }
@@ -583,6 +635,33 @@ static cell_t GetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 	return json_integer_value(value);
 }
 
+static cell_t GetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	json_t *object;
+	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
+	}
+
+	int index = params[2];
+
+	json_t *value = json_array_get(object, index);
+	if (value == NULL)
+	{
+		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
+	}
+
+	char result[20];
+	snprintf(result, sizeof(result), "%" PRId64, json_integer_value(value));
+	pContext->StringToLocalUTF8(params[3], params[4], result, NULL);
+
+	return 1;
+}
+
 static cell_t GetArrayStringValue(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -714,6 +793,28 @@ static cell_t SetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 	int index = params[2];
 
 	json_t *value = json_integer(params[3]);
+
+	return (json_array_set_new(object, index, value) == 0);
+}
+
+static cell_t SetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	json_t *object;
+	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
+	}
+
+	int index = params[2];
+
+	char *val;
+	pContext->LocalToString(params[3], &val);
+
+	json_t *value = json_integer(strtoll(val, NULL, 10));
 
 	return (json_array_set_new(object, index, value) == 0);
 }
@@ -1013,6 +1114,7 @@ const sp_nativeinfo_t json_natives[] =
 	{"JSONObject.GetBool",				GetObjectBoolValue},
 	{"JSONObject.GetFloat",				GetObjectFloatValue},
 	{"JSONObject.GetInt",				GetObjectIntValue},
+	{"JSONObject.GetInt64",				GetObjectInt64Value},
 	{"JSONObject.GetString",			GetObjectStringValue},
 	{"JSONObject.IsNull",				IsObjectNullValue},
 	{"JSONObject.HasKey",				IsObjectKeyValid},
@@ -1020,6 +1122,7 @@ const sp_nativeinfo_t json_natives[] =
 	{"JSONObject.SetBool",				SetObjectBoolValue},
 	{"JSONObject.SetFloat",				SetObjectFloatValue},
 	{"JSONObject.SetInt",				SetObjectIntValue},
+	{"JSONObject.SetInt64",				SetObjectInt64Value},
 	{"JSONObject.SetNull",				SetObjectNullValue},
 	{"JSONObject.SetString",			SetObjectStringValue},
 	{"JSONObject.Remove",				RemoveFromObject},
@@ -1035,12 +1138,14 @@ const sp_nativeinfo_t json_natives[] =
 	{"JSONArray.GetBool",				GetArrayBoolValue},
 	{"JSONArray.GetFloat",				GetArrayFloatValue},
 	{"JSONArray.GetInt",				GetArrayIntValue},
+	{"JSONArray.GetInt64",				GetArrayInt64Value},
 	{"JSONArray.GetString",				GetArrayStringValue},
 	{"JSONArray.IsNull",				IsArrayNullValue},
 	{"JSONArray.Set",					SetArrayValue},
 	{"JSONArray.SetBool",				SetArrayBoolValue},
 	{"JSONArray.SetFloat",				SetArrayFloatValue},
 	{"JSONArray.SetInt",				SetArrayIntValue},
+	{"JSONArray.SetInt64",				SetArrayInt64Value},
 	{"JSONArray.SetNull",				SetArrayNullValue},
 	{"JSONArray.SetString",				SetArrayStringValue},
 	{"JSONArray.Push",					PushArrayValue},

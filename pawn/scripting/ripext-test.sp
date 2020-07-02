@@ -82,6 +82,7 @@ JSONObject CreateJSONObject()
 {
     JSONObject hJSONObject = new JSONObject();
     hJSONObject.SetInt("id", 1);
+    hJSONObject.SetInt64("int64", "9223372036854775800");
     hJSONObject.SetFloat("jsonrpc", 2.0);
     hJSONObject.SetString("method", "subtract");
 
