@@ -313,7 +313,7 @@ methodmap JSONArray < JSON
 	// @param index      Index in the array.
 	// @param value      64-bit integer value to set.
 	// @return           True on success, false on failure.
-	public native bool SetString(int index, const char[] value);
+	public native bool SetInt64(int index, const char[] value);
 
 	// Sets a null value in the array.
 	//
