@@ -352,6 +352,12 @@ methodmap JSONArray < JSON
 	// @return           True on success, false on failure.
 	public native bool PushInt(int value);
 
+	// Pushes a 64-bit integer value onto the end of the array, adding a new index.
+	//
+	// @param value      64-bit integer value to push.
+	// @return           True on success, false on failure.
+	public native bool PushInt64(const char[] value);
+
 	// Pushes a null value onto the end of the array, adding a new index.
 	// @return           True on success, false on failure.
 	public native bool PushNull();

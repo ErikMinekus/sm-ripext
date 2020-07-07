@@ -933,6 +933,26 @@ static cell_t PushArrayIntValue(IPluginContext *pContext, const cell_t *params)
 	return (json_array_append_new(object, value) == 0);
 }
 
+static cell_t PushArrayInt64Value(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	json_t *object;
+	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
+	}
+
+	char *val;
+	pContext->LocalToString(params[2], &val);
+
+	json_t *value = json_integer(strtoll(val, NULL, 10));
+
+	return (json_array_append_new(object, value) == 0);
+}
+
 static cell_t PushArrayNullValue(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -1152,6 +1172,7 @@ const sp_nativeinfo_t json_natives[] =
 	{"JSONArray.PushBool",				PushArrayBoolValue},
 	{"JSONArray.PushFloat",				PushArrayFloatValue},
 	{"JSONArray.PushInt",				PushArrayIntValue},
+	{"JSONArray.PushInt64",				PushArrayInt64Value},
 	{"JSONArray.PushNull",				PushArrayNullValue},
 	{"JSONArray.PushString",			PushArrayStringValue},
 	{"JSONArray.Remove",				RemoveFromArray},

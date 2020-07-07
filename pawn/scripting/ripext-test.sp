@@ -44,7 +44,7 @@ public void OnPluginStart()
     char sKey[64];
 
     while (hJSONObjectKeys.ReadKey(sKey, sizeof(sKey))) {
-        PrintToServer("[JSON] Object Key: %s", sKey);
+        PrintToServer("[JSON] Read Object Key: %s", sKey);
     }
 
     delete hJSONObjectKeys;
@@ -84,11 +84,19 @@ JSONObject CreateJSONObject()
     hJSONObject.SetInt("id", 1);
     hJSONObject.SetInt64("int64", "9223372036854775800");
     hJSONObject.SetFloat("jsonrpc", 2.0);
+    hJSONObject.SetBool("bool", true);
     hJSONObject.SetString("method", "subtract");
+    hJSONObject.SetNull("null");
 
     JSONArray hJSONArray = new JSONArray();
-    hJSONArray.PushInt(42);
-    hJSONArray.PushInt(23);
+    hJSONArray.Push(hJSONObject);
+    hJSONArray.PushInt(1);
+    hJSONArray.PushInt64("9223372036854775800");
+    hJSONArray.PushFloat(2.0);
+    hJSONArray.PushBool(true);
+    hJSONArray.PushString("string");
+    hJSONArray.PushNull();
+
     hJSONObject.Set("params", hJSONArray);
 
     delete hJSONArray;
