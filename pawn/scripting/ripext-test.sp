@@ -88,8 +88,11 @@ JSONObject CreateJSONObject()
     hJSONObject.SetString("method", "subtract");
     hJSONObject.SetNull("null");
 
+    JSONObject hJSONObjectInArray = new JSONObject();
+    hJSONObjectInArray.SetInt("id", 1);
+
     JSONArray hJSONArray = new JSONArray();
-    hJSONArray.Push(hJSONObject);
+    hJSONArray.Push(hJSONObjectInArray);
     hJSONArray.PushInt(1);
     hJSONArray.PushInt64("9223372036854775800");
     hJSONArray.PushFloat(2.0);
@@ -99,6 +102,7 @@ JSONObject CreateJSONObject()
 
     hJSONObject.Set("params", hJSONArray);
 
+    delete hJSONObjectInArray;
     delete hJSONArray;
     return hJSONObject;
 }
