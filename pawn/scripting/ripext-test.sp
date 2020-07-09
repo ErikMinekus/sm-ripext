@@ -23,7 +23,6 @@ char sHTTPTags[][] = {
     "GZIP",
 };
 
-
 public void OnPluginStart()
 {
     HTTPClient hHTTPClient = new HTTPClient("https://nghttp2.org/httpbin");
@@ -39,6 +38,12 @@ public void OnPluginStart()
     hHTTPClient.Delete("delete", OnHTTPResponse, 4);
     hHTTPClient.Get("gzip", OnHTTPResponse, 5);
     hHTTPClient.DownloadFile("image/jpeg", sImagePath, OnImageDownloaded);
+
+    // Params
+    HTTPQueryParams params;
+    params.Add("test", "test");
+    params.Add("test2", "test2");
+    hHTTPClient.GetWithParams("get", params, OnHTTPResponse, 0);
 
     JSONObjectKeys hJSONObjectKeys = hJSONObject.Keys();
     char sKey[64];

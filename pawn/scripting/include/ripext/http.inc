@@ -1,3 +1,5 @@
+#define MAX_PATH_LENGTH 256
+
 enum HTTPStatus
 {
 	HTTPStatus_Invalid = 0,
@@ -52,6 +54,32 @@ enum HTTPStatus
 	HTTPStatus_GatewayTimeout = 504,
 	HTTPStatus_HTTPVersionNotSupported = 505,
 };
+
+enum struct HTTPQueryParams
+{
+	int count;
+	char params[MAX_PATH_LENGTH];
+	
+	void Add(const char[] key, const char[] value)
+	{
+		if (this.count == 0)
+			Format(this.params, MAX_PATH_LENGTH, "%s=%s", key, value);
+		else
+			Format(this.params, MAX_PATH_LENGTH, "%s&%s=%s", this.params, key, value);
+		this.count++;
+	}
+
+	void ToString(char[] buffer, int size)
+	{
+		strcopy(buffer, size, this.params)
+	}
+
+	void Clean()
+	{
+		this.count = 0;
+		this.params = "";
+	}
+}
 
 typeset HTTPRequestCallback
 {
@@ -156,6 +184,14 @@ methodmap HTTPClient < Handle
 	// @param callback   A function to use as a callback when the upload has finished.
 	// @param value      Optional value to pass to the callback function.
 	public native void UploadFile(const char[] endpoint, const char[] path, HTTPFileCallback callback, any value = 0);
+
+	public void GetWithParams(const char[] endpoint, HTTPQueryParams params, HTTPRequestCallback callback, any value = 0)
+	{
+		char path[MAX_PATH_LENGTH];
+		params.ToString(path, sizeof(path));
+		Format(path, sizeof(path), "%s?%s", endpoint, path);
+		this.Get(path, callback, value);
+	}
 
 	// Connect timeout in seconds.
 	property int ConnectTimeout {
