@@ -311,7 +311,7 @@ static cell_t SetClientFollowLocation(IPluginContext *pContext, const cell_t *pa
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
 
-	client->SetFollowLocation(params[2]);
+	client->SetFollowLocation(params[2] == 1);
 
 	return 1;
 }
