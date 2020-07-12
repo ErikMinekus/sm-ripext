@@ -1,4 +1,4 @@
-#define MAX_PATH_LENGTH 256
+#define SM_RIPEXT_MAX_PATH_LENGTH 8192
 
 enum HTTPStatus
 {
@@ -58,14 +58,14 @@ enum HTTPStatus
 enum struct HTTPQueryParams
 {
 	int count;
-	char params[MAX_PATH_LENGTH];
+	char params[SM_RIPEXT_MAX_PATH_LENGTH];
 	
 	void Add(const char[] key, const char[] value)
 	{
 		if (this.count == 0)
-			Format(this.params, MAX_PATH_LENGTH, "%s=%s", key, value);
+			Format(this.params, SM_RIPEXT_MAX_PATH_LENGTH, "%s=%s", key, value);
 		else
-			Format(this.params, MAX_PATH_LENGTH, "%s&%s=%s", this.params, key, value);
+			Format(this.params, SM_RIPEXT_MAX_PATH_LENGTH, "%s&%s=%s", this.params, key, value);
 		this.count++;
 	}
 
@@ -187,7 +187,7 @@ methodmap HTTPClient < Handle
 
 	public void GetWithParams(const char[] endpoint, HTTPQueryParams params, HTTPRequestCallback callback, any value = 0)
 	{
-		char path[MAX_PATH_LENGTH];
+		char path[SM_RIPEXT_MAX_PATH_LENGTH];
 		params.ToString(path, sizeof(path));
 		Format(path, sizeof(path), "%s?%s", endpoint, path);
 		this.Get(path, callback, value);
