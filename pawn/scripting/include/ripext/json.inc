@@ -98,7 +98,7 @@ methodmap JSONObject < JSON
 	// @param key        Key string.
 	// @param buffer     String buffer to store value.
 	// @param maxlength  Maximum length of the string buffer.
-	// @return           True on success. False if the key was not found.
+	// @return           True on success, false if the key was not found.
 	public native bool GetInt64(const char[] key, char[] buffer, int maxlength);
 
 	// Retrieves a string value from the object.
@@ -260,9 +260,8 @@ methodmap JSONArray < JSON
 	// @param index      Index in the array.
 	// @param buffer     Buffer to copy to.
 	// @param maxlength  Maximum size of the buffer.
-	// @return           True on success, false if the index out of range.
 	// @error            Invalid index.
-	public native bool GetInt64(int index, char[] buffer, int maxlength);
+	public native void GetInt64(int index, char[] buffer, int maxlength);
 
 	// Retrieves a string value from the array.
 	//

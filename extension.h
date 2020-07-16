@@ -41,6 +41,7 @@ class IHTTPContext
 public:
 	virtual void InitCurl() = 0;
 	virtual void OnCompleted() = 0;
+	virtual ~IHTTPContext() {}
 
 	CURL *curl;
 };

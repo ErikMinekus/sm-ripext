@@ -180,7 +180,7 @@ static cell_t GetObjectInt64Value(IPluginContext *pContext, const cell_t *params
 	json_t *value = json_object_get(object, key);
 	if (value == NULL)
 	{
-		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
+		return 0;
 	}
 
 	char result[20];
