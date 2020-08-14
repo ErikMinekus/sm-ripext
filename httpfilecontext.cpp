@@ -23,7 +23,7 @@
 
 HTTPFileContext::HTTPFileContext(bool isUpload, const ke::AString &url, const ke::AString &path,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-	long connectTimeout, long followLocation, long timeout, long maxSendSpeed, long maxRecvSpeed)
+	long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed)
 	: isUpload(isUpload), url(url), path(path), headers(headers), forward(forward), value(value),
 	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout),
 	maxSendSpeed(maxSendSpeed), maxRecvSpeed(maxRecvSpeed)
