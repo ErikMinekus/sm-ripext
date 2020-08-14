@@ -61,8 +61,8 @@ private:
 	int connectTimeout = 10;
 	bool followLocation = true;
 	int timeout = 30;
-	int maxRecvSpeed = 0;
-	int maxSendSpeed = 0;
+	curl_off_t maxRecvSpeed = 0;
+	curl_off_t maxSendSpeed = 0;
 };
 
 #endif // SM_RIPEXT_HTTPCLIENT_H_

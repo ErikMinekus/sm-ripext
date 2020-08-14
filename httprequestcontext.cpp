@@ -143,7 +143,7 @@ void HTTPRequestContext::InitCurl()
 	}
 	if (maxSendSpeed > 0)
 	{
-		curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, maxSendSpeed);
+		curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, maxSendSpeed);
 	}
 }
 
