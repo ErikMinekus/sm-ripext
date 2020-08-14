@@ -14,7 +14,7 @@ env:
 
 install:
   - git clone https://github.com/alliedmodders/sourcemod.git -b $SOURCEMOD_VERSION --depth 1 --recursive $TRAVIS_BUILD_DIR/../sourcemod
-  - git clone https://github.com/alliedmodders/ambuild.git --depth 1 $TRAVIS_BUILD_DIR/../ambuild
+  - git clone -b 2.1 https://github.com/alliedmodders/ambuild.git --depth 1 $TRAVIS_BUILD_DIR/../ambuild
   - cd $TRAVIS_BUILD_DIR/../ambuild && python setup.py build && sudo python setup.py install
 
 script:
