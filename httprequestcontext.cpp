@@ -76,7 +76,7 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 
 HTTPRequestContext::HTTPRequestContext(const ke::AString &method, const ke::AString &url, json_t *data,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-	long connectTimeout, long followLocation, long timeout, long maxSendSpeed, long maxRecvSpeed)
+	long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed)
 	: request(data), method(method), url(url), headers(headers), forward(forward), value(value),
 	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout),
 	maxSendSpeed(maxSendSpeed), maxRecvSpeed(maxRecvSpeed)
