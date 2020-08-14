@@ -49,12 +49,20 @@ public:
 	int GetTimeout() const;
 	void SetTimeout(int timeout);
 
+	int GetMaxSendSpeed() const;
+	void SetMaxSendSpeed(int speed);
+
+	int GetMaxRecvSpeed() const;
+	void SetMaxRecvSpeed(int speed);
+
 private:
 	const ke::AString baseURL;
 	HTTPHeaderMap headers;
 	int connectTimeout = 10;
 	bool followLocation = true;
 	int timeout = 30;
+	int maxRecvSpeed = 0;
+	int maxSendSpeed = 0;
 };
 
 #endif // SM_RIPEXT_HTTPCLIENT_H_

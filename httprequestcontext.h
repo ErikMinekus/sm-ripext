@@ -29,7 +29,8 @@ class HTTPRequestContext : public IHTTPContext
 public:
 	HTTPRequestContext(const ke::AString &method, const ke::AString &url, json_t *data,
 		struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-		long connectTimeout, long followLocation, long timeout);
+		long connectTimeout, long followLocation, long timeout, long maxSendSpeed,
+		long maxRecvSpeed);
 	~HTTPRequestContext();
 
 public: // IHTTPContext
@@ -49,6 +50,8 @@ private:
 	long connectTimeout;
 	long followLocation;
 	long timeout;
+	long maxSendSpeed;
+	long maxRecvSpeed;
 };
 
 #endif // SM_RIPEXT_HTTPREQUESTCONTEXT_H_
