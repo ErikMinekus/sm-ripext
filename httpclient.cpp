@@ -144,7 +144,7 @@ void HTTPClient::SetTimeout(int timeout)
 
 int HTTPClient::GetMaxSendSpeed() const
 {
-	return (int)this->maxSendSpeed;
+	return this->maxSendSpeed;
 }
 
 void HTTPClient::SetMaxSendSpeed(int speed)
@@ -154,7 +154,7 @@ void HTTPClient::SetMaxSendSpeed(int speed)
 
 int HTTPClient::GetMaxRecvSpeed() const
 {
-	return (int)this->maxRecvSpeed;
+	return this->maxRecvSpeed;
 }
 
 void HTTPClient::SetMaxRecvSpeed(int speed)

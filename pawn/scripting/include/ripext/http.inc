@@ -175,15 +175,15 @@ methodmap HTTPClient < Handle
 		public native set(int timeout);
 	}
 
-	// Max Send speed in bytes per second.
+	// Max upload speed in bytes per second.
 	property int MaxSendSpeed {
 		public native get();
-		public native set(int value);
+		public native set(int speed);
 	}
 
-	// Max Recv speed in bytes per second.
+	// Max download speed in bytes per second.
 	property int MaxRecvSpeed {
 		public native get();
-		public native set(int value);
+		public native set(int speed);
 	}
 };
