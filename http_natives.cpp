@@ -348,6 +348,70 @@ static cell_t SetClientTimeout(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
+static cell_t GetClientMaxSendSpeed(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	return client->GetMaxSendSpeed();
+}
+
+static cell_t SetClientMaxSendSpeed(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	client->SetMaxSendSpeed(params[2]);
+
+	return 1;
+}
+
+static cell_t GetClientMaxRecvSpeed(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	return client->GetMaxRecvSpeed();
+}
+
+static cell_t SetClientMaxRecvSpeed(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	client->SetMaxRecvSpeed(params[2]);
+
+	return 1;
+}
+
 static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -445,6 +509,10 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.FollowLocation.set",	SetClientFollowLocation},
 	{"HTTPClient.Timeout.get",			GetClientTimeout},
 	{"HTTPClient.Timeout.set",			SetClientTimeout},
+	{"HTTPClient.MaxSendSpeed.get",		GetClientMaxSendSpeed},
+	{"HTTPClient.MaxSendSpeed.set",		SetClientMaxSendSpeed},
+	{"HTTPClient.MaxRecvSpeed.get",		GetClientMaxRecvSpeed},
+	{"HTTPClient.MaxRecvSpeed.set",		SetClientMaxRecvSpeed},
 	{"HTTPResponse.Data.get",			GetResponseData},
 	{"HTTPResponse.Status.get",			GetResponseStatus},
 	{"HTTPResponse.GetHeader",			GetResponseHeader},

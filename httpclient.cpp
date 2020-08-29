@@ -67,7 +67,7 @@ void HTTPClient::Request(const char *method, const char *endpoint, json_t *data,
 	const ke::AString url = this->BuildURL(ke::AString(endpoint));
 	struct curl_slist *headers = this->BuildHeaders("application/json", "application/json");
 	HTTPRequestContext *context = new HTTPRequestContext(ke::AString(method), url, data, headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout);
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -84,7 +84,7 @@ void HTTPClient::DownloadFile(const char *endpoint, const char *path, IPluginFun
 	const ke::AString url = this->BuildURL(ke::AString(endpoint));
 	struct curl_slist *headers = this->BuildHeaders("*/*", "application/octet-stream");
 	HTTPFileContext *context = new HTTPFileContext(false, url, ke::AString(path), headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout);
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -101,7 +101,7 @@ void HTTPClient::UploadFile(const char *endpoint, const char *path, IPluginFunct
 	const ke::AString url = this->BuildURL(ke::AString(endpoint));
 	struct curl_slist *headers = this->BuildHeaders("*/*", "application/octet-stream");
 	HTTPFileContext *context = new HTTPFileContext(true, url, ke::AString(path), headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout);
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -140,4 +140,24 @@ int HTTPClient::GetTimeout() const
 void HTTPClient::SetTimeout(int timeout)
 {
 	this->timeout = timeout;
+}
+
+int HTTPClient::GetMaxSendSpeed() const
+{
+	return this->maxSendSpeed;
+}
+
+void HTTPClient::SetMaxSendSpeed(int speed)
+{
+	this->maxSendSpeed = speed;
+}
+
+int HTTPClient::GetMaxRecvSpeed() const
+{
+	return this->maxRecvSpeed;
+}
+
+void HTTPClient::SetMaxRecvSpeed(int speed)
+{
+	this->maxRecvSpeed = speed;
 }

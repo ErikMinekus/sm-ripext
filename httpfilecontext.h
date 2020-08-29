@@ -29,7 +29,7 @@ class HTTPFileContext : public IHTTPContext
 public:
 	HTTPFileContext(bool isUpload, const ke::AString &url, const ke::AString &path,
 		struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-		long connectTimeout, long followLocation, long timeout);
+		long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed);
 	~HTTPFileContext();
 
 public: // IHTTPContext
@@ -49,6 +49,8 @@ private:
 	long connectTimeout;
 	long followLocation;
 	long timeout;
+	curl_off_t maxSendSpeed;
+	curl_off_t maxRecvSpeed;
 };
 
 #endif // SM_RIPEXT_HTTPFILECONTEXT_H_

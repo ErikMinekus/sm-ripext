@@ -23,9 +23,10 @@
 
 HTTPFileContext::HTTPFileContext(bool isUpload, const ke::AString &url, const ke::AString &path,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-	long connectTimeout, long followLocation, long timeout)
+	long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed)
 	: isUpload(isUpload), url(url), path(path), headers(headers), forward(forward), value(value),
-	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout)
+	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout),
+	maxSendSpeed(maxSendSpeed), maxRecvSpeed(maxRecvSpeed)
 {}
 
 HTTPFileContext::~HTTPFileContext()
@@ -83,6 +84,15 @@ void HTTPFileContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_PRIVATE, this);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
 	curl_easy_setopt(curl, CURLOPT_URL, url.chars());
+
+	if (maxRecvSpeed > 0)
+	{
+		curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, maxRecvSpeed);
+	}
+	if (maxSendSpeed > 0)
+	{
+		curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, maxSendSpeed);
+	}
 }
 
 void HTTPFileContext::OnCompleted()
