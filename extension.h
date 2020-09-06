@@ -192,19 +192,19 @@ public:
 	char caBundlePath[PLATFORM_MAX_PATH];
 };
 
-class HTTPClientObjectHandler : public IHandleTypeDispatch
+class HTTPClientHandler : public IHandleTypeDispatch
 {
 public:
 	void OnHandleDestroy(HandleType_t type, void *object);
 };
 
-class HTTPResponseObjectHandler : public IHandleTypeDispatch
+class HTTPResponseHandler : public IHandleTypeDispatch
 {
 public:
 	void OnHandleDestroy(HandleType_t type, void *object);
 };
 
-class JSONObjectHandler : public IHandleTypeDispatch
+class JSONHandler : public IHandleTypeDispatch
 {
 public:
 	void OnHandleDestroy(HandleType_t type, void *object);
@@ -218,14 +218,14 @@ public:
 
 extern RipExt g_RipExt;
 
-extern HTTPClientObjectHandler	g_HTTPClientObjectHandler;
-extern HandleType_t				htHTTPClientObject;
+extern HTTPClientHandler	g_HTTPClientHandler;
+extern HandleType_t			htHTTPClient;
 
-extern HTTPResponseObjectHandler	g_HTTPResponseObjectHandler;
-extern HandleType_t					htHTTPResponseObject;
+extern HTTPResponseHandler	g_HTTPResponseHandler;
+extern HandleType_t				htHTTPResponse;
 
-extern JSONObjectHandler	g_JSONObjectHandler;
-extern HandleType_t			htJSONObject;
+extern JSONHandler	g_JSONHandler;
+extern HandleType_t		htJSON;
 
 extern JSONObjectKeysHandler	g_JSONObjectKeysHandler;
 extern HandleType_t				htJSONObjectKeys;

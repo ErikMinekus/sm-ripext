@@ -26,7 +26,7 @@ static cell_t CreateObject(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = json_object();
 
-	Handle_t hndl = handlesys->CreateHandle(htJSONObject, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
+	Handle_t hndl = handlesys->CreateHandle(htJSON, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndl == BAD_HANDLE)
 	{
 		json_decref(object);
@@ -45,7 +45,7 @@ static cell_t GetObjectSize(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -60,7 +60,7 @@ static cell_t GetObjectValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 		return BAD_HANDLE;
@@ -76,7 +76,7 @@ static cell_t GetObjectValue(IPluginContext *pContext, const cell_t *params)
 		return BAD_HANDLE;
 	}
 
-	Handle_t hndlValue = handlesys->CreateHandleEx(htJSONObject, value, &sec, NULL, NULL);
+	Handle_t hndlValue = handlesys->CreateHandleEx(htJSON, value, &sec, NULL, NULL);
 	if (hndlValue == BAD_HANDLE)
 	{
 		pContext->ThrowNativeError("Could not create value handle.");
@@ -97,7 +97,7 @@ static cell_t GetObjectBoolValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -121,7 +121,7 @@ static cell_t GetObjectFloatValue(IPluginContext *pContext, const cell_t *params
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -145,7 +145,7 @@ static cell_t GetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -169,7 +169,7 @@ static cell_t GetObjectInt64Value(IPluginContext *pContext, const cell_t *params
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -197,7 +197,7 @@ static cell_t GetObjectStringValue(IPluginContext *pContext, const cell_t *param
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -229,7 +229,7 @@ static cell_t IsObjectNullValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -253,7 +253,7 @@ static cell_t IsObjectKeyValid(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 		return BAD_HANDLE;
@@ -272,7 +272,7 @@ static cell_t SetObjectValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -282,7 +282,7 @@ static cell_t SetObjectValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *value;
 	Handle_t hndlValue = static_cast<Handle_t>(params[3]);
-	if ((err=handlesys->ReadHandle(hndlValue, htJSONObject, &sec, (void **)&value)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlValue, htJSON, &sec, (void **)&value)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid value handle %x (error %d)", hndlValue, err);
 	}
@@ -297,7 +297,7 @@ static cell_t SetObjectBoolValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -317,7 +317,7 @@ static cell_t SetObjectFloatValue(IPluginContext *pContext, const cell_t *params
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -337,7 +337,7 @@ static cell_t SetObjectIntValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -357,7 +357,7 @@ static cell_t SetObjectInt64Value(IPluginContext *pContext, const cell_t *params
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -380,7 +380,7 @@ static cell_t SetObjectNullValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -400,7 +400,7 @@ static cell_t SetObjectStringValue(IPluginContext *pContext, const cell_t *param
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -423,7 +423,7 @@ static cell_t RemoveFromObject(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -441,7 +441,7 @@ static cell_t ClearObject(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -456,7 +456,7 @@ static cell_t CreateObjectKeys(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -503,7 +503,7 @@ static cell_t CreateArray(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = json_array();
 
-	Handle_t hndl = handlesys->CreateHandle(htJSONObject, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
+	Handle_t hndl = handlesys->CreateHandle(htJSON, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndl == BAD_HANDLE)
 	{
 		json_decref(object);
@@ -522,7 +522,7 @@ static cell_t GetArraySize(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -537,7 +537,7 @@ static cell_t GetArrayValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 		return BAD_HANDLE;
@@ -552,7 +552,7 @@ static cell_t GetArrayValue(IPluginContext *pContext, const cell_t *params)
 		return BAD_HANDLE;
 	}
 
-	Handle_t hndlValue = handlesys->CreateHandleEx(htJSONObject, value, &sec, NULL, NULL);
+	Handle_t hndlValue = handlesys->CreateHandleEx(htJSON, value, &sec, NULL, NULL);
 	if (hndlValue == BAD_HANDLE)
 	{
 		pContext->ThrowNativeError("Could not create value handle.");
@@ -573,7 +573,7 @@ static cell_t GetArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -596,7 +596,7 @@ static cell_t GetArrayFloatValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -619,7 +619,7 @@ static cell_t GetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -642,7 +642,7 @@ static cell_t GetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -669,7 +669,7 @@ static cell_t GetArrayStringValue(IPluginContext *pContext, const cell_t *params
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -700,7 +700,7 @@ static cell_t IsArrayNullValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -723,7 +723,7 @@ static cell_t SetArrayValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -732,7 +732,7 @@ static cell_t SetArrayValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *value;
 	Handle_t hndlValue = static_cast<Handle_t>(params[3]);
-	if ((err=handlesys->ReadHandle(hndlValue, htJSONObject, &sec, (void **)&value)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlValue, htJSON, &sec, (void **)&value)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid value handle %x (error %d)", hndlValue, err);
 	}
@@ -747,7 +747,7 @@ static cell_t SetArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -766,7 +766,7 @@ static cell_t SetArrayFloatValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -785,7 +785,7 @@ static cell_t SetArrayIntValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -804,7 +804,7 @@ static cell_t SetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -826,7 +826,7 @@ static cell_t SetArrayNullValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -845,7 +845,7 @@ static cell_t SetArrayStringValue(IPluginContext *pContext, const cell_t *params
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -867,14 +867,14 @@ static cell_t PushArrayValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
 
 	json_t *value;
 	Handle_t hndlValue = static_cast<Handle_t>(params[2]);
-	if ((err=handlesys->ReadHandle(hndlValue, htJSONObject, &sec, (void **)&value)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlValue, htJSON, &sec, (void **)&value)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid value handle %x (error %d)", hndlValue, err);
 	}
@@ -889,7 +889,7 @@ static cell_t PushArrayBoolValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -906,7 +906,7 @@ static cell_t PushArrayFloatValue(IPluginContext *pContext, const cell_t *params
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -923,7 +923,7 @@ static cell_t PushArrayIntValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -940,7 +940,7 @@ static cell_t PushArrayInt64Value(IPluginContext *pContext, const cell_t *params
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -960,7 +960,7 @@ static cell_t PushArrayNullValue(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -977,7 +977,7 @@ static cell_t PushArrayStringValue(IPluginContext *pContext, const cell_t *param
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -997,7 +997,7 @@ static cell_t RemoveFromArray(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -1014,7 +1014,7 @@ static cell_t ClearArray(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid array handle %x (error %d)", hndlObject, err);
 	}
@@ -1035,7 +1035,7 @@ static cell_t FromString(IPluginContext *pContext, const cell_t *params)
 		return BAD_HANDLE;
 	}
 
-	Handle_t hndlObject = handlesys->CreateHandle(htJSONObject, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
+	Handle_t hndlObject = handlesys->CreateHandle(htJSON, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndlObject == BAD_HANDLE)
 	{
 		json_decref(object);
@@ -1063,7 +1063,7 @@ static cell_t FromFile(IPluginContext *pContext, const cell_t *params)
 		return BAD_HANDLE;
 	}
 
-	Handle_t hndlObject = handlesys->CreateHandle(htJSONObject, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
+	Handle_t hndlObject = handlesys->CreateHandle(htJSON, object, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndlObject == BAD_HANDLE)
 	{
 		json_decref(object);
@@ -1082,7 +1082,7 @@ static cell_t ToString(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
@@ -1108,7 +1108,7 @@ static cell_t ToFile(IPluginContext *pContext, const cell_t *params)
 
 	json_t *object;
 	Handle_t hndlObject = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlObject, htJSONObject, &sec, (void **)&object)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlObject, htJSON, &sec, (void **)&object)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid object handle %x (error %d)", hndlObject, err);
 	}
