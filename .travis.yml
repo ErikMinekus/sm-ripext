@@ -7,20 +7,22 @@ addons:
     packages:
       - g++-multilib
       - lib32z1-dev
+      - python3-pip
 
 env:
   global:
     - SOURCEMOD_VERSION=1.10-dev
 
 install:
-  - git clone https://github.com/alliedmodders/sourcemod.git -b $SOURCEMOD_VERSION --depth 1 --recursive $TRAVIS_BUILD_DIR/../sourcemod
+  - git clone https://github.com/alliedmodders/sourcemod.git -b $SOURCEMOD_VERSION --depth 1 -j8 --recurse-submodules --shallow-submodules $TRAVIS_BUILD_DIR/../sourcemod
   - git clone https://github.com/alliedmodders/ambuild.git --depth 1 $TRAVIS_BUILD_DIR/../ambuild
-  - cd $TRAVIS_BUILD_DIR/../ambuild && python setup.py build && sudo python setup.py install
+  - python3 -m pip install --upgrade pip setuptools
+  - python3 -m pip install $TRAVIS_BUILD_DIR/../ambuild
 
 script:
   - mkdir $TRAVIS_BUILD_DIR/build && cd $TRAVIS_BUILD_DIR/build
   - perl ../curl/lib/mk-ca-bundle.pl
-  - python ../configure.py --enable-optimize
+  - python3 ../configure.py --enable-optimize
   - ambuild
 
 before_deploy:
