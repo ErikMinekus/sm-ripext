@@ -31,6 +31,7 @@
 #include "smsdk_ext.h"
 
 #define SM_RIPEXT_CA_BUNDLE_PATH "configs/ripext/ca-bundle.crt"
+#define SM_RIPEXT_USER_AGENT "sm-ripext/" SMEXT_CONF_VERSION
 
 extern uv_loop_t *g_Loop;
 

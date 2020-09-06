@@ -134,6 +134,7 @@ void HTTPRequestContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, &ReadRequestBody);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
 	curl_easy_setopt(curl, CURLOPT_URL, url.chars());
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);
 

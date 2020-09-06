@@ -84,6 +84,7 @@ void HTTPFileContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_PRIVATE, this);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
 	curl_easy_setopt(curl, CURLOPT_URL, url.chars());
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
 
 	if (maxRecvSpeed > 0)
 	{
