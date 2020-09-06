@@ -3,7 +3,7 @@ import os
 
 builder.SetBuildFolder('libcurl')
 
-binary = builder.compiler.StaticLibrary('curl')
+binary = builder.cxx.StaticLibrary('curl')
 binary.compiler.includes += [
   os.path.join(builder.sourcePath, 'curl', 'lib'),
   os.path.join(builder.sourcePath, 'curl', 'include'),
@@ -19,10 +19,10 @@ binary.compiler.defines += [
   'NGHTTP2_STATICLIB',
 ]
 
-if builder.target_platform == 'linux':
+if binary.compiler.target.platform == 'linux':
   binary.compiler.defines += ['_GNU_SOURCE']
 
-if binary.compiler.vendor == 'clang':
+if binary.compiler.family == 'clang':
   # https://llvm.org/bugs/show_bug.cgi?id=16428
   binary.compiler.cflags += ['-Wno-attributes']
 

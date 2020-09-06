@@ -3,7 +3,7 @@ import os
 
 builder.SetBuildFolder('libjansson')
 
-binary = builder.compiler.StaticLibrary('jansson')
+binary = builder.cxx.StaticLibrary('jansson')
 binary.compiler.includes += [
   os.path.join(builder.sourcePath, 'jansson', 'src'),
   os.path.join(builder.sourcePath, 'jansson', 'include'),
@@ -11,7 +11,7 @@ binary.compiler.includes += [
 ]
 binary.compiler.defines += ['HAVE_CONFIG_H']
 
-if binary.compiler.vendor == 'clang':
+if binary.compiler.family == 'clang':
   # https://llvm.org/bugs/show_bug.cgi?id=16428
   binary.compiler.cflags += ['-Wno-attributes']
 

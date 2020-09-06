@@ -1,12 +1,12 @@
 # vim: set sts=2 ts=8 sw=2 tw=99 et ft=python:
 import os
 
-libcurl = builder.RunScript('curl/lib/AMBuilder')
-libjansson = builder.RunScript('jansson/src/AMBuilder')
-libmbedtls = builder.RunScript('mbedtls/library/AMBuilder')
-libnghttp2 = builder.RunScript('nghttp2/lib/AMBuilder')
-libuv = builder.RunScript('libuv/src/AMBuilder')
-libz = builder.RunScript('zlib/AMBuilder')
+libcurl = builder.Build('curl/lib/AMBuilder')
+libjansson = builder.Build('jansson/src/AMBuilder')
+libmbedtls = builder.Build('mbedtls/library/AMBuilder')
+libnghttp2 = builder.Build('nghttp2/lib/AMBuilder')
+libuv = builder.Build('libuv/src/AMBuilder')
+libz = builder.Build('zlib/AMBuilder')
 
 binary = Extension.Library(builder, 'rip.ext')
 
@@ -30,9 +30,9 @@ binary.compiler.defines += [
   'CURL_STATICLIB',
 ]
 
-if binary.compiler.vendor == 'gcc' or binary.compiler.vendor == 'clang':
+if binary.compiler.family == 'gcc' or binary.compiler.family == 'clang':
   binary.compiler.cxxflags += ['-fno-rtti']
-elif binary.compiler.vendor == 'msvc':
+elif binary.compiler.family == 'msvc':
   binary.compiler.cxxflags += ['/GR-']
 
 binary.compiler.postlink += [
@@ -44,9 +44,9 @@ binary.compiler.postlink += [
   libz.binary,
 ]
 
-if builder.target_platform == 'linux':
+if binary.compiler.target.platform == 'linux':
   binary.compiler.postlink += ['-lrt']
-elif builder.target_platform == 'windows':
+elif binary.compiler.target.platform == 'windows':
   binary.compiler.postlink += [
     'iphlpapi.lib',
     'psapi.lib',

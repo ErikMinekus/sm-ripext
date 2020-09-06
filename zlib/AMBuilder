@@ -3,15 +3,15 @@ import os
 
 builder.SetBuildFolder('libz')
 
-binary = builder.compiler.StaticLibrary('z')
+binary = builder.cxx.StaticLibrary('z')
 binary.compiler.includes += [
   os.path.join(builder.sourcePath, 'zlib'),
 ]
 
-if builder.target_platform == 'linux':
+if binary.compiler.target.platform == 'linux':
   binary.compiler.defines += ['HAVE_UNISTD_H']
 
-if binary.compiler.vendor == 'clang':
+if binary.compiler.family == 'clang':
   # https://llvm.org/bugs/show_bug.cgi?id=16428
   binary.compiler.cflags += ['-Wno-attributes']
 

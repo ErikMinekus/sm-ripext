@@ -49,11 +49,13 @@ class ExtensionConfig(object):
     self.sm_root = Normalize(self.sm_root)
 
   def configure(self):
-    cxx = builder.DetectCompilers()
+    cxx = builder.DetectCxx()
+
+    builder.cxx = cxx
 
     if cxx.like('gcc'):
       self.configure_gcc(cxx)
-    elif cxx.vendor == 'msvc':
+    elif cxx.family == 'msvc':
       self.configure_msvc(cxx)
 
     # Optimization
@@ -65,11 +67,11 @@ class ExtensionConfig(object):
       cxx.defines += ['DEBUG', '_DEBUG']
 
     # Platform-specifics
-    if builder.target_platform == 'linux':
+    if cxx.target.platform == 'linux':
       self.configure_linux(cxx)
-    elif builder.target_platform == 'mac':
+    elif cxx.target.platform == 'mac':
       self.configure_mac(cxx)
-    elif builder.target_platform == 'windows':
+    elif cxx.target.platform == 'windows':
       self.configure_windows(cxx)
 
     # Finish up.
@@ -108,9 +110,9 @@ class ExtensionConfig(object):
     ]
     cxx.linkflags += ['-m32']
 
-    have_gcc = cxx.vendor == 'gcc'
-    have_clang = cxx.vendor == 'clang'
-    if cxx.version >= 'clang-3.6':
+    have_gcc = cxx.family == 'gcc'
+    have_clang = cxx.family == 'clang'
+    if cxx.version >= 'clang-3.6' or cxx.version >= 'apple-clang-7.0':
       cxx.cxxflags += ['-Wno-inconsistent-missing-override']
     if have_clang or (cxx.version >= 'gcc-4.6'):
       cxx.cflags += ['-Wno-narrowing']
@@ -183,9 +185,9 @@ class ExtensionConfig(object):
   def configure_linux(self, cxx):
     cxx.defines += ['_LINUX', 'POSIX']
     cxx.linkflags += ['-Wl,--exclude-libs,ALL', '-lm']
-    if cxx.vendor == 'gcc':
+    if cxx.family == 'gcc':
       cxx.linkflags += ['-static-libgcc']
-    elif cxx.vendor == 'clang':
+    elif cxx.family == 'clang':
       cxx.linkflags += ['-lgcc_eh']
 
   def configure_mac(self, cxx):
@@ -214,7 +216,7 @@ class ExtensionConfig(object):
     return compiler
 
   def Library(self, context, name):
-    binary = context.compiler.Library(name)
+    binary = context.cxx.Library(name)
     self.ConfigureForExtension(context, binary.compiler)
     return binary
 
@@ -232,4 +234,4 @@ if builder.backend == 'amb2':
     'PackageScript',
   ]
 
-builder.RunBuildScripts(BuildScripts, {'Extension': Extension})
+builder.Build(BuildScripts, {'Extension': Extension})
