@@ -60,14 +60,6 @@
 
 #else /* HAVE_CONFIG_H */
 
-#ifdef __linux__
-# include "config-sm-linux.h"
-#elif defined(__APPLE__)
-# include "config-sm-mac.h"
-#elif defined(WIN32)
-# include "config-sm-windows.h"
-#endif
-
 #ifdef _WIN32_WCE
 #  include "config-win32ce.h"
 #else
