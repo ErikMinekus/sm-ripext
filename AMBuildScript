@@ -22,10 +22,40 @@ def ResolveEnvPath(env, folder):
 def Normalize(path):
   return os.path.abspath(os.path.normpath(path))
 
+def SetArchFlags(compiler):
+  if compiler.behavior == 'gcc':
+    if compiler.target.arch == 'x86_64':
+      compiler.cflags += ['-fPIC']
+  elif compiler.like('msvc'):
+    if compiler.target.arch == 'x86_64':
+      compiler.defines += ['WIN64']
+
 class ExtensionConfig(object):
   def __init__(self):
     self.extensions = []
     self.sm_root = None
+    self.all_targets = []
+    self.target_archs = set()
+
+    if builder.options.targets:
+      target_archs = builder.options.targets.split(',')
+    else:
+      target_archs = ['x86']
+
+    for arch in target_archs:
+        try:
+            cxx = builder.DetectCxx(target_arch = arch)
+            self.target_archs.add(cxx.target.arch)
+        except Exception as e:
+            # Error if archs were manually overridden.
+            if builder.options.targets:
+                raise
+            print('Skipping target {}: {}'.format(arch, e))
+            continue
+        self.all_targets.append(cxx)
+
+    if not self.all_targets:
+        raise Exception('No suitable C/C++ compiler was found.')
 
   @property
   def tag(self):
@@ -49,10 +79,10 @@ class ExtensionConfig(object):
     self.sm_root = Normalize(self.sm_root)
 
   def configure(self):
-    cxx = builder.DetectCxx()
+    for cxx in self.all_targets:
+        self.configure_cxx(cxx)
 
-    builder.cxx = cxx
-
+  def configure_cxx(self, cxx):
     if cxx.like('gcc'):
       self.configure_gcc(cxx)
     elif cxx.family == 'msvc':
@@ -97,7 +127,6 @@ class ExtensionConfig(object):
       '-Wno-switch',
       '-Wno-array-bounds',
       '-msse',
-      '-m32',
       '-fvisibility=hidden',
     ]
     cxx.cxxflags += [
@@ -108,7 +137,6 @@ class ExtensionConfig(object):
       '-Wno-overloaded-virtual',
       '-fvisibility-inlines-hidden',
     ]
-    cxx.linkflags += ['-m32']
 
     have_gcc = cxx.family == 'gcc'
     have_clang = cxx.family == 'clang'
@@ -156,7 +184,6 @@ class ExtensionConfig(object):
       '/TP',
     ]
     cxx.linkflags += [
-      '/MACHINE:X86',
       'kernel32.lib',
       'user32.lib',
       'gdi32.lib',
@@ -195,7 +222,6 @@ class ExtensionConfig(object):
     cxx.cflags += ['-mmacosx-version-min=10.5']
     cxx.linkflags += [
       '-mmacosx-version-min=10.5',
-      '-arch', 'i386',
       '-lstdc++',
       '-stdlib=libstdc++',
     ]
@@ -215,14 +241,24 @@ class ExtensionConfig(object):
     ]
     return compiler
 
-  def Library(self, context, name):
-    binary = context.cxx.Library(name)
-    self.ConfigureForExtension(context, binary.compiler)
-    return binary
+  def Library(self, context, compiler, name):
+    compiler = compiler.clone()
+    SetArchFlags(compiler)
+    self.ConfigureForExtension(context, compiler)
+    return compiler.Library(name)
+
+  def StaticLibrary(self, context, compiler, name):
+    compiler = compiler.clone()
+    SetArchFlags(compiler)
+    return compiler.StaticLibrary(name)
 
 Extension = ExtensionConfig()
 Extension.detectSourceMod()
 Extension.configure()
+
+# This will clone the list and each cxx object as we recurse, preventing child
+# scripts from messing up global state.
+builder.targets = builder.CloneableList(Extension.all_targets)
 
 # Add additional buildscripts here
 BuildScripts = [

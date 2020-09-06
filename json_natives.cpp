@@ -20,7 +20,6 @@
  */
 
 #include "extension.h"
-#include <cinttypes>
 
 static cell_t CreateObject(IPluginContext *pContext, const cell_t *params)
 {
@@ -184,7 +183,7 @@ static cell_t GetObjectInt64Value(IPluginContext *pContext, const cell_t *params
 	}
 
 	char result[20];
-	snprintf(result, sizeof(result), "%" PRId64, json_integer_value(value));
+	snprintf(result, sizeof(result), "%" JSON_INTEGER_FORMAT, json_integer_value(value));
 	pContext->StringToLocalUTF8(params[3], params[4], result, NULL);
 
 	return 1;
@@ -656,7 +655,7 @@ static cell_t GetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 	}
 
 	char result[20];
-	snprintf(result, sizeof(result), "%" PRId64, json_integer_value(value));
+	snprintf(result, sizeof(result), "%" JSON_INTEGER_FORMAT, json_integer_value(value));
 	pContext->StringToLocalUTF8(params[3], params[4], result, NULL);
 
 	return 1;
@@ -814,7 +813,7 @@ static cell_t SetArrayInt64Value(IPluginContext *pContext, const cell_t *params)
 	char *val;
 	pContext->LocalToString(params[3], &val);
 
-	json_t *value = json_integer(strtoll(val, NULL, 10));
+	json_t *value = json_integer(json_strtoint(val, NULL, 10));
 
 	return (json_array_set_new(object, index, value) == 0);
 }
@@ -948,7 +947,7 @@ static cell_t PushArrayInt64Value(IPluginContext *pContext, const cell_t *params
 	char *val;
 	pContext->LocalToString(params[2], &val);
 
-	json_t *value = json_integer(strtoll(val, NULL, 10));
+	json_t *value = json_integer(json_strtoint(val, NULL, 10));
 
 	return (json_array_append_new(object, value) == 0);
 }
