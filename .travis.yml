@@ -2,6 +2,10 @@ language: cpp
 compiler:
   - clang
 
+os:
+  - linux
+  - osx
+
 addons:
   apt:
     packages:
@@ -27,13 +31,13 @@ script:
   - ambuild
 
 before_deploy:
-  - tar -czf sm-ripext-${TRAVIS_TAG}-linux.tar.gz -C package/ addons/
+  - tar -czf sm-ripext-${TRAVIS_TAG}-${TRAVIS_OS_NAME}.tar.gz -C package/ addons/
 
 deploy:
   provider: releases
   api_key:
     secure: ZnwybxNCMbb9l+njaP1NxtDWqDwz+n1vba/IoB6dvv5t6HW8XG9ZtbGME9dLF1x8EyH7TUMGFbWLKkbFecxMnhJCOuJ8AZ26iv6tR8R28sK/sfb8DXZXMd/NfBM4sdlQEIncW9EddUho3mWeVFkPWiG8cBb53dGaTCq5khOf0/GdIbTz9ba/G8BL5lOT/2agufDiVM7bVFsgH3iPjPEPxQWV9vH1sU5eT8/0bkEwpBP90EgYdGjhiZcrKQCq94+zJvPWAoPv+IHBX9K3kM0OOEE+aMY2/Xi82pKZhDJ/dgHv6OQ3EWZja/E6NgsropFxfCqqS3JTNt7Qdv9E3Dr7IAz3pq8cmxu6k+0J7z0SjlXaIy1LrqnA6+ttfxDyNaVPUqY2MkS8jKlFlAsTEt6EfO1ViqHXwlU8kaRKiZ8eR0usSLvDrxJomBZTSgrCJySmRjSrjvMhjVQLuiPLRcBKmut0aOM+Vzzww1EXq3kOmU1V6Q8yMay7y0FbTS/SuA7SNbhlNC1HDO+dTcdLTt1uvD/6VkDCuz5Nh0Pe8R87YkqWKoTS6YxvR4Ixih/fVkKvgAqw6seZf+bQ6qw5HsEFx7P9qTMHYYjYHQ7jsdNTnMGpg+NW35J8ApJx7oaCx3IGfzGZHwnWqFbDBMgTL8OfP8vzx47Y/XZj0fRle6dlfvA=
-  file: sm-ripext-${TRAVIS_TAG}-linux.tar.gz
+  file: sm-ripext-${TRAVIS_TAG}-${TRAVIS_OS_NAME}.tar.gz
   skip_cleanup: true
   on:
     tags: true
