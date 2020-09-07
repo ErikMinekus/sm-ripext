@@ -334,7 +334,7 @@
 /* #undef HAVE_GSSMIT */
 
 /* Define to 1 if you have the <idn2.h> header file. */
-#define HAVE_IDN2_H 1
+/* #undef HAVE_IDN2_H */
 
 /* Define to 1 if you have the <ifaddrs.h> header file. */
 #define HAVE_IFADDRS_H 1
@@ -413,7 +413,7 @@
 #define HAVE_LIBGEN_H 1
 
 /* Define to 1 if you have the `idn2' library (-lidn2). */
-#define HAVE_LIBIDN2 1
+/* #undef HAVE_LIBIDN2 */
 
 /* Define to 1 if using libressl. */
 /* #undef HAVE_LIBRESSL */
@@ -837,7 +837,7 @@
 /* #undef NTLM_WB_FILE */
 
 /* cpu-machine-OS */
-#define OS "x86_64-apple-darwin18.7.0"
+#define OS "x86_64-apple-darwin17.7.0"
 
 /* Name of package */
 #define PACKAGE "curl"
@@ -921,7 +921,7 @@
 #define SIZEOF_INT 4
 
 /* The number of bytes in type long */
-#define SIZEOF_LONG 8
+#define SIZEOF_LONG 4
 
 /* The number of bytes in type long long */
 /* #undef SIZEOF_LONG_LONG */
@@ -933,10 +933,10 @@
 #define SIZEOF_SHORT 2
 
 /* The number of bytes in type size_t */
-#define SIZEOF_SIZE_T 8
+#define SIZEOF_SIZE_T 4
 
 /* The number of bytes in type time_t */
-#define SIZEOF_TIME_T 8
+#define SIZEOF_TIME_T 4
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1

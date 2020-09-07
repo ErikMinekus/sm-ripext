@@ -76,14 +76,28 @@ for cxx in builder.targets:
       'unix/thread.c',
       'unix/tty.c',
       'unix/udp.c',
-      'unix/linux-core.c',
-      'unix/linux-inotify.c',
-      'unix/linux-syscalls.c',
-      'unix/procfs-exepath.c',
-      'unix/proctitle.c',
-      'unix/random-getrandom.c',
-      'unix/random-sysctl.c',
-      'unix/sysinfo-loadavg.c',
     ]
+
+    if binary.compiler.target.platform == 'linux':
+      binary.sources += [
+        'unix/linux-core.c',
+        'unix/linux-inotify.c',
+        'unix/linux-syscalls.c',
+        'unix/procfs-exepath.c',
+        'unix/proctitle.c',
+        'unix/random-getrandom.c',
+        'unix/random-sysctl.c',
+        'unix/sysinfo-loadavg.c',
+      ]
+    elif binary.compiler.target.platform == 'mac':
+      binary.sources += [
+        'unix/bsd-ifaddrs.c',
+        'unix/darwin.c',
+        'unix/darwin-proctitle.c',
+        'unix/fsevents.c',
+        'unix/kqueue.c',
+        'unix/proctitle.c',
+        'unix/random-getentropy.c',
+      ]
 
   rvalue[binary.compiler.target.arch] = builder.Add(binary)

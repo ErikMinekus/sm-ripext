@@ -1,5 +1,5 @@
 # vim: sts=2 ts=8 sw=2 tw=99 et ft=python:
-import os
+import os, platform
 
 builder.SetBuildFolder('libcurl')
 
@@ -23,6 +23,11 @@ for cxx in builder.targets:
 
   if binary.compiler.target.platform == 'linux':
     binary.compiler.defines += ['_GNU_SOURCE']
+  elif binary.compiler.target.platform == 'mac':
+    mac_version, ignore, ignore = platform.mac_ver()
+    mac_tuple = mac_version.split('.')
+    if int(mac_tuple[0]) >= 10 and int(mac_tuple[1]) >= 9:
+      binary.compiler.defines += ['BUILTIN_STRLCAT']
 
   if binary.compiler.family == 'clang':
     # https://llvm.org/bugs/show_bug.cgi?id=16428

@@ -10,7 +10,7 @@ for cxx in builder.targets:
     os.path.join(builder.sourcePath, 'zlib'),
   ]
 
-  if binary.compiler.target.platform == 'linux':
+  if binary.compiler.target.platform in ['linux', 'mac']:
     binary.compiler.defines += ['HAVE_UNISTD_H']
 
   if binary.compiler.family == 'clang':
