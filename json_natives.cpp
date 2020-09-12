@@ -1026,8 +1026,10 @@ static cell_t FromString(IPluginContext *pContext, const cell_t *params)
 	char *buffer;
 	pContext->LocalToString(params[1], &buffer);
 
+	size_t flags = (size_t)params[2];
+
 	json_error_t error;
-	json_t *object = json_loads(buffer, 0, &error);
+	json_t *object = json_loads(buffer, flags, &error);
 	if (object == NULL)
 	{
 		pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
@@ -1054,8 +1056,10 @@ static cell_t FromFile(IPluginContext *pContext, const cell_t *params)
 	char realpath[PLATFORM_MAX_PATH];
 	smutils->BuildPath(Path_Game, realpath, sizeof(realpath), "%s", path);
 
+	size_t flags = (size_t)params[2];
+
 	json_error_t error;
-	json_t *object = json_load_file(realpath, 0, &error);
+	json_t *object = json_load_file(realpath, flags, &error);
 	if (object == NULL)
 	{
 		pContext->ThrowNativeError("Invalid JSON in line %d, column %d: %s", error.line, error.column, error.text);
