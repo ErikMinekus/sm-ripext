@@ -1,7 +1,6 @@
 // Encoding flags
 enum
 {
-	JSON_MAX_INDENT   = 0x1F,		/**< Maximum indentation */
 	JSON_COMPACT      = 0x20,		/**< Compact representation */
 	JSON_ENSURE_ASCII = 0x40,		/**< Escape all Unicode characters outside the ASCII range */
 	JSON_SORT_KEYS    = 0x80,		/**< Sort object keys */
@@ -10,7 +9,10 @@ enum
 	JSON_EMBED        = 0x10000		/**< Omit opening and closing braces of the top-level object */
 };
 
-// Pretty-print the result and indent with n spaces
+// Maximum indentation
+static const int JSON_MAX_INDENT = 0x1F;
+
+// Pretty-print the result, indenting with n spaces
 stock int JSON_INDENT(int n)
 {
 	return n & JSON_MAX_INDENT;
@@ -25,14 +27,14 @@ stock int JSON_REAL_PRECISION(int n)
 // Generic type for encoding JSON.
 methodmap JSON < Handle
 {
-	// Writes the JSON string representation of the object to a file.
+	// Writes the JSON string representation to a file.
 	//
 	// @param file       File to write to.
 	// @param flags      Encoding flags.
 	// @return           True on success, false on failure.
 	public native bool ToFile(const char[] file, int flags = 0);
 
-	// Retrieves the JSON string representation of the object.
+	// Retrieves the JSON string representation.
 	//
 	// @param buffer     String buffer to write to.
 	// @param maxlength  Maximum length of the string buffer.
@@ -116,7 +118,7 @@ methodmap JSONObject < JSON
 	// @error            Invalid key.
 	public native bool IsNull(const char[] key);
 
-	// Returns whether or not a key in the object exists
+	// Returns whether or not a key exists in the object.
 	//
 	// @param key        Key string.
 	// @return           True if the key exists, false otherwise.

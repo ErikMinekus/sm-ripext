@@ -23,6 +23,7 @@ enum HTTPStatus
 	HTTPStatus_NotModified = 304,
 	HTTPStatus_UseProxy = 305,
 	HTTPStatus_TemporaryRedirect = 307,
+	HTTPStatus_PermanentRedirect = 308,
 
 	// 4xx Client Error
 	HTTPStatus_BadRequest = 400,
@@ -39,10 +40,17 @@ enum HTTPStatus
 	HTTPStatus_LengthRequired = 411,
 	HTTPStatus_PreconditionFailed = 412,
 	HTTPStatus_RequestEntityTooLarge = 413,
-	HTTPStatus_RequestURITooLarge = 414,
+	HTTPStatus_RequestURITooLong = 414,
 	HTTPStatus_UnsupportedMediaType = 415,
 	HTTPStatus_RequestedRangeNotSatisfiable = 416,
 	HTTPStatus_ExpectationFailed = 417,
+	HTTPStatus_MisdirectedRequest = 421,
+	HTTPStatus_TooEarly = 425,
+	HTTPStatus_UpgradeRequired = 426,
+	HTTPStatus_PreconditionRequired = 428,
+	HTTPStatus_TooManyRequests = 429,
+	HTTPStatus_RequestHeaderFieldsTooLarge = 431,
+	HTTPStatus_UnavailableForLegalReasons = 451,
 
 	// 5xx Server Error
 	HTTPStatus_InternalServerError = 500,
@@ -51,6 +59,9 @@ enum HTTPStatus
 	HTTPStatus_ServiceUnavailable = 503,
 	HTTPStatus_GatewayTimeout = 504,
 	HTTPStatus_HTTPVersionNotSupported = 505,
+	HTTPStatus_VariantAlsoNegotiates = 506,
+	HTTPStatus_NotExtended = 510,
+	HTTPStatus_NetworkAuthenticationRequired = 511,
 };
 
 typeset HTTPRequestCallback
