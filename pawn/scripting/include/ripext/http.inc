@@ -183,7 +183,7 @@ methodmap HTTPClient < Handle
 	// Performs a HTTP GET request with encoded params.
 	//
 	// @param endpoint   API endpoint to request.
-	// @param params	 Request params stored in StringMap.
+	// @param params     Request params stored in StringMap.
 	// @param callback   A function to use as a callback when the request has finished.
 	// @param value      Optional value to pass to the callback function.
 	public void GetWithParams(const char[] endpoint, StringMap params, HTTPRequestCallback callback, any value = 0)
