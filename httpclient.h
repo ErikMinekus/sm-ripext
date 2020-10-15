@@ -49,6 +49,8 @@ public:
 	int GetTimeout() const;
 	void SetTimeout(int timeout);
 
+	void Escape(char *dest, const char *source);
+
 private:
 	const ke::AString baseURL;
 	HTTPHeaderMap headers;

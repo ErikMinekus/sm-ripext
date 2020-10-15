@@ -40,9 +40,10 @@ public void OnPluginStart()
     hHTTPClient.DownloadFile("image/jpeg", sImagePath, OnImageDownloaded);
 
     // Params
-    HTTPQueryParams params;
-    params.Add("test", "test");
-    params.Add("test2", "test2");
+    StringMap params = StringMap();
+    params.SetString("test", "test");
+    params.SetString("test2", "test2");
+    params.SetString("escape", "Hofbräuhaus / München");
     hHTTPClient.GetWithParams("get", params, OnHTTPResponse, 0);
 
     JSONObjectKeys hJSONObjectKeys = hJSONObject.Keys();

@@ -141,3 +141,17 @@ void HTTPClient::SetTimeout(int timeout)
 {
 	this->timeout = timeout;
 }
+
+void HTTPClient::Escape(char *dest, const char *source)
+{
+	CURL *curl = curl_easy_init();
+	if (curl)
+	{
+		char *output = curl_easy_escape(curl, source, 0);
+		if (output)
+		{
+			strcpy(dest, output);
+    		curl_free(output);
+  		}
+	}
+}

@@ -1,4 +1,5 @@
 #define SM_RIPEXT_MAX_PATH_LENGTH 8192
+#define SM_RIPEXT_MAX_PARAM_LENGTH 1024
 
 enum HTTPStatus
 {
@@ -54,32 +55,6 @@ enum HTTPStatus
 	HTTPStatus_GatewayTimeout = 504,
 	HTTPStatus_HTTPVersionNotSupported = 505,
 };
-
-enum struct HTTPQueryParams
-{
-	int count;
-	char params[SM_RIPEXT_MAX_PATH_LENGTH];
-	
-	void Add(const char[] key, const char[] value)
-	{
-		if (this.count == 0)
-			Format(this.params, SM_RIPEXT_MAX_PATH_LENGTH, "%s=%s", key, value);
-		else
-			Format(this.params, SM_RIPEXT_MAX_PATH_LENGTH, "%s&%s=%s", this.params, key, value);
-		this.count++;
-	}
-
-	void ToString(char[] buffer, int size)
-	{
-		strcopy(buffer, size, this.params)
-	}
-
-	void Clean()
-	{
-		this.count = 0;
-		this.params = "";
-	}
-}
 
 typeset HTTPRequestCallback
 {
@@ -185,10 +160,34 @@ methodmap HTTPClient < Handle
 	// @param value      Optional value to pass to the callback function.
 	public native void UploadFile(const char[] endpoint, const char[] path, HTTPFileCallback callback, any value = 0);
 
-	public void GetWithParams(const char[] endpoint, HTTPQueryParams params, HTTPRequestCallback callback, any value = 0)
+	// URL encode the given string.
+	//
+	// Provided by curl https://curl.haxx.se/libcurl/c/curl_easy_escape.html
+	//
+	// @param dest		Destination to store the escaped string.
+	// @param maxlength Maximum length of the destination.
+	// @param source	A string need to escape.
+	public native void Escape(char[] dest, int maxlength, const char[] source);
+
+	public void GetWithParams(const char[] endpoint, StringMap params, HTTPRequestCallback callback, any value = 0)
 	{
 		char path[SM_RIPEXT_MAX_PATH_LENGTH];
-		params.ToString(path, sizeof(path));
+		// Encode params
+		StringMapSnapshot snapshot = params.Snapshot();
+		for (int i = 0; i < snapshot.Length; i++)
+		{
+			int length = snapshot.KeyBufferSize(i) + 1;
+			char[] key = new char[length];
+			snapshot.GetKey(i, key, length);
+			
+			char value[SM_RIPEXT_MAX_PARAM_LENGTH];
+			params.GetString(key, value, SM_RIPEXT_MAX_PARAM_LENGTH);
+
+			if (i)
+				Format(path, sizeof(path), "%s&%s=%s", path, key, value);
+			else
+				Format(path, sizeof(path), "%s=%s", key, value);
+		}
 		Format(path, sizeof(path), "%s?%s", endpoint, path);
 		this.Get(path, callback, value);
 	}

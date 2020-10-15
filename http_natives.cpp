@@ -427,6 +427,26 @@ static cell_t GetResponseHeader(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
+static cell_t Escape(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	char *source;
+	pContext->LocalToString(params[4], &source);
+
+	char *dest;
+	client->Escape(dest, source);
+	pContext->StringToLocalUTF8(params[2], params[3], dest, NULL);
+	return 1;
+}
 
 const sp_nativeinfo_t http_natives[] =
 {
@@ -448,6 +468,7 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPResponse.Data.get",			GetResponseData},
 	{"HTTPResponse.Status.get",			GetResponseStatus},
 	{"HTTPResponse.GetHeader",			GetResponseHeader},
+	{"HTTPResponse.Escape",				Escape},
 
 	{NULL,								NULL}
 };
