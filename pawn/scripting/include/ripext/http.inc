@@ -180,13 +180,14 @@ methodmap HTTPClient < Handle
 			char[] key = new char[length];
 			snapshot.GetKey(i, key, length);
 			
-			char value[SM_RIPEXT_MAX_PARAM_LENGTH];
-			params.GetString(key, value, SM_RIPEXT_MAX_PARAM_LENGTH);
+			char val[SM_RIPEXT_MAX_PARAM_LENGTH];
+			params.GetString(key, val, sizeof(val));
+			this.Escape(val, sizeof(val), val);
 
 			if (i)
-				Format(path, sizeof(path), "%s&%s=%s", path, key, value);
+				Format(path, sizeof(path), "%s&%s=%s", path, key, val);
 			else
-				Format(path, sizeof(path), "%s=%s", key, value);
+				Format(path, sizeof(path), "%s=%s", key, val);
 		}
 		Format(path, sizeof(path), "%s?%s", endpoint, path);
 		this.Get(path, callback, value);

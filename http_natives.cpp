@@ -465,10 +465,10 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.FollowLocation.set",	SetClientFollowLocation},
 	{"HTTPClient.Timeout.get",			GetClientTimeout},
 	{"HTTPClient.Timeout.set",			SetClientTimeout},
+	{"HTTPClient.Escape",				Escape},
 	{"HTTPResponse.Data.get",			GetResponseData},
 	{"HTTPResponse.Status.get",			GetResponseStatus},
 	{"HTTPResponse.GetHeader",			GetResponseHeader},
-	{"HTTPResponse.Escape",				Escape},
-
+	
 	{NULL,								NULL}
 };
