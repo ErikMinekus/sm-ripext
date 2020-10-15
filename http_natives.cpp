@@ -442,7 +442,7 @@ static cell_t Escape(IPluginContext *pContext, const cell_t *params)
 	char *source;
 	pContext->LocalToString(params[4], &source);
 
-	char *dest;
+	char *dest = new char[params[3]];
 	client->Escape(dest, source);
 	pContext->StringToLocalUTF8(params[2], params[3], dest, NULL);
 	return 1;
