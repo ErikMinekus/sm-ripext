@@ -175,9 +175,9 @@ methodmap HTTPClient < Handle
 	//
 	// Provided by curl https://curl.haxx.se/libcurl/c/curl_easy_escape.html
 	//
-	// @param dest		Destination to store the escaped string.
-	// @param maxlength Maximum length of the destination.
-	// @param source	A string need to escape.
+	// @param dest       Destination to store the escaped string.
+	// @param maxlength  Maximum length of the destination.
+	// @param source     A string need to escape.
 	public native void Escape(char[] dest, int maxlength, const char[] source);
 
 	// Performs a HTTP GET request with encoded params.
