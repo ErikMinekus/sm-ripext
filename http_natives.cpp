@@ -29,7 +29,7 @@ static cell_t CreateClient(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client = new HTTPClient(baseURL);
 
-	Handle_t hndl = handlesys->CreateHandle(htHTTPClientObject, client, pContext->GetIdentity(), myself->GetIdentity(), NULL);
+	Handle_t hndl = handlesys->CreateHandle(htHTTPClient, client, pContext->GetIdentity(), myself->GetIdentity(), NULL);
 	if (hndl == BAD_HANDLE)
 	{
 		delete client;
@@ -48,7 +48,7 @@ static cell_t SetClientHeader(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -71,7 +71,7 @@ static cell_t GetRequest(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -94,7 +94,7 @@ static cell_t PostRequest(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -104,7 +104,7 @@ static cell_t PostRequest(IPluginContext *pContext, const cell_t *params)
 
 	json_t *data;
 	Handle_t hndlData = static_cast<Handle_t>(params[3]);
-	if ((err=handlesys->ReadHandle(hndlData, htJSONObject, &sec, (void **)&data)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlData, htJSON, &sec, (void **)&data)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid data handle %x (error %d)", hndlData, err);
 	}
@@ -124,7 +124,7 @@ static cell_t PutRequest(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -134,7 +134,7 @@ static cell_t PutRequest(IPluginContext *pContext, const cell_t *params)
 
 	json_t *data;
 	Handle_t hndlData = static_cast<Handle_t>(params[3]);
-	if ((err=handlesys->ReadHandle(hndlData, htJSONObject, &sec, (void **)&data)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlData, htJSON, &sec, (void **)&data)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid data handle %x (error %d)", hndlData, err);
 	}
@@ -154,7 +154,7 @@ static cell_t PatchRequest(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -164,7 +164,7 @@ static cell_t PatchRequest(IPluginContext *pContext, const cell_t *params)
 
 	json_t *data;
 	Handle_t hndlData = static_cast<Handle_t>(params[3]);
-	if ((err=handlesys->ReadHandle(hndlData, htJSONObject, &sec, (void **)&data)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlData, htJSON, &sec, (void **)&data)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid data handle %x (error %d)", hndlData, err);
 	}
@@ -184,7 +184,7 @@ static cell_t DeleteRequest(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -207,7 +207,7 @@ static cell_t DownloadFile(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -233,7 +233,7 @@ static cell_t UploadFile(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -259,7 +259,7 @@ static cell_t GetClientConnectTimeout(IPluginContext *pContext, const cell_t *pa
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -274,7 +274,7 @@ static cell_t SetClientConnectTimeout(IPluginContext *pContext, const cell_t *pa
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -291,7 +291,7 @@ static cell_t GetClientFollowLocation(IPluginContext *pContext, const cell_t *pa
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -306,12 +306,12 @@ static cell_t SetClientFollowLocation(IPluginContext *pContext, const cell_t *pa
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
 
-	client->SetFollowLocation(params[2]);
+	client->SetFollowLocation(params[2] == 1);
 
 	return 1;
 }
@@ -323,7 +323,7 @@ static cell_t GetClientTimeout(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
@@ -338,12 +338,76 @@ static cell_t SetClientTimeout(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
 
 	client->SetTimeout(params[2]);
+
+	return 1;
+}
+
+static cell_t GetClientMaxSendSpeed(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	return client->GetMaxSendSpeed();
+}
+
+static cell_t SetClientMaxSendSpeed(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	client->SetMaxSendSpeed(params[2]);
+
+	return 1;
+}
+
+static cell_t GetClientMaxRecvSpeed(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	return client->GetMaxRecvSpeed();
+}
+
+static cell_t SetClientMaxRecvSpeed(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPClient *client;
+	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
+	}
+
+	client->SetMaxRecvSpeed(params[2]);
 
 	return 1;
 }
@@ -355,7 +419,7 @@ static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 
 	struct HTTPResponse *response;
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponseObject, &sec, (void **)&response)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
 		return BAD_HANDLE;
@@ -372,7 +436,7 @@ static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 			return BAD_HANDLE;
 		}
 
-		response->hndlData = handlesys->CreateHandleEx(htJSONObject, response->data, &sec, NULL, NULL);
+		response->hndlData = handlesys->CreateHandleEx(htJSON, response->data, &sec, NULL, NULL);
 		if (response->hndlData == BAD_HANDLE)
 		{
 			json_decref(response->data);
@@ -392,7 +456,7 @@ static cell_t GetResponseStatus(IPluginContext *pContext, const cell_t *params)
 
 	struct HTTPResponse *response;
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponseObject, &sec, (void **)&response)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
 	}
@@ -407,7 +471,7 @@ static cell_t GetResponseHeader(IPluginContext *pContext, const cell_t *params)
 
 	struct HTTPResponse *response;
 	Handle_t hndlResponse = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponseObject, &sec, (void **)&response)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlResponse, htHTTPResponse, &sec, (void **)&response)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP response handle %x (error %d)", hndlResponse, err);
 	}
@@ -459,13 +523,17 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.Delete",				DeleteRequest},
 	{"HTTPClient.DownloadFile",			DownloadFile},
 	{"HTTPClient.UploadFile",			UploadFile},
+  {"HTTPClient.Escape",				Escape},
 	{"HTTPClient.ConnectTimeout.get",	GetClientConnectTimeout},
 	{"HTTPClient.ConnectTimeout.set",	SetClientConnectTimeout},
 	{"HTTPClient.FollowLocation.get",	GetClientFollowLocation},
 	{"HTTPClient.FollowLocation.set",	SetClientFollowLocation},
 	{"HTTPClient.Timeout.get",			GetClientTimeout},
 	{"HTTPClient.Timeout.set",			SetClientTimeout},
-	{"HTTPClient.Escape",				Escape},
+	{"HTTPClient.MaxSendSpeed.get",		GetClientMaxSendSpeed},
+	{"HTTPClient.MaxSendSpeed.set",		SetClientMaxSendSpeed},
+	{"HTTPClient.MaxRecvSpeed.get",		GetClientMaxRecvSpeed},
+	{"HTTPClient.MaxRecvSpeed.set",		SetClientMaxRecvSpeed},
 	{"HTTPResponse.Data.get",			GetResponseData},
 	{"HTTPResponse.Status.get",			GetResponseStatus},
 	{"HTTPResponse.GetHeader",			GetResponseHeader},

@@ -1,21 +1,24 @@
 version: '{branch}-{build}'
 
-image: Visual Studio 2015
+image: Visual Studio 2017
 
 environment:
+  AMBUILD_VCVARS_X86: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat
+  AMBUILD_VCVARS_X86_64: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat
   SOURCEMOD_VERSION: 1.10-dev
+  TARGET_ARCHS: x86,x86_64
 
 install:
-  - '"%VS140COMNTOOLS%vsvars32.bat"'
-  - git clone https://github.com/alliedmodders/sourcemod.git -b %SOURCEMOD_VERSION% --depth 1 --recursive %APPVEYOR_BUILD_FOLDER%\..\sourcemod
+  - git clone https://github.com/alliedmodders/sourcemod.git -b %SOURCEMOD_VERSION% --depth 1 -j8 --recurse-submodules --shallow-submodules %APPVEYOR_BUILD_FOLDER%\..\sourcemod
   - git clone https://github.com/alliedmodders/ambuild.git --depth 1 %APPVEYOR_BUILD_FOLDER%\..\ambuild
-  - cd %APPVEYOR_BUILD_FOLDER%\..\ambuild && python setup.py build && python setup.py install
+  - C:\Python38\python.exe -m pip install --upgrade pip setuptools
+  - C:\Python38\python.exe -m pip install %APPVEYOR_BUILD_FOLDER%\..\ambuild
 
 build_script:
   - mkdir %APPVEYOR_BUILD_FOLDER%\build && cd %APPVEYOR_BUILD_FOLDER%\build
   - perl ..\curl\lib\mk-ca-bundle.pl
-  - python ..\configure.py --enable-optimize
-  - C:\Python27\Scripts\ambuild
+  - C:\Python38\python.exe ..\configure.py --enable-optimize --targets=%TARGET_ARCHS%
+  - C:\Python38\Scripts\ambuild
 
 after_build:
   - if /i "%APPVEYOR_REPO_TAG%"=="true" 7z a sm-ripext-%APPVEYOR_REPO_TAG_NAME%-windows.zip .\package\*

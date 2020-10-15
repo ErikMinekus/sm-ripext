@@ -41,14 +41,14 @@ uv_timer_t g_Timeout;
 uv_async_t g_AsyncPerformRequests;
 uv_async_t g_AsyncStopLoop;
 
-HTTPClientObjectHandler	g_HTTPClientObjectHandler;
-HandleType_t			htHTTPClientObject;
+HTTPClientHandler	g_HTTPClientHandler;
+HandleType_t		htHTTPClient;
 
-HTTPResponseObjectHandler	g_HTTPResponseObjectHandler;
-HandleType_t				htHTTPResponseObject;
+HTTPResponseHandler	g_HTTPResponseHandler;
+HandleType_t			htHTTPResponse;
 
-JSONObjectHandler		g_JSONObjectHandler;
-HandleType_t			htJSONObject;
+JSONHandler		g_JSONHandler;
+HandleType_t		htJSON;
 
 JSONObjectKeysHandler	g_JSONObjectKeysHandler;
 HandleType_t			htJSONObjectKeys;
@@ -230,21 +230,21 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	uv_async_init(g_Loop, &g_AsyncStopLoop, &AsyncStopLoop);
 	uv_thread_create(&g_Thread, &EventLoop, NULL);
 
-	/* Set up access rights for the 'HTTPResponseObject' handle type */
-	HandleAccess haHTTPResponseObject;
-	haHTTPResponseObject.access[HandleAccess_Clone] = HANDLE_RESTRICT_IDENTITY|HANDLE_RESTRICT_OWNER;
-	haHTTPResponseObject.access[HandleAccess_Delete] = HANDLE_RESTRICT_IDENTITY;
-	haHTTPResponseObject.access[HandleAccess_Read] = HANDLE_RESTRICT_IDENTITY;
+	/* Set up access rights for the 'HTTPResponse' handle type */
+	HandleAccess haHTTPResponse;
+	haHTTPResponse.access[HandleAccess_Clone] = HANDLE_RESTRICT_IDENTITY|HANDLE_RESTRICT_OWNER;
+	haHTTPResponse.access[HandleAccess_Delete] = HANDLE_RESTRICT_IDENTITY;
+	haHTTPResponse.access[HandleAccess_Read] = HANDLE_RESTRICT_IDENTITY;
 
-	/* Set up access rights for the 'JSONObject' handle type */
-	HandleAccess haJSONObject;
-	haJSONObject.access[HandleAccess_Clone] = 0;
-	haJSONObject.access[HandleAccess_Delete] = 0;
-	haJSONObject.access[HandleAccess_Read] = 0;
+	/* Set up access rights for the 'JSON' handle type */
+	HandleAccess haJSON;
+	haJSON.access[HandleAccess_Clone] = 0;
+	haJSON.access[HandleAccess_Delete] = 0;
+	haJSON.access[HandleAccess_Read] = 0;
 
-	htHTTPClientObject = handlesys->CreateType("HTTPClientObject", &g_HTTPClientObjectHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
-	htHTTPResponseObject = handlesys->CreateType("HTTPResponseObject", &g_HTTPResponseObjectHandler, 0, NULL, &haHTTPResponseObject, myself->GetIdentity(), NULL);
-	htJSONObject = handlesys->CreateType("JSONObject", &g_JSONObjectHandler, 0, NULL, &haJSONObject, myself->GetIdentity(), NULL);
+	htHTTPClient = handlesys->CreateType("HTTPClient", &g_HTTPClientHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
+	htHTTPResponse = handlesys->CreateType("HTTPResponse", &g_HTTPResponseHandler, 0, NULL, &haHTTPResponse, myself->GetIdentity(), NULL);
+	htJSON = handlesys->CreateType("JSON", &g_JSONHandler, 0, NULL, &haJSON, myself->GetIdentity(), NULL);
 	htJSONObjectKeys = handlesys->CreateType("JSONObjectKeys", &g_JSONObjectKeysHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
 
 	smutils->AddGameFrameHook(&FrameHook);
@@ -262,9 +262,9 @@ void RipExt::SDK_OnUnload()
 	curl_multi_cleanup(&g_Curl);
 	curl_global_cleanup();
 
-	handlesys->RemoveType(htHTTPClientObject, myself->GetIdentity());
-	handlesys->RemoveType(htHTTPResponseObject, myself->GetIdentity());
-	handlesys->RemoveType(htJSONObject, myself->GetIdentity());
+	handlesys->RemoveType(htHTTPClient, myself->GetIdentity());
+	handlesys->RemoveType(htHTTPResponse, myself->GetIdentity());
+	handlesys->RemoveType(htJSON, myself->GetIdentity());
 	handlesys->RemoveType(htJSONObjectKeys, myself->GetIdentity());
 
 	smutils->RemoveGameFrameHook(&FrameHook);
@@ -277,17 +277,17 @@ void RipExt::AddRequestToQueue(IHTTPContext *context)
 	g_RequestQueue.Unlock();
 }
 
-void HTTPClientObjectHandler::OnHandleDestroy(HandleType_t type, void *object)
+void HTTPClientHandler::OnHandleDestroy(HandleType_t type, void *object)
 {
 	delete (HTTPClient *)object;
 }
 
-void HTTPResponseObjectHandler::OnHandleDestroy(HandleType_t type, void *object)
+void HTTPResponseHandler::OnHandleDestroy(HandleType_t type, void *object)
 {
 	/* Response objects are automatically cleaned up */
 }
 
-void JSONObjectHandler::OnHandleDestroy(HandleType_t type, void *object)
+void JSONHandler::OnHandleDestroy(HandleType_t type, void *object)
 {
 	json_decref((json_t *)object);
 }

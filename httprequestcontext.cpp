@@ -76,9 +76,10 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 
 HTTPRequestContext::HTTPRequestContext(const ke::AString &method, const ke::AString &url, json_t *data,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-	long connectTimeout, long followLocation, long timeout)
+	long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed)
 	: request(data), method(method), url(url), headers(headers), forward(forward), value(value),
-	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout)
+	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout),
+	maxSendSpeed(maxSendSpeed), maxRecvSpeed(maxRecvSpeed)
 {}
 
 HTTPRequestContext::~HTTPRequestContext()
@@ -133,8 +134,18 @@ void HTTPRequestContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, &ReadRequestBody);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
 	curl_easy_setopt(curl, CURLOPT_URL, url.chars());
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);
+
+	if (maxRecvSpeed > 0)
+	{
+		curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, maxRecvSpeed);
+	}
+	if (maxSendSpeed > 0)
+	{
+		curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, maxSendSpeed);
+	}
 }
 
 void HTTPRequestContext::OnCompleted()
@@ -148,7 +159,7 @@ void HTTPRequestContext::OnCompleted()
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.status);
 
 	HandleSecurity sec(NULL, myself->GetIdentity());
-	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponseObject, &response, &sec, NULL, NULL);
+	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponse, &response, &sec, NULL, NULL);
 	if (hndlResponse == BAD_HANDLE)
 	{
 		smutils->LogError(myself, "Could not create HTTP response handle.");

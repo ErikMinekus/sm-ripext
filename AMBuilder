@@ -1,57 +1,59 @@
 # vim: set sts=2 ts=8 sw=2 tw=99 et ft=python:
 import os
 
-libcurl = builder.RunScript('curl/lib/AMBuilder')
-libjansson = builder.RunScript('jansson/src/AMBuilder')
-libmbedtls = builder.RunScript('mbedtls/library/AMBuilder')
-libnghttp2 = builder.RunScript('nghttp2/lib/AMBuilder')
-libuv = builder.RunScript('libuv/src/AMBuilder')
-libz = builder.RunScript('zlib/AMBuilder')
+libcurl = builder.Build('curl/lib/AMBuilder')
+libjansson = builder.Build('jansson/src/AMBuilder')
+libmbedtls = builder.Build('mbedtls/library/AMBuilder')
+libnghttp2 = builder.Build('nghttp2/lib/AMBuilder')
+libuv = builder.Build('libuv/src/AMBuilder')
+libz = builder.Build('zlib/AMBuilder')
 
-binary = Extension.Library(builder, 'rip.ext')
+for cxx in builder.targets:
+  binary = Extension.Library(builder, cxx, 'rip.ext')
+  arch = binary.compiler.target.arch
 
-binary.sources += [
-  'extension.cpp',
-  'httpclient.cpp',
-  'httprequestcontext.cpp',
-  'httpfilecontext.cpp',
-  'http_natives.cpp',
-  'json_natives.cpp',
-  os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),
-]
-
-binary.compiler.includes += [
-  os.path.join(builder.sourcePath, 'curl', 'include'),
-  os.path.join(builder.sourcePath, 'jansson', 'include'),
-  os.path.join(builder.sourcePath, 'libuv', 'include'),
-]
-
-binary.compiler.defines += [
-  'CURL_STATICLIB',
-]
-
-if binary.compiler.vendor == 'gcc' or binary.compiler.vendor == 'clang':
-  binary.compiler.cxxflags += ['-fno-rtti']
-elif binary.compiler.vendor == 'msvc':
-  binary.compiler.cxxflags += ['/GR-']
-
-binary.compiler.postlink += [
-  libcurl.binary,
-  libjansson.binary,
-  libmbedtls.binary,
-  libnghttp2.binary,
-  libuv.binary,
-  libz.binary,
-]
-
-if builder.target_platform == 'linux':
-  binary.compiler.postlink += ['-lrt']
-elif builder.target_platform == 'windows':
-  binary.compiler.postlink += [
-    'iphlpapi.lib',
-    'psapi.lib',
-    'userenv.lib',
-    'ws2_32.lib',
+  binary.sources += [
+    'extension.cpp',
+    'httpclient.cpp',
+    'httprequestcontext.cpp',
+    'httpfilecontext.cpp',
+    'http_natives.cpp',
+    'json_natives.cpp',
+    os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),
   ]
 
-Extension.extensions += [builder.Add(binary)]
+  binary.compiler.includes += [
+    os.path.join(builder.sourcePath, 'curl', 'include'),
+    os.path.join(builder.sourcePath, 'jansson', 'include'),
+    os.path.join(builder.sourcePath, 'libuv', 'include'),
+  ]
+
+  binary.compiler.defines += [
+    'CURL_STATICLIB',
+  ]
+
+  if binary.compiler.family == 'gcc' or binary.compiler.family == 'clang':
+    binary.compiler.cxxflags += ['-fno-rtti']
+  elif binary.compiler.family == 'msvc':
+    binary.compiler.cxxflags += ['/GR-']
+
+  binary.compiler.postlink += [
+    libcurl[arch].binary,
+    libjansson[arch].binary,
+    libmbedtls[arch].binary,
+    libnghttp2[arch].binary,
+    libuv[arch].binary,
+    libz[arch].binary,
+  ]
+
+  if binary.compiler.target.platform == 'linux':
+    binary.compiler.postlink += ['-lrt']
+  elif binary.compiler.target.platform == 'windows':
+    binary.compiler.postlink += [
+      'iphlpapi.lib',
+      'psapi.lib',
+      'userenv.lib',
+      'ws2_32.lib',
+    ]
+
+  Extension.extensions += [builder.Add(binary)]
