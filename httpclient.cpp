@@ -151,8 +151,8 @@ void HTTPClient::Escape(char *dest, const char *source)
 		if (output)
 		{
 			strcpy(dest, output);
-    		curl_free(output);
-  		}
+			curl_free(output);
+		}
 	}
 }
 

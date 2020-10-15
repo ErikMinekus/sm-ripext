@@ -180,27 +180,38 @@ methodmap HTTPClient < Handle
 	// @param source	A string need to escape.
 	public native void Escape(char[] dest, int maxlength, const char[] source);
 
+	// Performs a HTTP GET request with encoded params.
+	//
+	// @param endpoint   API endpoint to request.
+	// @param params	 Request params stored in StringMap.
+	// @param callback   A function to use as a callback when the request has finished.
+	// @param value      Optional value to pass to the callback function.
 	public void GetWithParams(const char[] endpoint, StringMap params, HTTPRequestCallback callback, any value = 0)
 	{
 		char path[SM_RIPEXT_MAX_PATH_LENGTH];
-		// Encode params
+		
 		StringMapSnapshot snapshot = params.Snapshot();
 		for (int i = 0; i < snapshot.Length; i++)
 		{
+			// Get Keys
 			int length = snapshot.KeyBufferSize(i) + 1;
 			char[] key = new char[length];
 			snapshot.GetKey(i, key, length);
 			
-			char val[SM_RIPEXT_MAX_PARAM_LENGTH];
-			char escapedVal[SM_RIPEXT_MAX_PARAM_LENGTH];
+			// Get Key and value from params
+			char val[SM_RIPEXT_MAX_PARAM_LENGTH], escapedVal[SM_RIPEXT_MAX_PARAM_LENGTH];
 			params.GetString(key, val, sizeof(val));
+
+			// Encode params
 			this.Escape(escapedVal, sizeof(escapedVal), val);
 
+			// Build params
 			if (i)
 				Format(path, sizeof(path), "%s&%s=%s", path, key, escapedVal);
 			else
 				Format(path, sizeof(path), "%s=%s", key, escapedVal);
 		}
+		delete snapshot;
 		Format(path, sizeof(path), "%s?%s", endpoint, path);
 		this.Get(path, callback, value);
 	}

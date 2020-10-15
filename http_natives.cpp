@@ -498,7 +498,7 @@ static cell_t Escape(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client;
 	Handle_t hndlClient = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClientObject, &sec, (void **)&client)) != HandleError_None)
+	if ((err=handlesys->ReadHandle(hndlClient, htHTTPClient, &sec, (void **)&client)) != HandleError_None)
 	{
 		return pContext->ThrowNativeError("Invalid HTTP client handle %x (error %d)", hndlClient, err);
 	}
