@@ -523,7 +523,7 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.Delete",				DeleteRequest},
 	{"HTTPClient.DownloadFile",			DownloadFile},
 	{"HTTPClient.UploadFile",			UploadFile},
-  {"HTTPClient.Escape",				Escape},
+	{"HTTPClient.Escape",				Escape},
 	{"HTTPClient.ConnectTimeout.get",	GetClientConnectTimeout},
 	{"HTTPClient.ConnectTimeout.set",	SetClientConnectTimeout},
 	{"HTTPClient.FollowLocation.get",	GetClientFollowLocation},
@@ -537,6 +537,6 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPResponse.Data.get",			GetResponseData},
 	{"HTTPResponse.Status.get",			GetResponseStatus},
 	{"HTTPResponse.GetHeader",			GetResponseHeader},
-	
+
 	{NULL,								NULL}
 };

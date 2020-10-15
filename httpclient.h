@@ -57,7 +57,6 @@ public:
 	int GetMaxRecvSpeed() const;
 	void SetMaxRecvSpeed(int speed);
 
-
 private:
 	const ke::AString baseURL;
 	HTTPHeaderMap headers;
