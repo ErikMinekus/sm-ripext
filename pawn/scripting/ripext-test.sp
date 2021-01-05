@@ -57,10 +57,6 @@ void OnHTTPResponse(HTTPResponse response, any value)
         PrintToServer("[ERR] %s Status: %d", sHTTPTags[value], response.Status);
         return;
     }
-    if (response.Data == null) {
-        PrintToServer("[OK] %s No response", sHTTPTags[value]);
-        return;
-    }
 
     char sData[1024];
     response.Data.ToString(sData, sizeof(sData), JSON_INDENT(4));

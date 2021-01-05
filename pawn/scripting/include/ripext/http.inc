@@ -87,6 +87,8 @@ methodmap HTTPResponse
 	public native bool GetHeader(const char[] name, char[] buffer, int maxlength);
 
 	// Retrieves the JSON data of the response.
+	//
+	// @error            Invalid JSON response.
 	property JSON Data {
 		public native get();
 	}
