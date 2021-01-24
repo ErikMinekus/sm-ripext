@@ -22,6 +22,7 @@
 #ifndef _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_
 #define _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_
 
+#include <string>
 #include <curl/curl.h>
 #include <jansson.h>
 #include <sm_stringhashmap.h>
@@ -35,7 +36,7 @@
 
 extern uv_loop_t *g_Loop;
 
-typedef StringHashMap<ke::AString> HTTPHeaderMap;
+typedef StringHashMap<std::string> HTTPHeaderMap;
 
 class IHTTPContext
 {

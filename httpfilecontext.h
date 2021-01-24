@@ -27,7 +27,7 @@
 class HTTPFileContext : public IHTTPContext
 {
 public:
-	HTTPFileContext(bool isUpload, const ke::AString &url, const ke::AString &path,
+	HTTPFileContext(bool isUpload, const std::string &url, const std::string &path,
 		struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 		long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed);
 	~HTTPFileContext();
@@ -40,8 +40,8 @@ private:
 	FILE *file = NULL;
 
 	bool isUpload;
-	const ke::AString url;
-	const ke::AString path;
+	const std::string url;
+	const std::string path;
 	struct curl_slist *headers;
 	IChangeableForward *forward;
 	cell_t value;

@@ -66,15 +66,20 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 		return total;
 	}
 
-	ke::AString name(header, match - header);
-	ke::AString value(match + 2);
+	std::string name(header, match - header);
+	std::string value(match + 2);
 
-	response->headers.replace(name.lowercase().chars(), ke::Move(value));
+	for (size_t i = 0; i < name.size(); i++)
+	{
+		name[i] = tolower(name[i]);
+	}
+
+	response->headers.replace(name.c_str(), std::move(value));
 
 	return total;
 }
 
-HTTPRequestContext::HTTPRequestContext(const ke::AString &method, const ke::AString &url, json_t *data,
+HTTPRequestContext::HTTPRequestContext(const std::string &method, const std::string &url, json_t *data,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 	long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed)
 	: request(data), method(method), url(url), headers(headers), forward(forward), value(value),
@@ -111,12 +116,12 @@ void HTTPRequestContext::InitCurl()
 	}
 	else if (method.compare("PATCH") == 0)
 	{
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.chars());
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
 	}
 	else if (method.compare("DELETE") == 0)
 	{
-		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.chars());
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());
 	}
 
 	curl_easy_setopt(curl, CURLOPT_ACCEPT_ENCODING, "");
@@ -133,7 +138,7 @@ void HTTPRequestContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_READDATA, &request);
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, &ReadRequestBody);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
-	curl_easy_setopt(curl, CURLOPT_URL, url.chars());
+	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);

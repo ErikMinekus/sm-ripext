@@ -21,7 +21,7 @@
 
 #include "httpfilecontext.h"
 
-HTTPFileContext::HTTPFileContext(bool isUpload, const ke::AString &url, const ke::AString &path,
+HTTPFileContext::HTTPFileContext(bool isUpload, const std::string &url, const std::string &path,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 	long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed)
 	: isUpload(isUpload), url(url), path(path), headers(headers), forward(forward), value(value),
@@ -52,12 +52,12 @@ void HTTPFileContext::InitCurl()
 	}
 
 	char realpath[PLATFORM_MAX_PATH];
-	smutils->BuildPath(Path_Game, realpath, sizeof(realpath), "%s", path.chars());
+	smutils->BuildPath(Path_Game, realpath, sizeof(realpath), "%s", path.c_str());
 
 	file = fopen(realpath, isUpload ? "rb" : "wb");
 	if (file == NULL)
 	{
-		smutils->LogError(myself, "Could not open file %s.", path.chars());
+		smutils->LogError(myself, "Could not open file %s.", path.c_str());
 		return;
 	}
 
@@ -83,7 +83,7 @@ void HTTPFileContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_PIPEWAIT, 1L);
 	curl_easy_setopt(curl, CURLOPT_PRIVATE, this);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
-	curl_easy_setopt(curl, CURLOPT_URL, url.chars());
+	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
 
 	if (maxRecvSpeed > 0)

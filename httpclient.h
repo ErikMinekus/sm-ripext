@@ -29,7 +29,7 @@ class HTTPClient
 public:
 	HTTPClient(const char *baseURL) : baseURL(baseURL) {}
 
-	const ke::AString BuildURL(const ke::AString &endpoint) const;
+	const std::string BuildURL(const std::string &endpoint) const;
 
 	struct curl_slist *BuildHeaders(const char *acceptTypes, const char *contentType);
 
@@ -56,7 +56,7 @@ public:
 	void SetMaxRecvSpeed(int speed);
 
 private:
-	const ke::AString baseURL;
+	const std::string baseURL;
 	HTTPHeaderMap headers;
 	int connectTimeout = 10;
 	bool followLocation = true;

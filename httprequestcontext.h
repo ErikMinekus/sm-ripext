@@ -27,7 +27,7 @@
 class HTTPRequestContext : public IHTTPContext
 {
 public:
-	HTTPRequestContext(const ke::AString &method, const ke::AString &url, json_t *data,
+	HTTPRequestContext(const std::string &method, const std::string &url, json_t *data,
 		struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 		long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed);
 	~HTTPRequestContext();
@@ -40,8 +40,8 @@ private:
 	struct HTTPRequest request;
 	struct HTTPResponse response;
 
-	const ke::AString method;
-	const ke::AString url;
+	const std::string method;
+	const std::string url;
 	struct curl_slist *headers;
 	IChangeableForward *forward;
 	cell_t value;

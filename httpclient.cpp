@@ -23,16 +23,13 @@
 #include "httprequestcontext.h"
 #include "httpfilecontext.h"
 
-const ke::AString HTTPClient::BuildURL(const ke::AString &endpoint) const
+const std::string HTTPClient::BuildURL(const std::string &endpoint) const
 {
-	char *url = new char[this->baseURL.length() + endpoint.length() + 2];
-	strcpy(url, this->baseURL.chars());
-	strcat(url, "/");
-	strcat(url, endpoint.chars());
+	std::string url(this->baseURL);
+	url.append("/");
+	url.append(endpoint);
 
-	ke::AString ret(url);
-	delete[] url;
-	return ret;
+	return url;
 }
 
 struct curl_slist *HTTPClient::BuildHeaders(const char *acceptTypes, const char *contentType)
@@ -48,7 +45,7 @@ struct curl_slist *HTTPClient::BuildHeaders(const char *acceptTypes, const char 
 
 	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
 	{
-		snprintf(header, sizeof(header), "%s: %s", iter->key.chars(), iter->value.chars());
+		snprintf(header, sizeof(header), "%s: %s", iter->key.chars(), iter->value.c_str());
 		headers = curl_slist_append(headers, header);
 	}
 
@@ -64,9 +61,9 @@ void HTTPClient::Request(const char *method, const char *endpoint, json_t *data,
 		return;
 	}
 
-	const ke::AString url = this->BuildURL(ke::AString(endpoint));
+	const std::string url = this->BuildURL(std::string(endpoint));
 	struct curl_slist *headers = this->BuildHeaders("application/json", "application/json");
-	HTTPRequestContext *context = new HTTPRequestContext(ke::AString(method), url, data, headers, forward, value,
+	HTTPRequestContext *context = new HTTPRequestContext(std::string(method), url, data, headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -81,9 +78,9 @@ void HTTPClient::DownloadFile(const char *endpoint, const char *path, IPluginFun
 		return;
 	}
 
-	const ke::AString url = this->BuildURL(ke::AString(endpoint));
+	const std::string url = this->BuildURL(std::string(endpoint));
 	struct curl_slist *headers = this->BuildHeaders("*/*", "application/octet-stream");
-	HTTPFileContext *context = new HTTPFileContext(false, url, ke::AString(path), headers, forward, value,
+	HTTPFileContext *context = new HTTPFileContext(false, url, std::string(path), headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -98,9 +95,9 @@ void HTTPClient::UploadFile(const char *endpoint, const char *path, IPluginFunct
 		return;
 	}
 
-	const ke::AString url = this->BuildURL(ke::AString(endpoint));
+	const std::string url = this->BuildURL(std::string(endpoint));
 	struct curl_slist *headers = this->BuildHeaders("*/*", "application/octet-stream");
-	HTTPFileContext *context = new HTTPFileContext(true, url, ke::AString(path), headers, forward, value,
+	HTTPFileContext *context = new HTTPFileContext(true, url, std::string(path), headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -108,8 +105,8 @@ void HTTPClient::UploadFile(const char *endpoint, const char *path, IPluginFunct
 
 void HTTPClient::SetHeader(const char *name, const char *value)
 {
-	ke::AString vstr(value);
-	this->headers.replace(name, ke::Move(vstr));
+	std::string vstr(value);
+	this->headers.replace(name, std::move(vstr));
 }
 
 int HTTPClient::GetConnectTimeout() const
