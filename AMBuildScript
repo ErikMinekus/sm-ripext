@@ -83,6 +83,16 @@ class ExtensionConfig(object):
         self.configure_cxx(cxx)
 
   def configure_cxx(self, cxx):
+    if cxx.family == 'msvc':
+      if cxx.version < 1900:
+        raise Exception('MSVC 2015 or later is required.')
+    elif cxx.family == 'gcc':
+      if cxx.version < 'gcc-4.9':
+        raise Exception('GCC 4.9 or later is required.')
+    elif cxx.family == 'clang':
+      if cxx.version < 'clang-3.4':
+        raise Exception('Clang 3.4 or later is required.')
+
     if cxx.like('gcc'):
       self.configure_gcc(cxx)
     elif cxx.family == 'msvc':
@@ -129,8 +139,13 @@ class ExtensionConfig(object):
       '-msse',
       '-fvisibility=hidden',
     ]
+
+    if cxx.version == 'apple-clang-6.0' or cxx.version == 'clang-3.4':
+      cxx.cxxflags += ['-std=c++1y']
+    else:
+      cxx.cxxflags += ['-std=c++14']
+
     cxx.cxxflags += [
-      '-std=c++11',
       '-fno-exceptions',
       '-fno-threadsafe-statics',
       '-Wno-non-virtual-dtor',
@@ -140,14 +155,22 @@ class ExtensionConfig(object):
 
     have_gcc = cxx.family == 'gcc'
     have_clang = cxx.family == 'clang'
-    if cxx.version >= 'clang-3.6' or cxx.version >= 'apple-clang-7.0':
+    if cxx.version >= 'clang-3.9' or cxx.version == 'clang-3.4' or cxx.version > 'apple-clang-6.0':
+      cxx.cxxflags += ['-Wno-expansion-to-defined']
+    if cxx.version == 'clang-3.9' or cxx.version == 'apple-clang-8.0':
+      cxx.cflags += ['-Wno-varargs']
+    if cxx.version >= 'clang-3.4' or cxx.version >= 'apple-clang-7.0':
       cxx.cxxflags += ['-Wno-inconsistent-missing-override']
+    if cxx.version >= 'clang-2.9' or cxx.version >= 'apple-clang-3.0':
+      cxx.cxxflags += ['-Wno-null-dereference']
     if have_clang or (cxx.version >= 'gcc-4.6'):
       cxx.cflags += ['-Wno-narrowing']
     if have_clang or (cxx.version >= 'gcc-4.7'):
       cxx.cxxflags += ['-Wno-delete-non-virtual-dtor']
     if cxx.version >= 'gcc-4.8':
       cxx.cflags += ['-Wno-unused-result']
+    if cxx.version >= 'gcc-9.0':
+      cxx.cxxflags += ['-Wno-class-memaccess', '-Wno-packed-not-aligned']
 
     if have_clang:
       cxx.cxxflags += ['-Wno-implicit-exception-spec-mismatch']
@@ -159,9 +182,14 @@ class ExtensionConfig(object):
 
     if have_gcc:
       cxx.cflags += ['-mfpmath=sse']
+      cxx.cflags += ['-Wno-maybe-uninitialized']
 
     if builder.options.opt == '1':
       cxx.cflags += ['-O3']
+
+    # This needs to be after our optimization flags which could otherwise disable it.
+    # Don't omit the frame pointer.
+    cxx.cflags += ['-fno-omit-frame-pointer']
 
   def configure_msvc(self, cxx):
     if builder.options.debug == '1':
@@ -216,12 +244,14 @@ class ExtensionConfig(object):
       cxx.linkflags += ['-static-libgcc']
     elif cxx.family == 'clang':
       cxx.linkflags += ['-lgcc_eh']
+    cxx.linkflags += ['-static-libstdc++']
 
   def configure_mac(self, cxx):
     cxx.defines += ['OSX', '_OSX', 'POSIX']
     cxx.cflags += ['-mmacosx-version-min=10.7']
     cxx.linkflags += [
       '-mmacosx-version-min=10.7',
+      '-lc++',
       '-stdlib=libc++',
     ]
     cxx.cxxflags += ['-stdlib=libc++']
