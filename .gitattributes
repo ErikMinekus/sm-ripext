@@ -1,0 +1,8 @@
+*.h linguist-language=C++
+
+curl/* linguist-vendored
+jansson/* linguist-vendored
+libuv/* linguist-vendored
+mbedtls/* linguist-vendored
+nghttp2/* linguist-vendored
+zlib/* linguist-vendored
