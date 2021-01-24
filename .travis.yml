@@ -2,16 +2,19 @@ language: cpp
 compiler:
   - clang
 
-os:
-  - linux
-  - osx
+jobs:
+  include:
+    - os: linux
+      dist: bionic
+      addons:
+        apt:
+          packages:
+            - g++-multilib
+            - lib32z1-dev
+            - python3-pip
 
-addons:
-  apt:
-    packages:
-      - g++-multilib
-      - lib32z1-dev
-      - python3-pip
+    - os: osx
+      osx_image: xcode9.4
 
 env:
   global:
