@@ -41,7 +41,7 @@ typedef StringHashMap<std::string> HTTPHeaderMap;
 class IHTTPContext
 {
 public:
-	virtual void InitCurl() = 0;
+	virtual bool InitCurl() = 0;
 	virtual void OnCompleted() = 0;
 	virtual ~IHTTPContext() {}
 

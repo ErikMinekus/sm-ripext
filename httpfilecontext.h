@@ -33,7 +33,7 @@ public:
 	~HTTPFileContext();
 
 public: // IHTTPContext
-	void InitCurl();
+	bool InitCurl();
 	void OnCompleted();
 
 private:

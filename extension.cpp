@@ -171,9 +171,12 @@ static void AsyncPerformRequests(uv_async_t *handle)
 	{
 		context = g_RequestQueue.Pop();
 
-		// Initialize here
-		// to reduce the impact on frame rendering time
-		context->InitCurl();
+		if (!context->InitCurl())
+		{
+			delete context;
+			continue;
+		}
+
 		curl_multi_add_handle(g_Curl, context->curl);
 		count++;
 	}

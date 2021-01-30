@@ -97,13 +97,13 @@ HTTPRequestContext::~HTTPRequestContext()
 	free(response.body);
 }
 
-void HTTPRequestContext::InitCurl()
+bool HTTPRequestContext::InitCurl()
 {
 	curl = curl_easy_init();
 	if (curl == NULL)
 	{
 		smutils->LogError(myself, "Could not initialize cURL session.");
-		return;
+		return false;
 	}
 
 	if (method.compare("POST") == 0)
@@ -151,6 +151,8 @@ void HTTPRequestContext::InitCurl()
 	{
 		curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, maxSendSpeed);
 	}
+
+	return true;
 }
 
 void HTTPRequestContext::OnCompleted()

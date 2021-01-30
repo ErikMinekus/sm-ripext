@@ -42,13 +42,13 @@ HTTPFileContext::~HTTPFileContext()
 	}
 }
 
-void HTTPFileContext::InitCurl()
+bool HTTPFileContext::InitCurl()
 {
 	curl = curl_easy_init();
 	if (curl == NULL)
 	{
 		smutils->LogError(myself, "Could not initialize cURL session.");
-		return;
+		return false;
 	}
 
 	char realpath[PLATFORM_MAX_PATH];
@@ -58,7 +58,7 @@ void HTTPFileContext::InitCurl()
 	if (file == NULL)
 	{
 		smutils->LogError(myself, "Could not open file %s.", path.c_str());
-		return;
+		return false;
 	}
 
 	if (isUpload)
@@ -94,6 +94,8 @@ void HTTPFileContext::InitCurl()
 	{
 		curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, maxSendSpeed);
 	}
+
+	return true;
 }
 
 void HTTPFileContext::OnCompleted()
