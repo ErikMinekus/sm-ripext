@@ -5,7 +5,7 @@ enum
 	JSON_DISABLE_EOF_CHECK  = 0x2,		/**< Allow extra data after a valid JSON array or object */
 	JSON_DECODE_ANY         = 0x4,		/**< Decode any value */
 	JSON_DECODE_INT_AS_REAL = 0x8,		/**< Interpret all numbers as floats */
-	JSON_ALLOW_NUL          = 0x10		/**< Allow \u0000 escape inside string values */
+	JSON_ALLOW_NULL         = 0x10		/**< Allow \u0000 escape inside string values */
 };
 
 // Encoding flags
