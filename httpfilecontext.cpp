@@ -35,11 +35,6 @@ HTTPFileContext::~HTTPFileContext()
 
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
-
-	if (file)
-	{
-		fclose(file);
-	}
 }
 
 bool HTTPFileContext::InitCurl()
@@ -100,6 +95,8 @@ bool HTTPFileContext::InitCurl()
 
 void HTTPFileContext::OnCompleted()
 {
+	fclose(file);
+
 	/* Return early if the plugin was unloaded while the thread was running */
 	if (forward->GetFunctionCount() == 0)
 	{

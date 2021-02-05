@@ -22,6 +22,7 @@
 #ifndef SM_RIPEXT_HTTPFILECONTEXT_H_
 #define SM_RIPEXT_HTTPFILECONTEXT_H_
 
+#include <stdio.h>
 #include "extension.h"
 
 class HTTPFileContext : public IHTTPContext
