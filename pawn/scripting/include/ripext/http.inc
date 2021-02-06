@@ -170,31 +170,31 @@ methodmap HTTPClient < Handle
 	// @param value      Optional value to pass to the callback function.
 	public native void UploadFile(const char[] endpoint, const char[] path, HTTPFileCallback callback, any value = 0);
 
-	// Connect timeout in seconds.
+	// Connect timeout in seconds. Defaults to 10.
 	property int ConnectTimeout {
 		public native get();
 		public native set(int connectTimeout);
 	}
 
-	// Follow HTTP 3xx redirects.
+	// Follow HTTP 3xx redirects. Defaults to true.
 	property bool FollowLocation {
 		public native get();
 		public native set(bool followLocation);
 	}
 
-	// Timeout in seconds.
+	// Timeout in seconds. Defaults to 30.
 	property int Timeout {
 		public native get();
 		public native set(int timeout);
 	}
 
-	// Max upload speed in bytes per second.
+	// Max upload speed in bytes per second. Defaults to unlimited speed.
 	property int MaxSendSpeed {
 		public native get();
 		public native set(int speed);
 	}
 
-	// Max download speed in bytes per second.
+	// Max download speed in bytes per second. Defaults to unlimited speed.
 	property int MaxRecvSpeed {
 		public native get();
 		public native set(int speed);
