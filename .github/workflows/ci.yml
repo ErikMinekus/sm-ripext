@@ -1,0 +1,100 @@
+name: CI
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        sourcemod-version: [1.10-dev]
+        include:
+          - os: ubuntu-latest
+            target-archs: x86,x86_64
+
+          - os: windows-latest
+            target-archs: x86,x86_64
+
+          - os: macos-latest
+            target-archs: x86_64
+
+    steps:
+      - name: Install Linux packages
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update
+          sudo apt install -yq --no-install-recommends g++-multilib lib32z1-dev
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: extension
+
+      - name: Checkout SourceMod
+        uses: actions/checkout@v2
+        with:
+          repository: alliedmodders/sourcemod
+          ref: ${{ matrix.sourcemod-version }}
+          path: sourcemod
+          submodules: recursive
+
+      - name: Checkout AMBuild
+        uses: actions/checkout@v2
+        with:
+          repository: alliedmodders/ambuild
+          path: ambuild
+
+      - name: Install AMBuild
+        uses: BSFishy/pip-action@v1
+        with:
+          packages: ./ambuild
+
+      - name: Build
+        working-directory: extension
+        shell: bash
+        env:
+          AMBUILD_VCVARS_X86: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat
+          AMBUILD_VCVARS_X86_64: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat
+        run: |
+          mkdir build && cd build
+          perl ../curl/lib/mk-ca-bundle.pl
+          python ../configure.py --enable-optimize --targets=${{ matrix.target-archs }}
+          ambuild
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ runner.os }}
+          path: extension/build/package
+
+
+  release:
+    name: Release
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Package
+        run: |
+          version=`echo $GITHUB_REF | sed "s/refs\/tags\///"`
+          7z a sm-ripext-${version}-linux.zip ./Linux/*
+          7z a sm-ripext-${version}-mac.zip ./macOS/*
+          7z a sm-ripext-${version}-windows.zip ./Windows/*
+
+      - name: Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: '*.zip'
+          tag: ${{ github.ref }}
+          file_glob: true
