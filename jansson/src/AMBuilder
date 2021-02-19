@@ -7,9 +7,9 @@ rvalue = {}
 for cxx in builder.targets:
   binary = Extension.StaticLibrary(builder, cxx, 'jansson')
   binary.compiler.includes += [
-    os.path.join(builder.sourcePath, 'jansson', 'src'),
     os.path.join(builder.sourcePath, 'jansson', 'include'),
     os.path.join(builder.sourcePath, 'jansson', 'private_include'),
+    os.path.join(builder.sourcePath, 'jansson', 'src'),
   ]
   binary.compiler.defines += ['HAVE_CONFIG_H']
 
@@ -17,6 +17,7 @@ for cxx in builder.targets:
     # https://llvm.org/bugs/show_bug.cgi?id=16428
     binary.compiler.cflags += ['-Wno-attributes']
 
+  # Defined as JANSSON_SRC in jansson/CMakeLists.txt
   binary.sources += [
     'dump.c',
     'error.c',
