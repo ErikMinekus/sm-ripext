@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, Jim Hollinger
+ * Copyright (c) 2011 - 2020, Jim Hollinger
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,17 +61,20 @@ static int _getch(void)
 #define VERSION_STR  "V1.0"
 
 /* error handling macros */
-#define my_curl_easy_setopt(A, B, C)                             \
-  res = curl_easy_setopt((A), (B), (C));                         \
-  if(res != CURLE_OK)                                            \
-    fprintf(stderr, "curl_easy_setopt(%s, %s, %s) failed: %d\n", \
-            #A, #B, #C, res);
+#define my_curl_easy_setopt(A, B, C)                               \
+  do {                                                             \
+    res = curl_easy_setopt((A), (B), (C));                         \
+    if(res != CURLE_OK)                                            \
+      fprintf(stderr, "curl_easy_setopt(%s, %s, %s) failed: %d\n", \
+              #A, #B, #C, res);                                    \
+  } while(0)
 
-#define my_curl_easy_perform(A)                                     \
-  res = curl_easy_perform(A);                                       \
-  if(res != CURLE_OK)                                               \
-    fprintf(stderr, "curl_easy_perform(%s) failed: %d\n", #A, res);
-
+#define my_curl_easy_perform(A)                                         \
+  do {                                                                  \
+    res = curl_easy_perform(A);                                         \
+    if(res != CURLE_OK)                                                 \
+      fprintf(stderr, "curl_easy_perform(%s) failed: %d\n", #A, res);   \
+  } while(0)
 
 /* send RTSP OPTIONS request */
 static void rtsp_options(CURL *curl, const char *uri)
@@ -192,7 +195,7 @@ int main(int argc, char * const argv[])
   char *base_name = NULL;
 
   printf("\nRTSP request %s\n", VERSION_STR);
-  printf("    Project web site: "
+  printf("    Project website: "
     "https://github.com/BackupGGCode/rtsprequest\n");
   printf("    Requires curl V7.20 or greater\n\n");
 
