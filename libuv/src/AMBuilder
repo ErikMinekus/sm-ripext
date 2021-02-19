@@ -7,14 +7,18 @@ rvalue = {}
 for cxx in builder.targets:
   binary = Extension.StaticLibrary(builder, cxx, 'uv')
   binary.compiler.includes += [
-    os.path.join(builder.sourcePath, 'libuv', 'src'),
     os.path.join(builder.sourcePath, 'libuv', 'include'),
+    os.path.join(builder.sourcePath, 'libuv', 'src'),
   ]
+
+  if binary.compiler.target.platform == 'linux':
+    binary.compiler.defines += ['_GNU_SOURCE']
 
   if binary.compiler.family == 'clang':
     # https://llvm.org/bugs/show_bug.cgi?id=16428
     binary.compiler.cflags += ['-Wno-attributes']
 
+  # Defined as uv_sources in libuv/CMakeLists.txt
   binary.sources += [
     'fs-poll.c',
     'idna.c',
@@ -76,6 +80,7 @@ for cxx in builder.targets:
       'unix/thread.c',
       'unix/tty.c',
       'unix/udp.c',
+      'unix/proctitle.c',
     ]
 
     if binary.compiler.target.platform == 'linux':
@@ -84,20 +89,17 @@ for cxx in builder.targets:
         'unix/linux-inotify.c',
         'unix/linux-syscalls.c',
         'unix/procfs-exepath.c',
-        'unix/proctitle.c',
         'unix/random-getrandom.c',
-        'unix/random-sysctl.c',
-        'unix/sysinfo-loadavg.c',
+        'unix/random-sysctl-linux.c',
       ]
     elif binary.compiler.target.platform == 'mac':
       binary.sources += [
         'unix/bsd-ifaddrs.c',
-        'unix/darwin.c',
-        'unix/darwin-proctitle.c',
-        'unix/fsevents.c',
         'unix/kqueue.c',
-        'unix/proctitle.c',
         'unix/random-getentropy.c',
+        'unix/darwin-proctitle.c',
+        'unix/darwin.c',
+        'unix/fsevents.c',
       ]
 
   rvalue[binary.compiler.target.arch] = builder.Add(binary)
