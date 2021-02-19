@@ -14,8 +14,8 @@ Synopsis
     
     This function receives as many frames as possible until the user
     callback :type:`nghttp2_recv_callback` returns
-    :macro:`NGHTTP2_ERR_WOULDBLOCK`.  This function calls several
-    callback functions which are passed when initializing the
+    :macro:`nghttp2_error.NGHTTP2_ERR_WOULDBLOCK`.  This function calls
+    several callback functions which are passed when initializing the
     *session*.  Here is the simple time chart which tells when each
     callback is invoked:
     
@@ -60,17 +60,17 @@ Synopsis
     This function returns 0 if it succeeds, or one of the following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_EOF`
+    :macro:`nghttp2_error.NGHTTP2_ERR_EOF`
         The remote peer did shutdown on the connection.
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.
-    :macro:`NGHTTP2_ERR_CALLBACK_FAILURE`
+    :macro:`nghttp2_error.NGHTTP2_ERR_CALLBACK_FAILURE`
         The callback function failed.
-    :macro:`NGHTTP2_ERR_BAD_CLIENT_MAGIC`
+    :macro:`nghttp2_error.NGHTTP2_ERR_BAD_CLIENT_MAGIC`
         Invalid client magic was detected.  This error only returns
         when *session* was configured as server and
         `nghttp2_option_set_no_recv_client_magic()` is not used with
         nonzero value.
-    :macro:`NGHTTP2_ERR_FLOODED`
+    :macro:`nghttp2_error.NGHTTP2_ERR_FLOODED`
         Flooding was detected in this HTTP/2 session, and it must be
         closed.  This is most likely caused by misbehaviour of peer.

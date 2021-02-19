@@ -24,6 +24,7 @@ for cxx in builder.targets:
     # https://llvm.org/bugs/show_bug.cgi?id=16428
     binary.compiler.cflags += ['-Wno-attributes']
 
+  # Defined as NGHTTP2_SOURCES in nghttp2/lib/CMakeLists.txt
   binary.sources += [
     'nghttp2_pq.c',
     'nghttp2_map.c',
@@ -47,6 +48,7 @@ for cxx in builder.targets:
     'nghttp2_http.c',
     'nghttp2_rcbuf.c',
     'nghttp2_debug.c',
+    'nghttp2_ksl.c',
   ]
 
   rvalue[binary.compiler.target.arch] = builder.Add(binary)

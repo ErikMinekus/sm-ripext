@@ -26,9 +26,9 @@ Synopsis
     This function returns 0 if it succeeds, or one of the following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.
-    :macro:`NGHTTP2_ERR_INVALID_STATE`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_STATE`
         The function is called while header block is being inflated.
         Probably, application missed to call
         `nghttp2_hd_inflate_end_headers()`.

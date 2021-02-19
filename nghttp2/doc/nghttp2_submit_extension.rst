@@ -31,16 +31,17 @@ Synopsis
     
     The standard HTTP/2 frame cannot be sent with this function, so
     *type* must be strictly grater than 0x9.  Otherwise, this function
-    will fail with error code :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`.
+    will fail with error code
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`.
     
     This function returns 0 if it succeeds, or one of the following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_INVALID_STATE`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_STATE`
         If :type:`nghttp2_pack_extension_callback` is not set.
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         If  *type* specifies  standard  HTTP/2 frame  type.  The  frame
         types  in the  rage [0x0,  0x9], both  inclusive, are  standard
         HTTP/2 frame type, and cannot be sent using this function.
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory

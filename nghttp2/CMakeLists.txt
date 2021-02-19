@@ -24,13 +24,13 @@
 
 cmake_minimum_required(VERSION 3.0)
 # XXX using 1.8.90 instead of 1.9.0-DEV
-project(nghttp2 VERSION 1.40.0)
+project(nghttp2 VERSION 1.43.0)
 
 # See versioning rule:
 #  http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-set(LT_CURRENT  33)
-set(LT_REVISION 0)
-set(LT_AGE      19)
+set(LT_CURRENT  34)
+set(LT_REVISION 1)
+set(LT_AGE      20)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 include(Version)
@@ -84,8 +84,6 @@ find_package(LibXml2 2.6.26)
 set(WITH_LIBXML2_DEFAULT    ${LIBXML2_FOUND})
 find_package(Jemalloc)
 set(WITH_JEMALLOC_DEFAULT   ${JEMALLOC_FOUND})
-find_package(Spdylay 1.3.2)
-set(WITH_SPDYLAY_DEFAULT    ${SPDYLAY_FOUND})
 
 include(CMakeOptions.txt)
 
@@ -220,8 +218,6 @@ else()
 endif()
 # jemalloc
 set(HAVE_JEMALLOC   ${JEMALLOC_FOUND})
-# spdylay (for src/nghttpx and src/h2load)
-set(HAVE_SPDYLAY    ${SPDYLAY_FOUND})
 
 if(ENABLE_ASIO_LIB)
   find_package(Boost 1.54.0 REQUIRED system thread)
@@ -504,7 +500,6 @@ message(STATUS "summary of build options:
       Libev:          ${HAVE_LIBEV} (LIBS='${LIBEV_LIBRARIES}')
       Libc-ares:      ${HAVE_LIBCARES} (LIBS='${LIBCARES_LIBRARIES}')
       Libevent(SSL):  ${HAVE_LIBEVENT_OPENSSL} (LIBS='${LIBEVENT_OPENSSL_LIBRARIES}')
-      Spdylay:        ${HAVE_SPDYLAY} (LIBS='${SPDYLAY_LIBRARIES}')
       Jansson:        ${HAVE_JANSSON} (LIBS='${JANSSON_LIBRARIES}')
       Jemalloc:       ${HAVE_JEMALLOC} (LIBS='${JEMALLOC_LIBRARIES}')
       Zlib:           ${HAVE_ZLIB} (LIBS='${ZLIB_LIBRARIES}')

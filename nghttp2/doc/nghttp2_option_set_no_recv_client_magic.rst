@@ -23,4 +23,5 @@ Synopsis
     If this option is not used or used with zero value, if MAGIC does
     not match :macro:`NGHTTP2_CLIENT_MAGIC`, `nghttp2_session_recv()`
     and `nghttp2_session_mem_recv()` will return error
-    :macro:`NGHTTP2_ERR_BAD_CLIENT_MAGIC`, which is fatal error.
+    :macro:`nghttp2_error.NGHTTP2_ERR_BAD_CLIENT_MAGIC`, which is fatal
+    error.

@@ -15,7 +15,7 @@ Synopsis
     indicates the number of :type:`nghttp2_settings_entry`.
     
     The *flags* is currently ignored and should be
-    :macro:`NGHTTP2_FLAG_NONE`.
+    :macro:`nghttp2_flag.NGHTTP2_FLAG_NONE`.
     
     This function does not take ownership of the *iv*.  This function
     copies all the elements in the *iv*.
@@ -24,14 +24,15 @@ Synopsis
     size becomes strictly larger than NGHTTP2_MAX_WINDOW_SIZE,
     RST_STREAM is issued against such a stream.
     
-    SETTINGS with :macro:`NGHTTP2_FLAG_ACK` is automatically submitted
-    by the library and application could not send it at its will.
+    SETTINGS with :macro:`nghttp2_flag.NGHTTP2_FLAG_ACK` is
+    automatically submitted by the library and application could not
+    send it at its will.
     
     This function returns 0 if it succeeds, or one of the following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         The *iv* contains invalid value (e.g., initial window size
         strictly greater than (1 << 31) - 1.
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.

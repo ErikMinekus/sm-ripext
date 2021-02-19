@@ -15,21 +15,22 @@ Synopsis
     must be set in len field of :type:`nghttp2_vec`.  If and only if
     one chunk is filled up completely, next chunk will be used.  If
     *vec* is not large enough to store the deflated header block, this
-    function fails with :macro:`NGHTTP2_ERR_INSUFF_BUFSIZE`.  The caller
+    function fails with
+    :macro:`nghttp2_error.NGHTTP2_ERR_INSUFF_BUFSIZE`.  The caller
     should use `nghttp2_hd_deflate_bound()` to know the upper bound of
     buffer size required to deflate given header name/value pairs.
     
     Once this function fails, subsequent call of this function always
-    returns :macro:`NGHTTP2_ERR_HEADER_COMP`.
+    returns :macro:`nghttp2_error.NGHTTP2_ERR_HEADER_COMP`.
     
     After this function returns, it is safe to delete the *nva*.
     
     This function returns the number of bytes written to *vec* if it
     succeeds, or one of the following negative error codes:
     
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.
-    :macro:`NGHTTP2_ERR_HEADER_COMP`
+    :macro:`nghttp2_error.NGHTTP2_ERR_HEADER_COMP`
         Deflation process has failed.
-    :macro:`NGHTTP2_ERR_INSUFF_BUFSIZE`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INSUFF_BUFSIZE`
         The provided *buflen* size is too small to hold the output.

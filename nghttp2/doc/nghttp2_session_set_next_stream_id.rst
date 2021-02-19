@@ -17,7 +17,7 @@ Synopsis
     This function returns 0 if it succeeds, or one of the following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         The *next_stream_id* is strictly less than the value
         `nghttp2_session_get_next_stream_id()` returns; or
         *next_stream_id* is invalid (e.g., even integer for client, or

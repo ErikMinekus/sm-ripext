@@ -17,7 +17,7 @@ Synopsis
     to transmission queue.
     
     The *flags* is currently ignored and should be
-    :macro:`NGHTTP2_FLAG_NONE`.
+    :macro:`nghttp2_flag.NGHTTP2_FLAG_NONE`.
     
     This sounds similar to `nghttp2_submit_window_update()`, but there
     are 2 differences.  The first difference is that this function
@@ -36,7 +36,7 @@ Synopsis
     This function returns 0 if it succeeds, or one of the following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         The *stream_id* is negative.
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.

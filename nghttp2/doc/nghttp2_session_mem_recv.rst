@@ -21,25 +21,25 @@ Synopsis
     
     In the current implementation, this function always tries to
     processes all input data unless either an error occurs or
-    :macro:`NGHTTP2_ERR_PAUSE` is returned from
+    :macro:`nghttp2_error.NGHTTP2_ERR_PAUSE` is returned from
     :type:`nghttp2_on_header_callback` or
     :type:`nghttp2_on_data_chunk_recv_callback`.  If
-    :macro:`NGHTTP2_ERR_PAUSE` is used, the return value includes the
-    number of bytes which was used to produce the data or frame for the
-    callback.
+    :macro:`nghttp2_error.NGHTTP2_ERR_PAUSE` is used, the return value
+    includes the number of bytes which was used to produce the data or
+    frame for the callback.
     
     This function returns the number of processed bytes, or one of the
     following negative error codes:
     
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.
-    :macro:`NGHTTP2_ERR_CALLBACK_FAILURE`
+    :macro:`nghttp2_error.NGHTTP2_ERR_CALLBACK_FAILURE`
         The callback function failed.
-    :macro:`NGHTTP2_ERR_BAD_CLIENT_MAGIC`
+    :macro:`nghttp2_error.NGHTTP2_ERR_BAD_CLIENT_MAGIC`
         Invalid client magic was detected.  This error only returns
         when *session* was configured as server and
         `nghttp2_option_set_no_recv_client_magic()` is not used with
         nonzero value.
-    :macro:`NGHTTP2_ERR_FLOODED`
+    :macro:`nghttp2_error.NGHTTP2_ERR_FLOODED`
         Flooding was detected in this HTTP/2 session, and it must be
         closed.  This is most likely caused by misbehaviour of peer.

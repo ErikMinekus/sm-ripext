@@ -16,7 +16,7 @@ Synopsis
     The pre-defined error code is one of :macro:`nghttp2_error_code`.
     
     The *flags* is currently ignored and should be
-    :macro:`NGHTTP2_FLAG_NONE`.
+    :macro:`nghttp2_flag.NGHTTP2_FLAG_NONE`.
     
     The *last_stream_id* is peer's stream ID or 0.  So if *session* is
     initialized as client, *last_stream_id* must be even or 0.  If
@@ -46,8 +46,8 @@ Synopsis
     This function returns 0 if it succeeds, or one of the following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         The *opaque_data_len* is too large; the *last_stream_id* is
         invalid.

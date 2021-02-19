@@ -13,7 +13,7 @@ Synopsis
     Submits WINDOW_UPDATE frame.
     
     The *flags* is currently ignored and should be
-    :macro:`NGHTTP2_FLAG_NONE`.
+    :macro:`nghttp2_flag.NGHTTP2_FLAG_NONE`.
     
     The *stream_id* is the stream ID to send this WINDOW_UPDATE.  To
     send connection level WINDOW_UPDATE, specify 0 to *stream_id*.
@@ -40,7 +40,7 @@ Synopsis
     This function returns 0 if it succeeds, or one of the following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_FLOW_CONTROL`
+    :macro:`nghttp2_error.NGHTTP2_ERR_FLOW_CONTROL`
         The local window size overflow or gets negative.
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.

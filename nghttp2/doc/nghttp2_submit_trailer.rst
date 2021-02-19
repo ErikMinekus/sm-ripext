@@ -19,12 +19,12 @@ Synopsis
     This function creates copies of all name/value pairs in *nva*.  It
     also lower-cases all names in *nva*.  The order of elements in
     *nva* is preserved.  For header fields with
-    :macro:`NGHTTP2_NV_FLAG_NO_COPY_NAME` and
-    :macro:`NGHTTP2_NV_FLAG_NO_COPY_VALUE` are set, header field name
-    and value are not copied respectively.  With
-    :macro:`NGHTTP2_NV_FLAG_NO_COPY_NAME`, application is responsible to
-    pass header field name in lowercase.  The application should
-    maintain the references to them until
+    :macro:`nghttp2_nv_flag.NGHTTP2_NV_FLAG_NO_COPY_NAME` and
+    :macro:`nghttp2_nv_flag.NGHTTP2_NV_FLAG_NO_COPY_VALUE` are set,
+    header field name and value are not copied respectively.  With
+    :macro:`nghttp2_nv_flag.NGHTTP2_NV_FLAG_NO_COPY_NAME`, application
+    is responsible to pass header field name in lowercase.  The
+    application should maintain the references to them until
     :type:`nghttp2_on_frame_send_callback` or
     :type:`nghttp2_on_frame_not_send_callback` is called.
     
@@ -36,16 +36,16 @@ Synopsis
     *nva* will be sent as response headers, which will result in error.
     
     This function has the same effect with `nghttp2_submit_headers()`,
-    with flags = :macro:`NGHTTP2_FLAG_END_STREAM` and both pri_spec and
-    stream_user_data to NULL.
+    with flags = :macro:`nghttp2_flag.NGHTTP2_FLAG_END_STREAM` and both
+    pri_spec and stream_user_data to NULL.
     
     To submit trailer fields after `nghttp2_submit_response()` is
     called, the application has to specify
     :type:`nghttp2_data_provider` to `nghttp2_submit_response()`.
     Inside of :type:`nghttp2_data_source_read_callback`, when setting
-    :macro:`NGHTTP2_DATA_FLAG_EOF`, also set
-    :macro:`NGHTTP2_DATA_FLAG_NO_END_STREAM`.  After that, the
-    application can send trailer fields using
+    :macro:`nghttp2_data_flag.NGHTTP2_DATA_FLAG_EOF`, also set
+    :macro:`nghttp2_data_flag.NGHTTP2_DATA_FLAG_NO_END_STREAM`.  After
+    that, the application can send trailer fields using
     `nghttp2_submit_trailer()`.  `nghttp2_submit_trailer()` can be used
     inside :type:`nghttp2_data_source_read_callback`.
     
@@ -53,7 +53,7 @@ Synopsis
     Otherwise, this function returns 0 if it succeeds, or one of the
     following negative error codes:
     
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         The *stream_id* is 0.

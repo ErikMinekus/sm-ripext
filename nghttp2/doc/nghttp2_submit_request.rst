@@ -19,10 +19,11 @@ Synopsis
     this function will copy its data members.
     
     The ``pri_spec->weight`` must be in [:macro:`NGHTTP2_MIN_WEIGHT`,
-    :macro:`NGHTTP2_MAX_WEIGHT`], inclusive.  If ``pri_spec->weight`` is
-    strictly less than :macro:`NGHTTP2_MIN_WEIGHT`, it becomes
+    :macro:`NGHTTP2_MAX_WEIGHT`], inclusive.  If ``pri_spec->weight``
+    is strictly less than :macro:`NGHTTP2_MIN_WEIGHT`, it becomes
     :macro:`NGHTTP2_MIN_WEIGHT`.  If it is strictly greater than
-    :macro:`NGHTTP2_MAX_WEIGHT`, it becomes :macro:`NGHTTP2_MAX_WEIGHT`.
+    :macro:`NGHTTP2_MAX_WEIGHT`, it becomes
+    :macro:`NGHTTP2_MAX_WEIGHT`.
     
     The *nva* is an array of name/value pair :type:`nghttp2_nv` with
     *nvlen* elements.  The application is responsible to include
@@ -33,12 +34,12 @@ Synopsis
     This function creates copies of all name/value pairs in *nva*.  It
     also lower-cases all names in *nva*.  The order of elements in
     *nva* is preserved.  For header fields with
-    :macro:`NGHTTP2_NV_FLAG_NO_COPY_NAME` and
-    :macro:`NGHTTP2_NV_FLAG_NO_COPY_VALUE` are set, header field name
-    and value are not copied respectively.  With
-    :macro:`NGHTTP2_NV_FLAG_NO_COPY_NAME`, application is responsible to
-    pass header field name in lowercase.  The application should
-    maintain the references to them until
+    :macro:`nghttp2_nv_flag.NGHTTP2_NV_FLAG_NO_COPY_NAME` and
+    :macro:`nghttp2_nv_flag.NGHTTP2_NV_FLAG_NO_COPY_VALUE` are set,
+    header field name and value are not copied respectively.  With
+    :macro:`nghttp2_nv_flag.NGHTTP2_NV_FLAG_NO_COPY_NAME`, application
+    is responsible to pass header field name in lowercase.  The
+    application should maintain the references to them until
     :type:`nghttp2_on_frame_send_callback` or
     :type:`nghttp2_on_frame_not_send_callback` is called.
     
@@ -60,15 +61,15 @@ Synopsis
     This function returns assigned stream ID if it succeeds, or one of
     the following negative error codes:
     
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.
-    :macro:`NGHTTP2_ERR_STREAM_ID_NOT_AVAILABLE`
+    :macro:`nghttp2_error.NGHTTP2_ERR_STREAM_ID_NOT_AVAILABLE`
         No stream ID is available because maximum stream ID was
         reached.
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         Trying to depend on itself (new stream ID equals
         ``pri_spec->stream_id``).
-    :macro:`NGHTTP2_ERR_PROTO`
+    :macro:`nghttp2_error.NGHTTP2_ERR_PROTO`
         The *session* is server session.
     
     .. warning::

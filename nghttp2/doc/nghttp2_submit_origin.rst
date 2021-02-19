@@ -16,7 +16,7 @@ Synopsis
     `RFC 8336 <https://tools.ietf.org/html/rfc8336>`_.
     
     The *flags* is currently ignored and should be
-    :macro:`NGHTTP2_FLAG_NONE`.
+    :macro:`nghttp2_flag.NGHTTP2_FLAG_NONE`.
     
     The *ov* points to the array of origins.  The *nov* specifies the
     number of origins included in *ov*.  This function creates copies
@@ -24,12 +24,12 @@ Synopsis
     
     The ORIGIN frame is only usable by a server.  If this function is
     invoked with client side session, this function returns
-    :macro:`NGHTTP2_ERR_INVALID_STATE`.
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_STATE`.
     
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory
-    :macro:`NGHTTP2_ERR_INVALID_STATE`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_STATE`
         The function is called from client side session.
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         There are too many origins, or an origin is too large to fit
         into a default frame payload.

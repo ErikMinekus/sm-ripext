@@ -24,6 +24,7 @@ set(NGHTTP2_SOURCES
   nghttp2_http.c
   nghttp2_rcbuf.c
   nghttp2_debug.c
+  nghttp2_ksl.c
 )
 
 set(NGHTTP2_RES "")
@@ -62,7 +63,7 @@ if(HAVE_CUNIT OR ENABLE_STATIC_LIB)
   set_target_properties(nghttp2_static PROPERTIES
     COMPILE_FLAGS "${WARNCFLAGS}"
     VERSION ${LT_VERSION} SOVERSION ${LT_SOVERSION}
-    ARCHIVE_OUTPUT_NAME nghttp2_static
+    ARCHIVE_OUTPUT_NAME nghttp2${STATIC_LIB_SUFFIX}
   )
   target_compile_definitions(nghttp2_static PUBLIC "-DNGHTTP2_STATICLIB")
   if(ENABLE_STATIC_LIB)

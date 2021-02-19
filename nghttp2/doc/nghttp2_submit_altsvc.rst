@@ -16,7 +16,7 @@ Synopsis
     `RFC 7383 <https://tools.ietf.org/html/rfc7838#section-4>`_.
     
     The *flags* is currently ignored and should be
-    :macro:`NGHTTP2_FLAG_NONE`.
+    :macro:`nghttp2_flag.NGHTTP2_FLAG_NONE`.
     
     The *origin* points to the origin this alternative service is
     associated with.  The *origin_len* is the length of the origin.  If
@@ -26,16 +26,16 @@ Synopsis
     
     The ALTSVC frame is only usable from server side.  If this function
     is invoked with client side session, this function returns
-    :macro:`NGHTTP2_ERR_INVALID_STATE`.
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_STATE`.
     
     This function returns 0 if it succeeds, or one of the following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory
-    :macro:`NGHTTP2_ERR_INVALID_STATE`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_STATE`
         The function is called from client side session
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         The sum of *origin_len* and *field_value_len* is larger than
         16382; or *origin_len* is 0 while *stream_id* is 0; or
         *origin_len* is not 0 while *stream_id* is not 0.

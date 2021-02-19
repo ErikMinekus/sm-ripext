@@ -261,8 +261,11 @@ Connections
     affinity is enabled.
 
     Since ";" and ":" are  used as delimiter, <PATTERN> must
-    not  contain these  characters.  Since  ";" has  special
-    meaning in shell, the option value must be quoted.
+    not contain  these characters.  In order  to include ":"
+    in  <PATTERN>,  one  has  to  specify  "%3A"  (which  is
+    percent-encoded  from of  ":") instead.   Since ";"  has
+    special  meaning  in shell,  the  option  value must  be
+    quoted.
 
 
     Default: ``127.0.0.1,80``
@@ -300,7 +303,7 @@ Connections
     default.  Any  requests which come through  this address
     are replied with 200 HTTP status, without no body.
 
-    To  accept   PROXY  protocol   version  1   on  frontend
+    To accept  PROXY protocol  version 1  and 2  on frontend
     connection,  specify  "proxyproto" parameter.   This  is
     disabled by default.
 
@@ -1203,6 +1206,14 @@ Logging
       request.  "-" if backend host is not available.
     * $backend_port:  backend  port   used  to  fulfill  the
       request.  "-" if backend host is not available.
+    * $method: HTTP method
+    * $path:  Request  path  including query.   For  CONNECT
+      request, authority is recorded.
+    * $path_without_query:  $path   up  to  the   first  '?'
+      character.    For   CONNECT  request,   authority   is
+      recorded.
+    * $protocol_version:   HTTP  version   (e.g.,  HTTP/1.1,
+      HTTP/2)
 
     The  variable  can  be  enclosed  by  "{"  and  "}"  for
     disambiguation (e.g., ${remote_addr}).

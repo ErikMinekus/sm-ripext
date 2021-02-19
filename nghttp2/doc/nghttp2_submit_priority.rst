@@ -14,7 +14,7 @@ Synopsis
     to the priority specification *pri_spec*.
     
     The *flags* is currently ignored and should be
-    :macro:`NGHTTP2_FLAG_NONE`.
+    :macro:`nghttp2_flag.NGHTTP2_FLAG_NONE`.
     
     The *pri_spec* is priority specification of this request.  ``NULL``
     is not allowed for this function. To specify the priority, use
@@ -22,16 +22,17 @@ Synopsis
     members.
     
     The ``pri_spec->weight`` must be in [:macro:`NGHTTP2_MIN_WEIGHT`,
-    :macro:`NGHTTP2_MAX_WEIGHT`], inclusive.  If ``pri_spec->weight`` is
-    strictly less than :macro:`NGHTTP2_MIN_WEIGHT`, it becomes
+    :macro:`NGHTTP2_MAX_WEIGHT`], inclusive.  If ``pri_spec->weight``
+    is strictly less than :macro:`NGHTTP2_MIN_WEIGHT`, it becomes
     :macro:`NGHTTP2_MIN_WEIGHT`.  If it is strictly greater than
-    :macro:`NGHTTP2_MAX_WEIGHT`, it becomes :macro:`NGHTTP2_MAX_WEIGHT`.
+    :macro:`NGHTTP2_MAX_WEIGHT`, it becomes
+    :macro:`NGHTTP2_MAX_WEIGHT`.
     
     This function returns 0 if it succeeds, or one of the following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_NOMEM`
+    :macro:`nghttp2_error.NGHTTP2_ERR_NOMEM`
         Out of memory.
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         The *stream_id* is 0; or the *pri_spec* is NULL; or trying to
         depend on itself.

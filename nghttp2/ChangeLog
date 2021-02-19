@@ -1,375 +1,239 @@
-commit cc05c5fe8cfc8287ddc4930fa9684af878d9e631 (HEAD, tag: v1.40.0, origin/master, origin/HEAD, master)
+commit fb0bd22979711c89d92d98ac5db57ebc6f4fd148 (HEAD, tag: v1.43.0, origin/master, origin/HEAD, master)
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-11-15
+AuthorDate: 2021-02-02
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-11-15
+CommitDate: 2021-02-02
 
     Update manual pages
 
-commit 66d7b194d4e27c8a316cbc5e8dca1722394401a9
+commit 3dc6c0afa2ed8b80b1f219813539db28f70886a3
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-11-15
+AuthorDate: 2021-02-02
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-11-15
+CommitDate: 2021-02-02
+
+    Bump version number to 1.43.0
+
+commit e8762781a72bf9220ec4de4e1c540d046051bb0a
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2021-02-02
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2021-02-02
 
     Update AUTHORS
 
-commit 41060943bdeff0ed575e3f0c011a0df17b9d8027
+commit 2bf841e22ae1fc27b9f4881cdc63020511ec047a
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-11-15
+AuthorDate: 2021-01-17
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-11-15
+CommitDate: 2021-01-17
 
-    Bump up version number to 1.40.0, LT revision to 33:0:19
+    workflow: Build with UBSAN enabled
 
-commit 5ae9bb8925c1cb1e945b41d140367f27b3dd5c98
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-11-09
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-11-09
-
-    Fail fast if huffman decoding context is in failure state
-
-commit bb519154fe62f7ff7e5eb7269e05043dec6d3682
-Merge: db9a8f6e 77f5487a
+commit 7ebab98e91df1678da74b47d690a1b1c5f2ba2e2
+Merge: 43ba3125 23fc6cc9
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2019-11-02
+AuthorDate: 2020-12-29
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2019-11-02
+CommitDate: 2020-12-29
 
-    Merge pull request #1413 from nghttp2/check-authority
+    Merge pull request #1548 from nghttp2/py3-bindings
     
-    Add nghttp2_check_authority as public API
+    Py3 bindings
 
-commit 77f5487a588f3c02a9671b7dd684186a5c34c1ea
+commit 23fc6cc9002e34f9b771ee54286e559fa4eecaef
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-11-02
+AuthorDate: 2020-12-29
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-11-02
+CommitDate: 2020-12-29
 
-    Add nghttp2_check_authority as public API
+    Bump Linux runner OS to ubuntu 20.04
 
-commit db9a8f6efe6cc692e09c81fed200d159071566d1
-Merge: 6f28a69b 6ce4835e
+commit 2e35cdea6ca3cdad3c111d1ca927d70dc29f9771
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2020-12-29
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2020-12-29
+
+    Update doc
+
+commit 22af8e782bed98e4b4f71617c9b905dd37e7c3f3
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2020-12-29
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2020-12-29
+
+    Require python3 for python bindings
+
+commit c88e9100096330c5d4445bc8d7482d6ad2c75fce
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2020-12-29
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2020-12-29
+
+    Update ax_python_devel.m4
+
+commit 43ba3125932c1d56addaeded2b7f62637af255cd
+Merge: 79a4f789 3c17299a
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2019-10-29
+AuthorDate: 2020-12-29
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2019-10-29
+CommitDate: 2020-12-29
 
-    Merge pull request #1409 from nghttp2/fix-wrong-stream-close-error-code
+    Merge pull request #1547 from nghttp2/sphinx-v3.3
     
-    Fix the bug that stream is closed with wrong error code
+    Sphinx v3.3
 
-commit 6f28a69b7d5bd93b67e2ca7af04bf9fa0b3c5c89
-Merge: d08c4395 29042f1c
+commit 3c17299a925dc150fd7aa7e1534d4b1679fb397d
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2020-12-29
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2020-12-29
+
+    Update enum references
+
+commit a7ecff657cfbcc442bfc70d51efbad1b57a9be46
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2020-12-29
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2020-12-29
+
+    Make doc generation work with sphinx v3.3
+
+commit 79a4f789a1453d8b916fbcfa43804184462bd11f
+Merge: 46536729 28ba0b37
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2019-10-29
+AuthorDate: 2020-12-29
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2019-10-29
+CommitDate: 2020-12-29
 
-    Merge pull request #1411 from richard78917/fix_warning
+    Merge pull request #1546 from nghttp2/py3-scripts
     
-    priority_spec::valid(): remove const qualifier from return value
+    Python3 development scripts
 
-commit 6ce4835eeafe5bcea91c9672fcd3f9ef68ebd472
+commit 28ba0b37e17e4daa901b622b0865dae61ee709a3
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-10-29
+AuthorDate: 2020-12-29
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-10-29
+CommitDate: 2020-12-29
 
-    Fix the bug that stream is closed with wrong error code
-    
-    This commit fixes the bug that stream is closed with wrong error code
-    (0).  This happens when STREAM or DATA frame with END_STREAM flag set
-    is received and it violates HTTP messaging rule (i.e., content-length
-    does not match) and the other side of stream has been closed.  In this
-    case, nghttp2_on_stream_close_callback should be called with nonzero
-    error code, but previously it is called with 0 (NO_ERROR).
+    Update document reference
 
-commit 29042f1c95ef5d17fde7e8d972d2af24e47adf1b
-Author:     Richard Wolfert <richard.wolfert@mavenir.com>
-AuthorDate: 2019-10-29
-Commit:     Richard Wolfert <richard.wolfert@mavenir.com>
-CommitDate: 2019-10-29
+commit 6b7ade9f3fb9ebb68bcb0c0911b2a831d4f10333
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2020-12-29
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2020-12-29
 
-    priority_spec::valid(): remove const qualifier from return value
-    
-    gcc generates warning:
-    * type qualifiers ignored on function return type [-Wignored-qualifiers]
+    Require python3 for python scripts
 
-commit d08c43951f5bf599dace882ed0e67ded2ff8519e
-Merge: 6f967c6e 5d6964cf
+commit 465367294fbcd2029b09844c4859b5acaa3fbe87
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2020-12-28
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2020-12-28
+
+    Bump clang-format to 10
+
+commit 563c1173038a418165eebc27e61e4845eee3ca81
+Merge: 1c04ca80 d32e20bc
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2019-10-12
+AuthorDate: 2020-12-16
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2019-10-12
+CommitDate: 2020-12-16
 
-    Merge pull request #1405 from nghttp2/huffman
+    Merge pull request #1544 from nghttp2/nghttpx-clear-mcpool
     
-    Faster Huffman encoding/decoding
+    nghttpx: Make sure that Pool gets cleared when all buffers are returned
 
-commit 5d6964cf81aaf41b4af5fdfbf4b06737bcb8f9a0
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-10-08
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-10-12
-
-    Faster huffman decoding
-
-commit 0d855bfc1ba6e4201e21d7d130dbaad0907c8a3e
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-10-08
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-10-12
-
-    Faster huffman encoding
-
-commit 6f967c6ef3ea5799b59a5cea6b6f4bec10d25b04
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-09-21
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-09-21
-
-    Fix errors reported by coverity scan
-
-commit b8a43db84c5ce9a91cede2f4faf4706c1b3f4010
-Merge: 70b62c1a 28b1f0b9
+commit 1c04ca80328434e8972726c9b26f524b4ee25a90
+Merge: 8b8ba6b0 d8c71d5f
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2019-09-21
+AuthorDate: 2020-12-16
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2019-09-21
+CommitDate: 2020-12-16
 
-    Merge pull request #1394 from wrowe/fix-static-libname
+    Merge pull request #1540 from tavrez/patch-1
     
-    Avoid filename collision of static and dynamic lib
+    Added new nghttp2_ksl.c to Windows makefile
 
-commit 70b62c1a32eb56edc67eae0609949e0830ec14ad
-Merge: 1dd966f1 72b71a6b
+commit d32e20bcaa8c9f4f24b9d5c3885204b6414fc923
+Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+AuthorDate: 2020-12-16
+Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+CommitDate: 2020-12-16
+
+    nghttpx: Make sure that Pool gets cleared when all buffers are returned
+
+commit 8b8ba6b0a61b58b2e40cb0325dbf49aca6fe62e2
+Merge: fb5b5aef 81fb0153
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2019-09-21
+AuthorDate: 2020-12-14
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2019-09-21
+CommitDate: 2020-12-14
 
-    Merge pull request #1393 from wrowe/fix-static-msvcrt
+    Merge pull request #1542 from nghttp2/nghttpx-check-sigalg
     
-    Add new flag ENABLE_STATIC_CRT for Windows
+    nghttpx: Choose ECDSA cert if compatible signature algorithm available
 
-commit 28b1f0b90f82cccb3f1977ed3b580d2c98421f94
-Author:     William A Rowe Jr <wrowe@pivotal.io>
-AuthorDate: 2019-09-16
-Commit:     William A Rowe Jr <wrowe@pivotal.io>
-CommitDate: 2019-09-16
-
-    Avoid filename collision of static and dynamic lib
-    
-    Renames the output of the ENABLE_STATIC_LIB library/archive output
-    to nghttp2_static.lib/.a to avoid filenames colliding with the output
-    name for ENABLE_SHARED_LIB library/archive, when both are enabled.
-    
-    Signed-off-by: William A Rowe Jr <wrowe@pivotal.io>
-    Signed-off-by: Yechiel Kalmenson <ykalmenson@pivotal.io>
-
-commit 1dd966f1897421fe10d1ad91cfe466526636fcad
-Merge: f8933fe5 fe8946dd
+commit 81fb015391c7ba9218b87caa148f46c888a49368
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-09-17
+AuthorDate: 2020-12-13
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-09-17
+CommitDate: 2020-12-13
 
-    Merge branch 'fix-nghttpx-mruby'
+    nghttpx: Choose ECDSA cert if compatible signature algorithm available
 
-commit fe8946ddc7c081eb0b2f376fc99279121a3f2a8b
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-09-16
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-09-16
+commit d8c71d5fdb6cd1579f2a569ccd7bdbdf9f776ea1
+Author:     Reza Tavakoli <9096461+tavrez@users.noreply.github.com>
+AuthorDate: 2020-12-02
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2020-12-02
 
-    nghttpx: Fix bug that mruby is incorrectly shared between backends
-    
-    Previously, mruby context is wrongly shared by multiple patterns if
-    the underlying SharedDownstreamAddr is shared by multiple
-    DownstreamAddrGroups.  This commit fixes it.
+    Added new nghttp2_ksl.c to Windows makefile
 
-commit 72b71a6ba3f843bdea27f5c1cf926a5e1b152e48
-Author:     William A Rowe Jr <wrowe@pivotal.io>
-AuthorDate: 2019-09-14
-Commit:     William A Rowe Jr <wrowe@pivotal.io>
-CommitDate: 2019-09-14
-
-    Add new flag ENABLE_STATIC_CRT for Windows
-    
-    This change adds the CMake option;
-    
-      ENABLE_STATIC_CRT  Build libnghttp2 against the MS LIBCMT[d]
-    
-    This avoids linking to msvcrt.lib for binaries to compile (/MT[d])
-    and link against the static C Runtime libcrt.lib, and
-    avoiding the msvcrt[d].dll dependency.
-    
-    Signed-off-by: William A Rowe Jr <wrowe@pivotal.io>
-    Signed-off-by: Yechiel Kalmenson <ykalmenson@pivotal.io>
-
-commit f8933fe50468413eb149df7e331e7335400f1649
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-09-07
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-09-07
-
-    nghttpx: Reconnect h1 backend if it lost connection before sending headers
-    
-    This is the second attempt.  The first attempt was
-    8a59ce6d37471ec7a437d4700cabd98c55115b1e and it failed.
-
-commit 89c33d690fd4667dd07c5791638eb6a4653a7f73
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-09-07
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-09-07
-
-    Update neverbleed
-
-commit 7079dc5e753c1881aa6f162bbb4a9bb6d44e79ed
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-09-06
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-09-06
-
-    Update neverbleed to fix memory leak
-
-commit 5080db84e267d9b036c08ac7b2de8b7696c4d6b2
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-09-06
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-09-06
-
-    Revert "nghttpx: Reconnect h1 backend if it lost connection before sending headers"
-    
-    This reverts commit 8a59ce6d37471ec7a437d4700cabd98c55115b1e.
-
-commit 053c7ac5889c280e1108b2bdd40c48d40920172a
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-09-03
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-09-03
-
-    nghttpx: Returns 408 if backend timed out before sending headers
-
-commit 8a59ce6d37471ec7a437d4700cabd98c55115b1e
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-09-03
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-09-03
-
-    nghttpx: Reconnect h1 backend if it lost connection before sending headers
-
-commit f2fde180cdcca1f0a1c12d097c92510a887f6500
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-08-19
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-08-19
-
-    Remove redundant null check before delete
-    
-    Reported in https://github.com/nghttp2/nghttp2/issues/1384
-
-commit 95efb3e19d174354ca50c65d5d7227d92bcd60e1
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-06-25
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-08-14
-
-    Don't read too greedily
-
-commit 0a6ce87c22c69438ecbffe52a2859c3a32f1620f
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-06-25
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-08-14
-
-    Add nghttp2_option_set_max_outbound_ack
-
-commit 2aa79fa91d2714ad704277c1c027c7f18cdd94f0
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-08-14
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-08-14
-
-    Bump up LT revision to 32:0:18
-
-commit 3980678d24ff1bd84b95ec88d1acc07326af3e62
-Merge: 448bbbc3 319d5ab1
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-08-06
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-08-06
-
-    Merge branch 'nghttpx-fix-request-stall'
-
-commit 319d5ab1c6d916b6b8a0d85b2ae3f01b3ad04f2c
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-08-06
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-08-06
-
-    nghttpx: Fix request stall
-    
-    Fix request stall if backend connection is reused and buffer is full.
-
-commit 448bbbc38c0f260447d0aae579d678885aa0f16c
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-08-06
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-08-06
-
-    integration-tests: gofmt
-
-commit e575a2aad99fe57126ad817c57356ea0ce51d213
-Merge: 7a590893 4f7aedc9
+commit fb5b5aef0aca21142d867b45f8b425a1da32bc4d
+Merge: ffcdf5df 6787423e
 Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
-AuthorDate: 2019-08-01
+AuthorDate: 2020-11-27
 Commit:     GitHub <noreply@github.com>
-CommitDate: 2019-08-01
+CommitDate: 2020-11-27
 
-    Merge pull request #1377 from Aldrog/cmake_systemd
+    Merge pull request #1537 from nghttp2/nghttpx-allow-colon-in-pattern
     
-    Support building nghttpx with systemd using cmake
+    nghttpx: Add workaround to include ':' in backend pattern
 
-commit 4f7aedc9d274183f4db17634d320a6d60ef2edb5
-Author:     Andrew Penkrat <Andrey.Penkrat@lanit-tercom.com>
-AuthorDate: 2019-07-29
-Commit:     Andrew Penkrat <Andrey.Penkrat@lanit-tercom.com>
-CommitDate: 2019-07-29
-
-    cmake: Support building nghttpx with systemd
-
-commit 7a5908933e55297ce2d8a0217391663ddf0c3f31
+commit 6787423edc7928ea778260e9c0c54b72f0a39770
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-06-22
+AuthorDate: 2020-11-27
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-06-22
+CommitDate: 2020-11-27
 
-    Fix clang-8 warning
+    nghttpx: Add workaround to include ':' in backend pattern
 
-commit ee4431344511886efc66395a38b9bf5dddd7151b
+commit ffcdf5dfbcfa9fa35a5501e0ea679bdf6181a88c
+Merge: c9d5472f 0cdb1738
+Author:     Tatsuhiro Tsujikawa <404610+tatsuhiro-t@users.noreply.github.com>
+AuthorDate: 2020-11-24
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2020-11-24
+
+    Merge pull request #1533 from LorenzNickel/patch-1
+    
+    Fix typo in security.rst
+
+commit 0cdb173846f84ffff8035b83c1d9ddd4fe732fda
+Author:     Lorenz Nickel <lorenz.nickel@gmx.net>
+AuthorDate: 2020-11-23
+Commit:     GitHub <noreply@github.com>
+CommitDate: 2020-11-23
+
+    Fix typo in security.rst
+
+commit c9d5472ffb5e7ec1214dd08d0afb4781c83725b2
 Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-06-11
+AuthorDate: 2020-11-23
 Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-06-11
+CommitDate: 2020-11-23
 
-    Fix FPE with default backend
-
-commit abef9b90ef2ba35ec25adbca7cb8d0b9a6c2d044
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-06-11
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-06-11
-
-    Fix log-level is not set with cmd-line or configuration file
-
-commit 12a999f0b8bc67706fdd5ff9b134ab67d495c76a
-Author:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-AuthorDate: 2019-06-11
-Commit:     Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
-CommitDate: 2019-06-11
-
-    Bump up version number to 1.40.0-DEV
+    Bump version number to 1.43.0-DEV

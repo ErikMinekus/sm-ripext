@@ -25,7 +25,7 @@ dnl Do not change user variables!
 dnl http://www.gnu.org/software/automake/manual/html_node/Flag-Variables-Ordering.html
 
 AC_PREREQ(2.61)
-AC_INIT([nghttp2], [1.40.0], [t-tujikawa@users.sourceforge.net])
+AC_INIT([nghttp2], [1.43.0], [t-tujikawa@users.sourceforge.net])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
@@ -44,9 +44,9 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 dnl See versioning rule:
 dnl  http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-AC_SUBST(LT_CURRENT, 33)
-AC_SUBST(LT_REVISION, 0)
-AC_SUBST(LT_AGE, 19)
+AC_SUBST(LT_CURRENT, 34)
+AC_SUBST(LT_REVISION, 1)
+AC_SUBST(LT_AGE, 20)
 
 major=`echo $PACKAGE_VERSION |cut -d. -f1 | sed -e "s/[^0-9]//g"`
 minor=`echo $PACKAGE_VERSION |cut -d. -f2 | sed -e "s/[^0-9]//g"`
@@ -151,7 +151,7 @@ AC_PROG_MKDIR_P
 
 PKG_PROG_PKG_CONFIG([0.20])
 
-AM_PATH_PYTHON([2.7],, [:])
+AM_PATH_PYTHON([3.8],, [:])
 
 if [test "x$request_lib_only" = "xyes"]; then
   request_app=no
@@ -161,7 +161,7 @@ if [test "x$request_lib_only" = "xyes"]; then
 fi
 
 if [test "x$request_python_bindings" != "xno"]; then
-  AX_PYTHON_DEVEL([>= '2.7'])
+  AX_PYTHON_DEVEL([>= '3.8'])
 fi
 
 if test "x${cython_path}" = "x"; then
@@ -567,7 +567,7 @@ enable_python_bindings=no
 if test "x${request_python_bindings}" != "xno" &&
    test "x${CYTHON}" != "x" &&
    test "x${PYTHON}" != "x:" &&
-   test "x${have_python_dev}" = "xyes"; then
+   test "x${PYTHON_VERSION}" != "x"; then
   enable_python_bindings=yes
 fi
 
@@ -890,9 +890,8 @@ AC_MSG_NOTICE([summary of build options:
       Python:         ${PYTHON}
       PYTHON_VERSION: ${PYTHON_VERSION}
       pyexecdir:      ${pyexecdir}
-      Python-dev:     ${have_python_dev}
       PYTHON_CPPFLAGS:${PYTHON_CPPFLAGS}
-      PYTHON_LDFLAGS: ${PYTHON_LDFLAGS}
+      PYTHON_LIBS:    ${PYTHON_LIBS}
       Cython:         ${CYTHON}
     Test:
       CUnit:          ${have_cunit} (CFLAGS='${CUNIT_CFLAGS}' LIBS='${CUNIT_LIBS}')

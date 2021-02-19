@@ -94,6 +94,7 @@ Config::Config()
       log_fd(-1),
       port(0),
       default_port(0),
+      connect_to_port(0),
       verbose(false),
       timing_script(false),
       base_uri_unix(false),
@@ -1563,8 +1564,13 @@ void resolve_host() {
   hints.ai_protocol = 0;
   hints.ai_flags = AI_ADDRCONFIG;
 
-  rv = getaddrinfo(config.host.c_str(), util::utos(config.port).c_str(), &hints,
-                   &res);
+  const auto &resolve_host =
+      config.connect_to_host.empty() ? config.host : config.connect_to_host;
+  auto port =
+      config.connect_to_port == 0 ? config.port : config.connect_to_port;
+
+  rv =
+      getaddrinfo(resolve_host.c_str(), util::utos(port).c_str(), &hints, &res);
   if (rv != 0) {
     std::cerr << "getaddrinfo() failed: " << gai_strerror(rv) << std::endl;
     exit(EXIT_FAILURE);
@@ -1979,6 +1985,9 @@ Options:
               response  time when  using  one worker  thread, but  may
               appear slightly  out of order with  multiple threads due
               to buffering.  Status code is -1 for failed streams.
+  --connect-to=<HOST>[:<PORT>]
+              Host and port to connect  instead of using the authority
+              in <URI>.
   -v, --verbose
               Output debug information.
   --version   Display version information and exit.
@@ -2037,6 +2046,7 @@ int main(int argc, char **argv) {
         {"encoder-header-table-size", required_argument, &flag, 8},
         {"warm-up-time", required_argument, &flag, 9},
         {"log-file", required_argument, &flag, 10},
+        {"connect-to", required_argument, &flag, 11},
         {nullptr, 0, nullptr, 0}};
     int option_index = 0;
     auto c = getopt_long(argc, argv,
@@ -2264,6 +2274,19 @@ int main(int argc, char **argv) {
         // --log-file
         logfile = optarg;
         break;
+      case 11: {
+        // --connect-to
+        auto p = util::split_hostport(StringRef{optarg});
+        int64_t port = 0;
+        if (p.first.empty() ||
+            (!p.second.empty() && (port = util::parse_uint(p.second)) == -1)) {
+          std::cerr << "--connect-to: Invalid value " << optarg << std::endl;
+          exit(EXIT_FAILURE);
+        }
+        config.connect_to_host = p.first.str();
+        config.connect_to_port = port;
+        break;
+      }
       }
       break;
     default:
@@ -2494,7 +2517,7 @@ int main(int argc, char **argv) {
   shared_nva.emplace_back(":method", config.data_fd == -1 ? "GET" : "POST");
   shared_nva.emplace_back("user-agent", user_agent);
 
-  // list overridalbe headers
+  // list header fields that can be overridden.
   auto override_hdrs = make_array<std::string>(":authority", ":host", ":method",
                                                ":scheme", "user-agent");
 

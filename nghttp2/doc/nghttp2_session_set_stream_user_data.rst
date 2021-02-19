@@ -22,5 +22,5 @@ Synopsis
     This function returns 0 if it succeeds, or one of following
     negative error codes:
     
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         The stream does not exist

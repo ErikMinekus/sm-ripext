@@ -22,8 +22,8 @@ Synopsis
     This function returns the number of bytes written in *buf*, or one
     of the following negative error codes:
     
-    :macro:`NGHTTP2_ERR_INVALID_ARGUMENT`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INVALID_ARGUMENT`
         The *iv* contains duplicate settings ID or invalid value.
     
-    :macro:`NGHTTP2_ERR_INSUFF_BUFSIZE`
+    :macro:`nghttp2_error.NGHTTP2_ERR_INSUFF_BUFSIZE`
         The provided *buflen* size is too small to hold the output.

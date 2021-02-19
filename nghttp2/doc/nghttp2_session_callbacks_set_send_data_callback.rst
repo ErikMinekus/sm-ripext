@@ -11,5 +11,5 @@ Synopsis
 
     
     Sets callback function invoked when
-    :macro:`NGHTTP2_DATA_FLAG_NO_COPY` is used in
+    :macro:`nghttp2_data_flag.NGHTTP2_DATA_FLAG_NO_COPY` is used in
     :type:`nghttp2_data_source_read_callback` to avoid data copy.

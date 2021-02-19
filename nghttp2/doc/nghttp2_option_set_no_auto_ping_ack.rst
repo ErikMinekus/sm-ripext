@@ -15,5 +15,5 @@ Synopsis
     received.  If this option is set to nonzero, the library won't send
     PING frame with ACK flag set in the response for incoming PING
     frame.  The application can send PING frame with ACK flag set using
-    `nghttp2_submit_ping()` with :macro:`NGHTTP2_FLAG_ACK` as flags
-    parameter.
+    `nghttp2_submit_ping()` with :macro:`nghttp2_flag.NGHTTP2_FLAG_ACK`
+    as flags parameter.

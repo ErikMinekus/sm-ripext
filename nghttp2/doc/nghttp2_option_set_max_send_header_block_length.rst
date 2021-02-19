@@ -16,4 +16,4 @@ Synopsis
     `nghttp2_hd_deflate_bound()`.  The default value is 64KiB.  If
     application attempts to send header fields larger than this limit,
     the transmission of the frame fails with error code
-    :macro:`NGHTTP2_ERR_FRAME_SIZE_ERROR`.
+    :macro:`nghttp2_error.NGHTTP2_ERR_FRAME_SIZE_ERROR`.

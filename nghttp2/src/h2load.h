@@ -69,6 +69,7 @@ struct Config {
   nghttp2::Headers custom_headers;
   std::string scheme;
   std::string host;
+  std::string connect_to_host;
   std::string ifile;
   std::string ciphers;
   // length of upload data
@@ -101,6 +102,7 @@ struct Config {
   int log_fd;
   uint16_t port;
   uint16_t default_port;
+  uint16_t connect_to_port;
   bool verbose;
   bool timing_script;
   std::string base_uri;

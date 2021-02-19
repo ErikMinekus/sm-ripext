@@ -12,4 +12,4 @@ Synopsis
     
     Returns state of *stream*.  The root stream retrieved by
     `nghttp2_session_get_root_stream()` will have stream state
-    :macro:`NGHTTP2_STREAM_STATE_IDLE`.
+    :macro:`nghttp2_stream_proto_state.NGHTTP2_STREAM_STATE_IDLE`.

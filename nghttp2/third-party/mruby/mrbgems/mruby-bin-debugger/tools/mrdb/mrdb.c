@@ -5,7 +5,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <ctype.h>
 
 #include <mruby.h>
@@ -505,7 +504,7 @@ get_and_parse_command(mrb_state *mrb, mrdb_state *mrdb)
 }
 
 static int32_t
-check_method_breakpoint(mrb_state *mrb, mrb_irep *irep, mrb_code *pc, mrb_value *regs)
+check_method_breakpoint(mrb_state *mrb, mrb_irep *irep, const mrb_code *pc, mrb_value *regs)
 {
   struct RClass* c;
   mrb_sym sym;
@@ -546,7 +545,7 @@ check_method_breakpoint(mrb_state *mrb, mrb_irep *irep, mrb_code *pc, mrb_value 
 }
 
 static void
-mrb_code_fetch_hook(mrb_state *mrb, mrb_irep *irep, mrb_code *pc, mrb_value *regs)
+mrb_code_fetch_hook(mrb_state *mrb, mrb_irep *irep, const mrb_code *pc, mrb_value *regs)
 {
   const char *file;
   int32_t line;
