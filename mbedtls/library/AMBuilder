@@ -7,16 +7,17 @@ rvalue = {}
 for cxx in builder.targets:
   binary = Extension.StaticLibrary(builder, cxx, 'mbedtls')
   binary.compiler.includes += [
-    os.path.join(builder.sourcePath, 'mbedtls', 'library'),
     os.path.join(builder.sourcePath, 'mbedtls', 'include'),
+    os.path.join(builder.sourcePath, 'mbedtls', 'library'),
   ]
 
   if binary.compiler.family == 'clang':
     # https://llvm.org/bugs/show_bug.cgi?id=16428
     binary.compiler.cflags += ['-Wno-attributes']
 
+  # Defined in mbedtls/library/CMakeLists.txt
   binary.sources += [
-    # mbedcrypto
+    # src_crypto
     'aes.c',
     'aesni.c',
     'arc4.c',
@@ -52,7 +53,6 @@ for cxx in builder.targets:
     'md2.c',
     'md4.c',
     'md5.c',
-    'md_wrap.c',
     'memory_buffer_alloc.c',
     'nist_kw.c',
     'oid.c',
@@ -67,6 +67,12 @@ for cxx in builder.targets:
     'platform.c',
     'platform_util.c',
     'poly1305.c',
+    'psa_crypto.c',
+    'psa_crypto_driver_wrappers.c',
+    'psa_crypto_se.c',
+    'psa_crypto_slot_management.c',
+    'psa_crypto_storage.c',
+    'psa_its_file.c',
     'ripemd160.c',
     'rsa.c',
     'rsa_internal.c',
@@ -79,7 +85,7 @@ for cxx in builder.targets:
     'version_features.c',
     'xtea.c',
 
-    # mbedx509
+    # src_x509
     'certs.c',
     'pkcs11.c',
     'x509.c',
@@ -90,16 +96,18 @@ for cxx in builder.targets:
     'x509write_crt.c',
     'x509write_csr.c',
 
-    # mbedtls
+    # src_tls
     'debug.c',
     'net_sockets.c',
     'ssl_cache.c',
     'ssl_ciphersuites.c',
     'ssl_cli.c',
     'ssl_cookie.c',
+    'ssl_msg.c',
     'ssl_srv.c',
     'ssl_ticket.c',
     'ssl_tls.c',
+    'ssl_tls13_keys.c',
   ]
 
   rvalue[binary.compiler.target.arch] = builder.Add(binary)
