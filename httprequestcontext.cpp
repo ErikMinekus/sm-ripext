@@ -24,11 +24,11 @@
 static size_t ReadRequestBody(void *body, size_t size, size_t nmemb, void *userdata)
 {
 	size_t total = size * nmemb;
-	struct HTTPRequest *request = (struct HTTPRequest *)userdata;
-	size_t to_copy = (request->size - request->pos < total) ? request->size - request->pos : total;
+	HTTPRequestContext *context = (HTTPRequestContext *)userdata;
+	size_t to_copy = (context->size - context->pos < total) ? context->size - context->pos : total;
 
-	memcpy(body, &(request->body[request->pos]), to_copy);
-	request->pos += to_copy;
+	memcpy(body, &(context->body[context->pos]), to_copy);
+	context->pos += to_copy;
 
 	return to_copy;
 }
@@ -82,10 +82,16 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 HTTPRequestContext::HTTPRequestContext(const std::string &method, const std::string &url, json_t *data,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 	long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed)
-	: request(data), method(method), url(url), headers(headers), forward(forward), value(value),
+	: method(method), url(url), headers(headers), forward(forward), value(value),
 	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout),
 	maxSendSpeed(maxSendSpeed), maxRecvSpeed(maxRecvSpeed)
-{}
+{
+	if (data != NULL)
+	{
+		body = json_dumps(data, 0);
+		size = (body == NULL) ? 0 : strlen(body);
+	}
+}
 
 HTTPRequestContext::~HTTPRequestContext()
 {
@@ -93,7 +99,7 @@ HTTPRequestContext::~HTTPRequestContext()
 
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
-	free(request.body);
+	free(body);
 	free(response.body);
 }
 
@@ -135,7 +141,7 @@ bool HTTPRequestContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 	curl_easy_setopt(curl, CURLOPT_PIPEWAIT, 1L);
 	curl_easy_setopt(curl, CURLOPT_PRIVATE, this);
-	curl_easy_setopt(curl, CURLOPT_READDATA, &request);
+	curl_easy_setopt(curl, CURLOPT_READDATA, this);
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, &ReadRequestBody);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());

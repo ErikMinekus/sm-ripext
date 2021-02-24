@@ -36,8 +36,12 @@ public: // IHTTPContext
 	bool InitCurl();
 	void OnCompleted();
 
+public:
+	char *body = NULL;
+	size_t pos = 0;
+	size_t size = 0;
+
 private:
-	struct HTTPRequest request;
 	struct HTTPResponse response;
 
 	const std::string method;

@@ -70,21 +70,6 @@ struct CurlContext {
 	uv_poll_t poll_handle;
 };
 
-struct HTTPRequest {
-	HTTPRequest(json_t *data = NULL)
-	{
-		if (data != NULL)
-		{
-			body = json_dumps(data, 0);
-			size = (body == NULL) ? 0 : strlen(body);
-		}
-	}
-
-	char *body = NULL;
-	size_t pos = 0;
-	size_t size = 0;
-};
-
 struct HTTPResponse {
 	long status = 0;
 	json_t *data = NULL;
