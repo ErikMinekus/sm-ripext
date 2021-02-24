@@ -21,6 +21,7 @@
 
 #include "extension.h"
 #include "httpclient.h"
+#include "httprequest.h"
 #include "queue.h"
 
 // Limit the max processing request per tick
@@ -43,6 +44,9 @@ uv_async_t g_AsyncStopLoop;
 
 HTTPClientHandler	g_HTTPClientHandler;
 HandleType_t		htHTTPClient;
+
+HTTPRequestHandler	g_HTTPRequestHandler;
+HandleType_t		htHTTPRequest;
 
 HTTPResponseHandler	g_HTTPResponseHandler;
 HandleType_t			htHTTPResponse;
@@ -246,6 +250,7 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	haJSON.access[HandleAccess_Read] = 0;
 
 	htHTTPClient = handlesys->CreateType("HTTPClient", &g_HTTPClientHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
+	htHTTPRequest = handlesys->CreateType("HTTPRequest", &g_HTTPRequestHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
 	htHTTPResponse = handlesys->CreateType("HTTPResponse", &g_HTTPResponseHandler, 0, NULL, &haHTTPResponse, myself->GetIdentity(), NULL);
 	htJSON = handlesys->CreateType("JSON", &g_JSONHandler, 0, NULL, &haJSON, myself->GetIdentity(), NULL);
 	htJSONObjectKeys = handlesys->CreateType("JSONObjectKeys", &g_JSONObjectKeysHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
@@ -266,6 +271,7 @@ void RipExt::SDK_OnUnload()
 	curl_global_cleanup();
 
 	handlesys->RemoveType(htHTTPClient, myself->GetIdentity());
+	handlesys->RemoveType(htHTTPRequest, myself->GetIdentity());
 	handlesys->RemoveType(htHTTPResponse, myself->GetIdentity());
 	handlesys->RemoveType(htJSON, myself->GetIdentity());
 	handlesys->RemoveType(htJSONObjectKeys, myself->GetIdentity());
@@ -283,6 +289,11 @@ void RipExt::AddRequestToQueue(IHTTPContext *context)
 void HTTPClientHandler::OnHandleDestroy(HandleType_t type, void *object)
 {
 	delete (HTTPClient *)object;
+}
+
+void HTTPRequestHandler::OnHandleDestroy(HandleType_t type, void *object)
+{
+	delete (HTTPRequest *)object;
 }
 
 void HTTPResponseHandler::OnHandleDestroy(HandleType_t type, void *object)

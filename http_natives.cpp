@@ -21,6 +21,7 @@
 
 #include "extension.h"
 #include "httpclient.h"
+#include "httprequest.h"
 
 static cell_t CreateClient(IPluginContext *pContext, const cell_t *params)
 {
@@ -412,6 +413,25 @@ static cell_t SetClientMaxRecvSpeed(IPluginContext *pContext, const cell_t *para
 	return 1;
 }
 
+static cell_t CreateRequest(IPluginContext *pContext, const cell_t *params)
+{
+	char *url;
+	pContext->LocalToString(params[1], &url);
+
+	HTTPRequest *request = new HTTPRequest(url);
+
+	Handle_t hndlRequest = handlesys->CreateHandle(htHTTPRequest, request, pContext->GetIdentity(), myself->GetIdentity(), NULL);
+	if (hndlRequest == BAD_HANDLE)
+	{
+		delete request;
+
+		pContext->ThrowNativeError("Could not create HTTPRequest handle.");
+		return BAD_HANDLE;
+	}
+
+	return hndlRequest;
+}
+
 static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -518,6 +538,7 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.MaxSendSpeed.set",		SetClientMaxSendSpeed},
 	{"HTTPClient.MaxRecvSpeed.get",		GetClientMaxRecvSpeed},
 	{"HTTPClient.MaxRecvSpeed.set",		SetClientMaxRecvSpeed},
+	{"HTTPRequest.HTTPRequest",			CreateRequest},
 	{"HTTPResponse.Data.get",			GetResponseData},
 	{"HTTPResponse.Status.get",			GetResponseStatus},
 	{"HTTPResponse.GetHeader",			GetResponseHeader},
