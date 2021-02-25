@@ -432,6 +432,229 @@ static cell_t CreateRequest(IPluginContext *pContext, const cell_t *params)
 	return hndlRequest;
 }
 
+static cell_t PerformGetRequest(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request;
+	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+	}
+
+	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
+	cell_t value = params[3];
+
+	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
+	if (forward == NULL || !forward->AddFunction(callback))
+	{
+		return pContext->ThrowNativeError("Could not create forward.");
+	}
+
+	request->Perform("GET", NULL, forward, value);
+
+	handlesys->FreeHandle(hndlRequest, &sec);
+
+	return 1;
+}
+
+static cell_t PerformPostRequest(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request;
+	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+	}
+
+	json_t *data;
+	Handle_t hndlData = static_cast<Handle_t>(params[2]);
+	if ((err=handlesys->ReadHandle(hndlData, htJSON, &sec, (void **)&data)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndlData, err);
+	}
+
+	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
+	cell_t value = params[4];
+
+	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
+	if (forward == NULL || !forward->AddFunction(callback))
+	{
+		return pContext->ThrowNativeError("Could not create forward.");
+	}
+
+	request->Perform("POST", data, forward, value);
+
+	handlesys->FreeHandle(hndlRequest, &sec);
+
+	return 1;
+}
+
+static cell_t PerformPutRequest(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request;
+	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+	}
+
+	json_t *data;
+	Handle_t hndlData = static_cast<Handle_t>(params[2]);
+	if ((err=handlesys->ReadHandle(hndlData, htJSON, &sec, (void **)&data)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndlData, err);
+	}
+
+	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
+	cell_t value = params[4];
+
+	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
+	if (forward == NULL || !forward->AddFunction(callback))
+	{
+		return pContext->ThrowNativeError("Could not create forward.");
+	}
+
+	request->Perform("PUT", data, forward, value);
+
+	handlesys->FreeHandle(hndlRequest, &sec);
+
+	return 1;
+}
+
+static cell_t PerformPatchRequest(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request;
+	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+	}
+
+	json_t *data;
+	Handle_t hndlData = static_cast<Handle_t>(params[2]);
+	if ((err=handlesys->ReadHandle(hndlData, htJSON, &sec, (void **)&data)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndlData, err);
+	}
+
+	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
+	cell_t value = params[4];
+
+	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
+	if (forward == NULL || !forward->AddFunction(callback))
+	{
+		return pContext->ThrowNativeError("Could not create forward.");
+	}
+
+	request->Perform("PATCH", data, forward, value);
+
+	handlesys->FreeHandle(hndlRequest, &sec);
+
+	return 1;
+}
+
+static cell_t PerformDeleteRequest(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request;
+	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+	}
+
+	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
+	cell_t value = params[3];
+
+	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
+	if (forward == NULL || !forward->AddFunction(callback))
+	{
+		return pContext->ThrowNativeError("Could not create forward.");
+	}
+
+	request->Perform("DELETE", NULL, forward, value);
+
+	handlesys->FreeHandle(hndlRequest, &sec);
+
+	return 1;
+}
+
+static cell_t PerformDownloadFile(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request;
+	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+	}
+
+	char *path;
+	pContext->LocalToString(params[2], &path);
+
+	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
+	cell_t value = params[4];
+
+	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
+	if (forward == NULL || !forward->AddFunction(callback))
+	{
+		return pContext->ThrowNativeError("Could not create forward.");
+	}
+
+	request->DownloadFile(path, forward, value);
+
+	handlesys->FreeHandle(hndlRequest, &sec);
+
+	return 1;
+}
+
+static cell_t PerformUploadFile(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request;
+	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+	}
+
+	char *path;
+	pContext->LocalToString(params[2], &path);
+
+	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
+	cell_t value = params[4];
+
+	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
+	if (forward == NULL || !forward->AddFunction(callback))
+	{
+		return pContext->ThrowNativeError("Could not create forward.");
+	}
+
+	request->UploadFile(path, forward, value);
+
+	handlesys->FreeHandle(hndlRequest, &sec);
+
+	return 1;
+}
+
 static cell_t GetRequestConnectTimeout(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -699,6 +922,13 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.MaxRecvSpeed.get",		GetClientMaxRecvSpeed},
 	{"HTTPClient.MaxRecvSpeed.set",		SetClientMaxRecvSpeed},
 	{"HTTPRequest.HTTPRequest",			CreateRequest},
+	{"HTTPRequest.Get",					PerformGetRequest},
+	{"HTTPRequest.Post",				PerformPostRequest},
+	{"HTTPRequest.Put",					PerformPutRequest},
+	{"HTTPRequest.Patch",				PerformPatchRequest},
+	{"HTTPRequest.Delete",				PerformDeleteRequest},
+	{"HTTPRequest.DownloadFile",		PerformDownloadFile},
+	{"HTTPRequest.UploadFile",			PerformUploadFile},
 	{"HTTPRequest.ConnectTimeout.get",	GetRequestConnectTimeout},
 	{"HTTPRequest.ConnectTimeout.set",	SetRequestConnectTimeout},
 	{"HTTPRequest.FollowLocation.get",	GetRequestFollowLocation},

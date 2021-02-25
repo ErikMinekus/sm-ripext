@@ -20,6 +20,44 @@
  */
 
 #include "httprequest.h"
+#include "httprequestcontext.h"
+#include "httpfilecontext.h"
+
+void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value)
+{
+	struct curl_slist *headers = NULL;
+	headers = curl_slist_append(headers, "Accept: application/json");
+	headers = curl_slist_append(headers, "Content-Type: application/json");
+
+	HTTPRequestContext *context = new HTTPRequestContext(method, this->GetURL(), data, headers, forward, value,
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
+
+	g_RipExt.AddRequestToQueue(context);
+}
+
+void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, cell_t value)
+{
+	struct curl_slist *headers = NULL;
+	headers = curl_slist_append(headers, "Accept: */*");
+	headers = curl_slist_append(headers, "Content-Type: application/octet-stream");
+
+	HTTPFileContext *context = new HTTPFileContext(false, this->GetURL(), path, headers, forward, value,
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
+
+	g_RipExt.AddRequestToQueue(context);
+}
+
+void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell_t value)
+{
+	struct curl_slist *headers = NULL;
+	headers = curl_slist_append(headers, "Accept: */*");
+	headers = curl_slist_append(headers, "Content-Type: application/octet-stream");
+
+	HTTPFileContext *context = new HTTPFileContext(true, this->GetURL(), path, headers, forward, value,
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
+
+	g_RipExt.AddRequestToQueue(context);
+}
 
 const std::string HTTPRequest::GetURL() const
 {

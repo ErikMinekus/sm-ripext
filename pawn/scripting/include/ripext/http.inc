@@ -80,10 +80,73 @@ methodmap HTTPRequest < Handle
 {
 	// Creates an HTTP request.
 	//
-	// The Handle must be freed via delete or CloseHandle().
+	// The Handle is automatically freed when the request is performed.
+	// Otherwise, the Handle must be freed via delete or CloseHandle().
 	//
 	// @param url        URL to the REST API endpoint.
 	public native HTTPRequest(const char[] url);
+
+	// Performs an HTTP GET request.
+	//
+	// This function closes the request Handle after completing.
+	//
+	// @param callback   A function to use as a callback when the request has finished.
+	// @param value      Optional value to pass to the callback function.
+	public native void Get(HTTPRequestCallback callback, any value = 0);
+
+	// Performs an HTTP POST request.
+	//
+	// This function closes the request Handle after completing.
+	//
+	// @param data       JSON data to send.
+	// @param callback   A function to use as a callback when the request has finished.
+	// @param value      Optional value to pass to the callback function.
+	public native void Post(JSON data, HTTPRequestCallback callback, any value = 0);
+
+	// Performs an HTTP PUT request.
+	//
+	// This function closes the request Handle after completing.
+	//
+	// @param data       JSON data to send.
+	// @param callback   A function to use as a callback when the request has finished.
+	// @param value      Optional value to pass to the callback function.
+	public native void Put(JSON data, HTTPRequestCallback callback, any value = 0);
+
+	// Performs an HTTP PATCH request.
+	//
+	// This function closes the request Handle after completing.
+	//
+	// @param data       JSON data to send.
+	// @param callback   A function to use as a callback when the request has finished.
+	// @param value      Optional value to pass to the callback function.
+	public native void Patch(JSON data, HTTPRequestCallback callback, any value = 0);
+
+	// Performs an HTTP DELETE request.
+	//
+	// This function closes the request Handle after completing.
+	//
+	// @param callback   A function to use as a callback when the request has finished.
+	// @param value      Optional value to pass to the callback function.
+	public native void Delete(HTTPRequestCallback callback, any value = 0);
+
+	// Downloads a file.
+	//
+	// This function closes the request Handle after completing.
+	//
+	// @param path       File path to write to.
+	// @param callback   A function to use as a callback when the download has finished.
+	// @param value      Optional value to pass to the callback function.
+	public native void DownloadFile(const char[] path, HTTPFileCallback callback, any value = 0);
+
+	// Uploads a file.
+	//
+	// This function performs an HTTP PUT request. The file contents are sent in the request body.
+	// This function closes the request Handle after completing.
+	//
+	// @param path       File path to read from.
+	// @param callback   A function to use as a callback when the upload has finished.
+	// @param value      Optional value to pass to the callback function.
+	public native void UploadFile(const char[] path, HTTPFileCallback callback, any value = 0);
 
 	// Connect timeout in seconds. Defaults to 10.
 	property int ConnectTimeout {
