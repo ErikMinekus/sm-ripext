@@ -84,6 +84,36 @@ methodmap HTTPRequest < Handle
 	//
 	// @param url        URL to the REST API endpoint.
 	public native HTTPRequest(const char[] url);
+
+	// Connect timeout in seconds. Defaults to 10.
+	property int ConnectTimeout {
+		public native get();
+		public native set(int connectTimeout);
+	}
+
+	// Follow HTTP 3xx redirects. Defaults to true.
+	property bool FollowLocation {
+		public native get();
+		public native set(bool followLocation);
+	}
+
+	// Maximum download speed in bytes per second. Defaults to unlimited speed.
+	property int MaxRecvSpeed {
+		public native get();
+		public native set(int maxSpeed);
+	}
+
+	// Maximum upload speed in bytes per second. Defaults to unlimited speed.
+	property int MaxSendSpeed {
+		public native get();
+		public native set(int maxSpeed);
+	}
+
+	// Timeout in seconds. Defaults to 30.
+	property int Timeout {
+		public native get();
+		public native set(int timeout);
+	}
 }
 
 methodmap HTTPResponse

@@ -31,8 +31,28 @@ public:
 
 	const std::string GetURL() const;
 
+	int GetConnectTimeout() const;
+	void SetConnectTimeout(int connectTimeout);
+
+	bool GetFollowLocation() const;
+	void SetFollowLocation(bool followLocation);
+
+	int GetMaxRecvSpeed() const;
+	void SetMaxRecvSpeed(int maxSpeed);
+
+	int GetMaxSendSpeed() const;
+	void SetMaxSendSpeed(int maxSpeed);
+
+	int GetTimeout() const;
+	void SetTimeout(int timeout);
+
 private:
 	const std::string url;
+	int connectTimeout = 10;
+	bool followLocation = true;
+	int maxRecvSpeed = 0;
+	int maxSendSpeed = 0;
+	int timeout = 30;
 };
 
 #endif // SM_RIPEXT_HTTPREQUEST_H_
