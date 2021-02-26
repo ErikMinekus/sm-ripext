@@ -28,6 +28,7 @@ void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "Accept: application/json");
 	headers = curl_slist_append(headers, "Content-Type: application/json");
+	headers = this->BuildHeaders(headers);
 
 	HTTPRequestContext *context = new HTTPRequestContext(method, this->GetURL(), data, headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
@@ -40,6 +41,7 @@ void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, ce
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "Accept: */*");
 	headers = curl_slist_append(headers, "Content-Type: application/octet-stream");
+	headers = this->BuildHeaders(headers);
 
 	HTTPFileContext *context = new HTTPFileContext(false, this->GetURL(), path, headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
@@ -52,6 +54,7 @@ void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "Accept: */*");
 	headers = curl_slist_append(headers, "Content-Type: application/octet-stream");
+	headers = this->BuildHeaders(headers);
 
 	HTTPFileContext *context = new HTTPFileContext(true, this->GetURL(), path, headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
@@ -62,6 +65,25 @@ void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell
 const std::string HTTPRequest::GetURL() const
 {
 	return url;
+}
+
+struct curl_slist *HTTPRequest::BuildHeaders(struct curl_slist *headers)
+{
+	char header[8192];
+
+	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
+	{
+		snprintf(header, sizeof(header), "%s: %s", iter->key.chars(), iter->value.c_str());
+		headers = curl_slist_append(headers, header);
+	}
+
+	return headers;
+}
+
+void HTTPRequest::SetHeader(const char *name, const char *value)
+{
+	std::string vstr(value);
+	headers.replace(name, std::move(vstr));
 }
 
 int HTTPRequest::GetConnectTimeout() const

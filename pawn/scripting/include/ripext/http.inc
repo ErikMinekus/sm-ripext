@@ -86,6 +86,12 @@ methodmap HTTPRequest < Handle
 	// @param url        URL to the REST API endpoint.
 	public native HTTPRequest(const char[] url);
 
+	// Sets an HTTP header.
+	//
+	// @param name       Header name.
+	// @param value      String value.
+	public native void SetHeader(const char[] name, const char[] value);
+
 	// Performs an HTTP GET request.
 	//
 	// This function closes the request Handle after completing.

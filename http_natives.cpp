@@ -432,6 +432,29 @@ static cell_t CreateRequest(IPluginContext *pContext, const cell_t *params)
 	return hndlRequest;
 }
 
+static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request;
+	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+	}
+
+	char *name;
+	pContext->LocalToString(params[2], &name);
+
+	char *value;
+	pContext->LocalToString(params[3], &value);
+
+	request->SetHeader(name, value);
+
+	return 1;
+}
+
 static cell_t PerformGetRequest(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -922,6 +945,7 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.MaxRecvSpeed.get",		GetClientMaxRecvSpeed},
 	{"HTTPClient.MaxRecvSpeed.set",		SetClientMaxRecvSpeed},
 	{"HTTPRequest.HTTPRequest",			CreateRequest},
+	{"HTTPRequest.SetHeader",			SetRequestHeader},
 	{"HTTPRequest.Get",					PerformGetRequest},
 	{"HTTPRequest.Post",				PerformPostRequest},
 	{"HTTPRequest.Put",					PerformPutRequest},

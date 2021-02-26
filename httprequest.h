@@ -35,6 +35,9 @@ public:
 
 	const std::string GetURL() const;
 
+	struct curl_slist *BuildHeaders(struct curl_slist *headers);
+	void SetHeader(const char *name, const char *value);
+
 	int GetConnectTimeout() const;
 	void SetConnectTimeout(int connectTimeout);
 
@@ -52,6 +55,7 @@ public:
 
 private:
 	const std::string url;
+	HTTPHeaderMap headers;
 	int connectTimeout = 10;
 	bool followLocation = true;
 	int maxRecvSpeed = 0;
