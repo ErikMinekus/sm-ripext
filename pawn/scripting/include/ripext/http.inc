@@ -86,6 +86,14 @@ methodmap HTTPRequest < Handle
 	// @param url        URL to the REST API endpoint.
 	public native HTTPRequest(const char[] url);
 
+	// Appends a query parameter to the URL.
+	//
+	// The parameter name and value are encoded according to RFC 3986.
+	//
+	// @param name       Parameter name.
+	// @param value      String value.
+	public native void AppendQueryParam(const char[] name, const char[] value);
+
 	// Sets an HTTP header.
 	//
 	// @param name       Header name.

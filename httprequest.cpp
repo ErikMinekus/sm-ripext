@@ -30,7 +30,7 @@ void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *
 	headers = curl_slist_append(headers, "Content-Type: application/json");
 	headers = this->BuildHeaders(headers);
 
-	HTTPRequestContext *context = new HTTPRequestContext(method, this->GetURL(), data, headers, forward, value,
+	HTTPRequestContext *context = new HTTPRequestContext(method, this->BuildURL(), data, headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -43,7 +43,7 @@ void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, ce
 	headers = curl_slist_append(headers, "Content-Type: application/octet-stream");
 	headers = this->BuildHeaders(headers);
 
-	HTTPFileContext *context = new HTTPFileContext(false, this->GetURL(), path, headers, forward, value,
+	HTTPFileContext *context = new HTTPFileContext(false, this->BuildURL(), path, headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -56,15 +56,42 @@ void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell
 	headers = curl_slist_append(headers, "Content-Type: application/octet-stream");
 	headers = this->BuildHeaders(headers);
 
-	HTTPFileContext *context = new HTTPFileContext(true, this->GetURL(), path, headers, forward, value,
+	HTTPFileContext *context = new HTTPFileContext(true, this->BuildURL(), path, headers, forward, value,
 		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
 
 	g_RipExt.AddRequestToQueue(context);
 }
 
-const std::string HTTPRequest::GetURL() const
+const std::string HTTPRequest::BuildURL() const
 {
+	std::string url(this->url);
+	url.append(query);
+
 	return url;
+}
+
+void HTTPRequest::AppendQueryParam(const char *name, const char *value)
+{
+	CURL *curl = curl_easy_init();
+	if (curl == NULL)
+	{
+		return;
+	}
+
+	char *escapedName = curl_easy_escape(curl, name, 0);
+	char *escapedValue = curl_easy_escape(curl, value, 0);
+
+	if (escapedName != NULL && escapedValue != NULL)
+	{
+		query.append(query.size() == 0 ? "?" : "&");
+		query.append(escapedName);
+		query.append("=");
+		query.append(escapedValue);
+	}
+
+	curl_free(escapedName);
+	curl_free(escapedValue);
+	curl_easy_cleanup(curl);
 }
 
 struct curl_slist *HTTPRequest::BuildHeaders(struct curl_slist *headers)

@@ -33,7 +33,8 @@ public:
 	void DownloadFile(const char *path, IChangeableForward *forward, cell_t value);
 	void UploadFile(const char *path, IChangeableForward *forward, cell_t value);
 
-	const std::string GetURL() const;
+	const std::string BuildURL() const;
+	void AppendQueryParam(const char *name, const char *value);
 
 	struct curl_slist *BuildHeaders(struct curl_slist *headers);
 	void SetHeader(const char *name, const char *value);
@@ -55,6 +56,7 @@ public:
 
 private:
 	const std::string url;
+	std::string query;
 	HTTPHeaderMap headers;
 	int connectTimeout = 10;
 	bool followLocation = true;
