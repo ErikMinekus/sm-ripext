@@ -94,6 +94,12 @@ methodmap HTTPRequest < Handle
 	// @param value      String value.
 	public native void AppendQueryParam(const char[] name, const char[] value);
 
+	// Sets the credentials for HTTP Basic authentication.
+	//
+	// @param username   Username to use.
+	// @param password   Password to use.
+	public native void SetBasicAuth(const char[] username, const char[] password);
+
 	// Sets an HTTP header.
 	//
 	// @param name       Header name.

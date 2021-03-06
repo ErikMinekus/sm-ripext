@@ -29,7 +29,8 @@ class HTTPRequestContext : public IHTTPContext
 public:
 	HTTPRequestContext(const std::string &method, const std::string &url, json_t *data,
 		struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-		long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed);
+		long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
+		bool useBasicAuth, const std::string &username, const std::string &password);
 	~HTTPRequestContext();
 
 public: // IHTTPContext
@@ -55,6 +56,9 @@ private:
 	long timeout;
 	curl_off_t maxSendSpeed;
 	curl_off_t maxRecvSpeed;
+	bool useBasicAuth;
+	const std::string username;
+	const std::string password;
 };
 
 #endif // SM_RIPEXT_HTTPREQUESTCONTEXT_H_

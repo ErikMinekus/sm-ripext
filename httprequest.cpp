@@ -31,7 +31,8 @@ void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *
 	headers = this->BuildHeaders(headers);
 
 	HTTPRequestContext *context = new HTTPRequestContext(method, this->BuildURL(), data, headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
+		this->useBasicAuth, this->username, this->password);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -44,7 +45,8 @@ void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, ce
 	headers = this->BuildHeaders(headers);
 
 	HTTPFileContext *context = new HTTPFileContext(false, this->BuildURL(), path, headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
+		this->useBasicAuth, this->username, this->password);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -57,7 +59,8 @@ void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell
 	headers = this->BuildHeaders(headers);
 
 	HTTPFileContext *context = new HTTPFileContext(true, this->BuildURL(), path, headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
+		this->useBasicAuth, this->username, this->password);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -111,6 +114,28 @@ void HTTPRequest::SetHeader(const char *name, const char *value)
 {
 	std::string vstr(value);
 	headers.replace(name, std::move(vstr));
+}
+
+bool HTTPRequest::UseBasicAuth() const
+{
+	return useBasicAuth;
+}
+
+const std::string HTTPRequest::GetUsername() const
+{
+	return username;
+}
+
+const std::string HTTPRequest::GetPassword() const
+{
+	return password;
+}
+
+void HTTPRequest::SetBasicAuth(const char *username, const char *password)
+{
+	this->useBasicAuth = true;
+	this->username = username;
+	this->password = password;
 }
 
 int HTTPRequest::GetConnectTimeout() const

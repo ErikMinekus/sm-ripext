@@ -23,10 +23,11 @@
 
 HTTPFileContext::HTTPFileContext(bool isUpload, const std::string &url, const std::string &path,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-	long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed)
+	long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
+	bool useBasicAuth, const std::string &username, const std::string &password)
 	: isUpload(isUpload), url(url), path(path), headers(headers), forward(forward), value(value),
-	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout),
-	maxSendSpeed(maxSendSpeed), maxRecvSpeed(maxRecvSpeed)
+	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout), maxSendSpeed(maxSendSpeed),
+	maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password)
 {}
 
 HTTPFileContext::~HTTPFileContext()
@@ -88,6 +89,11 @@ bool HTTPFileContext::InitCurl()
 	if (maxSendSpeed > 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_MAX_SEND_SPEED_LARGE, maxSendSpeed);
+	}
+	if (useBasicAuth)
+	{
+		curl_easy_setopt(curl, CURLOPT_USERNAME, username.c_str());
+		curl_easy_setopt(curl, CURLOPT_PASSWORD, password.c_str());
 	}
 
 	return true;

@@ -64,7 +64,7 @@ void HTTPClient::Request(const char *method, const char *endpoint, json_t *data,
 	const std::string url = this->BuildURL(std::string(endpoint));
 	struct curl_slist *headers = this->BuildHeaders("application/json", "application/json");
 	HTTPRequestContext *context = new HTTPRequestContext(std::string(method), url, data, headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed, false, "", "");
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -81,7 +81,7 @@ void HTTPClient::DownloadFile(const char *endpoint, const char *path, IPluginFun
 	const std::string url = this->BuildURL(std::string(endpoint));
 	struct curl_slist *headers = this->BuildHeaders("*/*", "application/octet-stream");
 	HTTPFileContext *context = new HTTPFileContext(false, url, std::string(path), headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed, false, "", "");
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -98,7 +98,7 @@ void HTTPClient::UploadFile(const char *endpoint, const char *path, IPluginFunct
 	const std::string url = this->BuildURL(std::string(endpoint));
 	struct curl_slist *headers = this->BuildHeaders("*/*", "application/octet-stream");
 	HTTPFileContext *context = new HTTPFileContext(true, url, std::string(path), headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed);
+		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed, false, "", "");
 
 	g_RipExt.AddRequestToQueue(context);
 }

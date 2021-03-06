@@ -39,6 +39,11 @@ public:
 	struct curl_slist *BuildHeaders(struct curl_slist *headers);
 	void SetHeader(const char *name, const char *value);
 
+	bool UseBasicAuth() const;
+	const std::string GetUsername() const;
+	const std::string GetPassword() const;
+	void SetBasicAuth(const char *username, const char *password);
+
 	int GetConnectTimeout() const;
 	void SetConnectTimeout(int connectTimeout);
 
@@ -58,6 +63,9 @@ private:
 	const std::string url;
 	std::string query;
 	HTTPHeaderMap headers;
+	bool useBasicAuth = false;
+	std::string username;
+	std::string password;
 	int connectTimeout = 10;
 	bool followLocation = true;
 	int maxRecvSpeed = 0;

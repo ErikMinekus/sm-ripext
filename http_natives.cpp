@@ -455,6 +455,29 @@ static cell_t AppendRequestQueryParam(IPluginContext *pContext, const cell_t *pa
 	return 1;
 }
 
+static cell_t SetRequestBasicAuth(IPluginContext *pContext, const cell_t *params)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request;
+	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
+	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	{
+		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+	}
+
+	char *username;
+	pContext->LocalToString(params[2], &username);
+
+	char *password;
+	pContext->LocalToString(params[3], &password);
+
+	request->SetBasicAuth(username, password);
+
+	return 1;
+}
+
 static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -969,6 +992,7 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.MaxRecvSpeed.set",		SetClientMaxRecvSpeed},
 	{"HTTPRequest.HTTPRequest",			CreateRequest},
 	{"HTTPRequest.AppendQueryParam",	AppendRequestQueryParam},
+	{"HTTPRequest.SetBasicAuth",		SetRequestBasicAuth},
 	{"HTTPRequest.SetHeader",			SetRequestHeader},
 	{"HTTPRequest.Get",					PerformGetRequest},
 	{"HTTPRequest.Post",				PerformPostRequest},
