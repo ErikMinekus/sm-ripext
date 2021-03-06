@@ -31,7 +31,7 @@ void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *
 	headers = this->BuildHeaders(headers);
 
 	HTTPRequestContext *context = new HTTPRequestContext(method, this->BuildURL(), data, headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
+		this->connectTimeout, this->maxRedirects, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
 		this->useBasicAuth, this->username, this->password);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -45,7 +45,7 @@ void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, ce
 	headers = this->BuildHeaders(headers);
 
 	HTTPFileContext *context = new HTTPFileContext(false, this->BuildURL(), path, headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
+		this->connectTimeout, this->maxRedirects, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
 		this->useBasicAuth, this->username, this->password);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -59,7 +59,7 @@ void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell
 	headers = this->BuildHeaders(headers);
 
 	HTTPFileContext *context = new HTTPFileContext(true, this->BuildURL(), path, headers, forward, value,
-		this->connectTimeout, this->followLocation, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
+		this->connectTimeout, this->maxRedirects, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
 		this->useBasicAuth, this->username, this->password);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -148,14 +148,14 @@ void HTTPRequest::SetConnectTimeout(int connectTimeout)
 	this->connectTimeout = connectTimeout;
 }
 
-bool HTTPRequest::GetFollowLocation() const
+int HTTPRequest::GetMaxRedirects() const
 {
-	return followLocation;
+	return maxRedirects;
 }
 
-void HTTPRequest::SetFollowLocation(bool followLocation)
+void HTTPRequest::SetMaxRedirects(int maxRedirects)
 {
-	this->followLocation = followLocation;
+	this->maxRedirects = maxRedirects;
 }
 
 int HTTPRequest::GetMaxRecvSpeed() const

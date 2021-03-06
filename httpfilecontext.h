@@ -30,7 +30,7 @@ class HTTPFileContext : public IHTTPContext
 public:
 	HTTPFileContext(bool isUpload, const std::string &url, const std::string &path,
 		struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-		long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
+		long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
 		bool useBasicAuth, const std::string &username, const std::string &password);
 	~HTTPFileContext();
 
@@ -49,7 +49,7 @@ private:
 	cell_t value;
 	char error[CURL_ERROR_SIZE] = {'\0'};
 	long connectTimeout;
-	long followLocation;
+	long maxRedirects;
 	long timeout;
 	curl_off_t maxSendSpeed;
 	curl_off_t maxRecvSpeed;

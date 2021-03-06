@@ -174,10 +174,10 @@ methodmap HTTPRequest < Handle
 		public native set(int connectTimeout);
 	}
 
-	// Follow HTTP 3xx redirects. Defaults to true.
-	property bool FollowLocation {
+	// Maximum number of redirects to follow. Defaults to 5.
+	property int MaxRedirects {
 		public native get();
-		public native set(bool followLocation);
+		public native set(int maxRedirects);
 	}
 
 	// Maximum download speed in bytes per second. Defaults to unlimited speed.

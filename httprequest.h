@@ -47,8 +47,8 @@ public:
 	int GetConnectTimeout() const;
 	void SetConnectTimeout(int connectTimeout);
 
-	bool GetFollowLocation() const;
-	void SetFollowLocation(bool followLocation);
+	int GetMaxRedirects() const;
+	void SetMaxRedirects(int maxRedirects);
 
 	int GetMaxRecvSpeed() const;
 	void SetMaxRecvSpeed(int maxSpeed);
@@ -67,7 +67,7 @@ private:
 	std::string username;
 	std::string password;
 	int connectTimeout = 10;
-	bool followLocation = true;
+	int maxRedirects = 5;
 	int maxRecvSpeed = 0;
 	int maxSendSpeed = 0;
 	int timeout = 30;

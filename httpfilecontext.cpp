@@ -23,10 +23,10 @@
 
 HTTPFileContext::HTTPFileContext(bool isUpload, const std::string &url, const std::string &path,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
-	long connectTimeout, long followLocation, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
+	long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
 	bool useBasicAuth, const std::string &username, const std::string &password)
 	: isUpload(isUpload), url(url), path(path), headers(headers), forward(forward), value(value),
-	connectTimeout(connectTimeout), followLocation(followLocation), timeout(timeout), maxSendSpeed(maxSendSpeed),
+	connectTimeout(connectTimeout), maxRedirects(maxRedirects), timeout(timeout), maxSendSpeed(maxSendSpeed),
 	maxRecvSpeed(maxRecvSpeed), useBasicAuth(useBasicAuth), username(username), password(password)
 {}
 
@@ -73,8 +73,9 @@ bool HTTPFileContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_CAINFO, g_RipExt.caBundlePath);
 	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, connectTimeout);
 	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, error);
-	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, followLocation);
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+	curl_easy_setopt(curl, CURLOPT_MAXREDIRS, maxRedirects);
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 	curl_easy_setopt(curl, CURLOPT_PIPEWAIT, 1L);
 	curl_easy_setopt(curl, CURLOPT_PRIVATE, this);

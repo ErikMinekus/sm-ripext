@@ -756,7 +756,7 @@ static cell_t SetRequestConnectTimeout(IPluginContext *pContext, const cell_t *p
 	return 1;
 }
 
-static cell_t GetRequestFollowLocation(IPluginContext *pContext, const cell_t *params)
+static cell_t GetRequestMaxRedirects(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
@@ -768,10 +768,10 @@ static cell_t GetRequestFollowLocation(IPluginContext *pContext, const cell_t *p
 		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
 	}
 
-	return request->GetFollowLocation();
+	return request->GetMaxRedirects();
 }
 
-static cell_t SetRequestFollowLocation(IPluginContext *pContext, const cell_t *params)
+static cell_t SetRequestMaxRedirects(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
@@ -783,7 +783,7 @@ static cell_t SetRequestFollowLocation(IPluginContext *pContext, const cell_t *p
 		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
 	}
 
-	request->SetFollowLocation(params[2] == 1);
+	request->SetMaxRedirects(params[2]);
 
 	return 1;
 }
@@ -1003,8 +1003,8 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPRequest.UploadFile",			PerformUploadFile},
 	{"HTTPRequest.ConnectTimeout.get",	GetRequestConnectTimeout},
 	{"HTTPRequest.ConnectTimeout.set",	SetRequestConnectTimeout},
-	{"HTTPRequest.FollowLocation.get",	GetRequestFollowLocation},
-	{"HTTPRequest.FollowLocation.set",	SetRequestFollowLocation},
+	{"HTTPRequest.MaxRedirects.get",	GetRequestMaxRedirects},
+	{"HTTPRequest.MaxRedirects.set",	SetRequestMaxRedirects},
 	{"HTTPRequest.MaxRecvSpeed.get",	GetRequestMaxRecvSpeed},
 	{"HTTPRequest.MaxRecvSpeed.set",	SetRequestMaxRecvSpeed},
 	{"HTTPRequest.MaxSendSpeed.get",	GetRequestMaxSendSpeed},
