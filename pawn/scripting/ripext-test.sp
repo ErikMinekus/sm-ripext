@@ -4,6 +4,8 @@
 #pragma newdecls required
 #pragma semicolon 1
 
+#define API_BASE_URL "https://nghttp2.org/httpbin"
+
 public Plugin myinfo =
 {
     name        = "REST in Pawn - Tests",
@@ -21,24 +23,53 @@ char sHTTPTags[][] = {
     "PATCH",
     "DELETE",
     "GZIP",
+    "AUTH",
+    "BEARER",
+    "REDIRECT",
 };
 
 
 public void OnPluginStart()
 {
-    HTTPClient hHTTPClient = new HTTPClient("https://nghttp2.org/httpbin");
+    HTTPRequest hHTTPRequest;
     JSONObject hJSONObject = CreateJSONObject();
 
     char sImagePath[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, sImagePath, sizeof(sImagePath), "data/ripext-test.jpg");
 
-    hHTTPClient.Get("get", OnHTTPResponse, 0);
-    hHTTPClient.Post("post", hJSONObject, OnHTTPResponse, 1);
-    hHTTPClient.Put("put", hJSONObject, OnHTTPResponse, 2);
-    hHTTPClient.Patch("patch", hJSONObject, OnHTTPResponse, 3);
-    hHTTPClient.Delete("delete", OnHTTPResponse, 4);
-    hHTTPClient.Get("gzip", OnHTTPResponse, 5);
-    hHTTPClient.DownloadFile("image/jpeg", sImagePath, OnImageDownloaded);
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/get");
+    hHTTPRequest.AppendQueryParam("name[]", "%&✓");
+    hHTTPRequest.AppendQueryParam("name[]", "<=>");
+    hHTTPRequest.Get(OnHTTPResponse, 0);
+
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/post");
+    hHTTPRequest.Post(hJSONObject, OnHTTPResponse, 1);
+
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/put");
+    hHTTPRequest.Put(hJSONObject, OnHTTPResponse, 2);
+
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/patch");
+    hHTTPRequest.Patch(hJSONObject, OnHTTPResponse, 3);
+
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/delete");
+    hHTTPRequest.Delete(OnHTTPResponse, 4);
+
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/gzip");
+    hHTTPRequest.Get(OnHTTPResponse, 5);
+
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/basic-auth/user/pass");
+    hHTTPRequest.SetBasicAuth("user", "pass");
+    hHTTPRequest.Get(OnHTTPResponse, 6);
+
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/bearer");
+    hHTTPRequest.SetHeader("Authorization", "Bearer token");
+    hHTTPRequest.Get(OnHTTPResponse, 7);
+
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/redirect/1");
+    hHTTPRequest.Get(OnHTTPResponse, 8);
+
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/image/jpeg");
+    hHTTPRequest.DownloadFile(sImagePath, OnImageDownloaded);
 
     JSONObjectKeys hJSONObjectKeys = hJSONObject.Keys();
     char sKey[64];
