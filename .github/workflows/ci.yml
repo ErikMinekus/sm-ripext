@@ -26,7 +26,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt update
-          sudo apt install -yq --no-install-recommends g++-multilib lib32z1-dev
+          sudo apt install -yq --no-install-recommends g++-multilib
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -58,9 +58,6 @@ jobs:
       - name: Build
         working-directory: extension
         shell: bash
-        env:
-          AMBUILD_VCVARS_X86: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars32.bat
-          AMBUILD_VCVARS_X86_64: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat
         run: |
           mkdir build && cd build
           perl ../curl/lib/mk-ca-bundle.pl
