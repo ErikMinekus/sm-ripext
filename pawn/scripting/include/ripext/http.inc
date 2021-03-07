@@ -222,6 +222,7 @@ methodmap HTTPResponse
 	}
 };
 
+// Deprecated. Use HTTPRequest instead.
 methodmap HTTPClient < Handle
 {
 	// Creates a HTTP client.
@@ -229,12 +230,14 @@ methodmap HTTPClient < Handle
 	// The HTTPClient must be freed via delete or CloseHandle().
 	//
 	// @param baseURL    Base URL to the REST API.
+	#pragma deprecated Use HTTPRequest instead.
 	public native HTTPClient(const char[] baseURL);
 
 	// Sets a HTTP header to be used for all requests.
 	//
 	// @param name       Header name.
 	// @param value      String value to set.
+	#pragma deprecated Use HTTPRequest.SetHeader() instead.
 	public native void SetHeader(const char[] name, const char[] value);
 
 	// Performs a HTTP GET request.
@@ -242,6 +245,7 @@ methodmap HTTPClient < Handle
 	// @param endpoint   API endpoint to request.
 	// @param callback   A function to use as a callback when the request has finished.
 	// @param value      Optional value to pass to the callback function.
+	#pragma deprecated Use HTTPRequest.Get() instead.
 	public native void Get(const char[] endpoint, HTTPRequestCallback callback, any value = 0);
 
 	// Performs a HTTP POST request.
@@ -250,6 +254,7 @@ methodmap HTTPClient < Handle
 	// @param data       JSON data to send.
 	// @param callback   A function to use as a callback when the request has finished.
 	// @param value      Optional value to pass to the callback function.
+	#pragma deprecated Use HTTPRequest.Post() instead.
 	public native void Post(const char[] endpoint, JSON data, HTTPRequestCallback callback, any value = 0);
 
 	// Performs a HTTP PUT request.
@@ -258,6 +263,7 @@ methodmap HTTPClient < Handle
 	// @param data       JSON data to send.
 	// @param callback   A function to use as a callback when the request has finished.
 	// @param value      Optional value to pass to the callback function.
+	#pragma deprecated Use HTTPRequest.Put() instead.
 	public native void Put(const char[] endpoint, JSON data, HTTPRequestCallback callback, any value = 0);
 
 	// Performs a HTTP PATCH request.
@@ -266,6 +272,7 @@ methodmap HTTPClient < Handle
 	// @param data       JSON data to send.
 	// @param callback   A function to use as a callback when the request has finished.
 	// @param value      Optional value to pass to the callback function.
+	#pragma deprecated Use HTTPRequest.Patch() instead.
 	public native void Patch(const char[] endpoint, JSON data, HTTPRequestCallback callback, any value = 0);
 
 	// Performs a HTTP DELETE request.
@@ -273,6 +280,7 @@ methodmap HTTPClient < Handle
 	// @param endpoint   API endpoint to request.
 	// @param callback   A function to use as a callback when the request has finished.
 	// @param value      Optional value to pass to the callback function.
+	#pragma deprecated Use HTTPRequest.Delete() instead.
 	public native void Delete(const char[] endpoint, HTTPRequestCallback callback, any value = 0);
 
 	// Downloads a file.
@@ -281,6 +289,7 @@ methodmap HTTPClient < Handle
 	// @param path       File to write to.
 	// @param callback   A function to use as a callback when the download has finished.
 	// @param value      Optional value to pass to the callback function.
+	#pragma deprecated Use HTTPRequest.DownloadFile() instead.
 	public native void DownloadFile(const char[] endpoint, const char[] path, HTTPFileCallback callback, any value = 0);
 
 	// Uploads a file.
@@ -291,33 +300,39 @@ methodmap HTTPClient < Handle
 	// @param path       File to read from.
 	// @param callback   A function to use as a callback when the upload has finished.
 	// @param value      Optional value to pass to the callback function.
+	#pragma deprecated Use HTTPRequest.UploadFile() instead.
 	public native void UploadFile(const char[] endpoint, const char[] path, HTTPFileCallback callback, any value = 0);
 
 	// Connect timeout in seconds. Defaults to 10.
+	#pragma deprecated Use HTTPRequest.ConnectTimeout instead.
 	property int ConnectTimeout {
 		public native get();
 		public native set(int connectTimeout);
 	}
 
 	// Follow HTTP 3xx redirects. Defaults to true.
+	#pragma deprecated Use HTTPRequest.MaxRedirects instead.
 	property bool FollowLocation {
 		public native get();
 		public native set(bool followLocation);
 	}
 
 	// Timeout in seconds. Defaults to 30.
+	#pragma deprecated Use HTTPRequest.Timeout instead.
 	property int Timeout {
 		public native get();
 		public native set(int timeout);
 	}
 
 	// Max upload speed in bytes per second. Defaults to unlimited speed.
+	#pragma deprecated Use HTTPRequest.MaxSendSpeed instead.
 	property int MaxSendSpeed {
 		public native get();
 		public native set(int speed);
 	}
 
 	// Max download speed in bytes per second. Defaults to unlimited speed.
+	#pragma deprecated Use HTTPRequest.MaxRecvSpeed instead.
 	property int MaxRecvSpeed {
 		public native get();
 		public native set(int speed);
