@@ -201,7 +201,7 @@ methodmap HTTPRequest < Handle
 
 methodmap HTTPResponse
 {
-	// Retrieves a HTTP header from the response.
+	// Retrieves an HTTP header from the response.
 	//
 	// @param name       Header name.
 	// @param buffer     String buffer to store value.
@@ -225,7 +225,7 @@ methodmap HTTPResponse
 // Deprecated. Use HTTPRequest instead.
 methodmap HTTPClient < Handle
 {
-	// Creates a HTTP client.
+	// Creates an HTTP client.
 	//
 	// The HTTPClient must be freed via delete or CloseHandle().
 	//
@@ -233,14 +233,14 @@ methodmap HTTPClient < Handle
 	#pragma deprecated Use HTTPRequest instead.
 	public native HTTPClient(const char[] baseURL);
 
-	// Sets a HTTP header to be used for all requests.
+	// Sets an HTTP header to be used for all requests.
 	//
 	// @param name       Header name.
 	// @param value      String value to set.
 	#pragma deprecated Use HTTPRequest.SetHeader() instead.
 	public native void SetHeader(const char[] name, const char[] value);
 
-	// Performs a HTTP GET request.
+	// Performs an HTTP GET request.
 	//
 	// @param endpoint   API endpoint to request.
 	// @param callback   A function to use as a callback when the request has finished.
@@ -248,7 +248,7 @@ methodmap HTTPClient < Handle
 	#pragma deprecated Use HTTPRequest.Get() instead.
 	public native void Get(const char[] endpoint, HTTPRequestCallback callback, any value = 0);
 
-	// Performs a HTTP POST request.
+	// Performs an HTTP POST request.
 	//
 	// @param endpoint   API endpoint to request.
 	// @param data       JSON data to send.
@@ -257,7 +257,7 @@ methodmap HTTPClient < Handle
 	#pragma deprecated Use HTTPRequest.Post() instead.
 	public native void Post(const char[] endpoint, JSON data, HTTPRequestCallback callback, any value = 0);
 
-	// Performs a HTTP PUT request.
+	// Performs an HTTP PUT request.
 	//
 	// @param endpoint   API endpoint to request.
 	// @param data       JSON data to send.
@@ -266,7 +266,7 @@ methodmap HTTPClient < Handle
 	#pragma deprecated Use HTTPRequest.Put() instead.
 	public native void Put(const char[] endpoint, JSON data, HTTPRequestCallback callback, any value = 0);
 
-	// Performs a HTTP PATCH request.
+	// Performs an HTTP PATCH request.
 	//
 	// @param endpoint   API endpoint to request.
 	// @param data       JSON data to send.
@@ -275,7 +275,7 @@ methodmap HTTPClient < Handle
 	#pragma deprecated Use HTTPRequest.Patch() instead.
 	public native void Patch(const char[] endpoint, JSON data, HTTPRequestCallback callback, any value = 0);
 
-	// Performs a HTTP DELETE request.
+	// Performs an HTTP DELETE request.
 	//
 	// @param endpoint   API endpoint to request.
 	// @param callback   A function to use as a callback when the request has finished.
@@ -286,7 +286,7 @@ methodmap HTTPClient < Handle
 	// Downloads a file.
 	//
 	// @param endpoint   API endpoint to download from.
-	// @param path       File to write to.
+	// @param path       File path to write to.
 	// @param callback   A function to use as a callback when the download has finished.
 	// @param value      Optional value to pass to the callback function.
 	#pragma deprecated Use HTTPRequest.DownloadFile() instead.
@@ -294,10 +294,10 @@ methodmap HTTPClient < Handle
 
 	// Uploads a file.
 	//
-	// This performs a HTTP PUT request. The file contents are in the request body.
+	// This function performs an HTTP PUT request. The file contents are sent in the request body.
 	//
 	// @param endpoint   API endpoint to upload to.
-	// @param path       File to read from.
+	// @param path       File path to read from.
 	// @param callback   A function to use as a callback when the upload has finished.
 	// @param value      Optional value to pass to the callback function.
 	#pragma deprecated Use HTTPRequest.UploadFile() instead.
@@ -324,14 +324,14 @@ methodmap HTTPClient < Handle
 		public native set(int timeout);
 	}
 
-	// Max upload speed in bytes per second. Defaults to unlimited speed.
+	// Maximum upload speed in bytes per second. Defaults to unlimited speed.
 	#pragma deprecated Use HTTPRequest.MaxSendSpeed instead.
 	property int MaxSendSpeed {
 		public native get();
 		public native set(int speed);
 	}
 
-	// Max download speed in bytes per second. Defaults to unlimited speed.
+	// Maximum download speed in bytes per second. Defaults to unlimited speed.
 	#pragma deprecated Use HTTPRequest.MaxRecvSpeed instead.
 	property int MaxRecvSpeed {
 		public native get();
