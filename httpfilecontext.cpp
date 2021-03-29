@@ -21,6 +21,11 @@
 
 #include "httpfilecontext.h"
 
+static size_t IgnoreResponseBody(void *body, size_t size, size_t nmemb, void *userdata)
+{
+	return size * nmemb;
+}
+
 HTTPFileContext::HTTPFileContext(bool isUpload, const std::string &url, const std::string &path,
 	struct curl_slist *headers, IChangeableForward *forward, cell_t value,
 	long connectTimeout, long maxRedirects, long timeout, curl_off_t maxSendSpeed, curl_off_t maxRecvSpeed,
@@ -62,6 +67,7 @@ bool HTTPFileContext::InitCurl()
 		curl_easy_setopt(curl, CURLOPT_READDATA, file);
 		curl_easy_setopt(curl, CURLOPT_READFUNCTION, fread);
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &IgnoreResponseBody);
 	}
 	else
 	{
