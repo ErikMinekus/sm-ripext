@@ -23,6 +23,34 @@
 #include "httpclient.h"
 #include "httprequest.h"
 
+static HTTPRequest *GetRequestFromHandle(IPluginContext *pContext, Handle_t hndl)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request;
+	if ((err=handlesys->ReadHandle(hndl, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	{
+		pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndl, err);
+	}
+
+	return request;
+}
+
+static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
+{
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	json_t *json;
+	if ((err=handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
+	{
+		pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndl, err);
+	}
+
+	return json;
+}
+
 static cell_t CreateClient(IPluginContext *pContext, const cell_t *params)
 {
 	char *baseURL;
@@ -446,14 +474,10 @@ static cell_t CreateRequest(IPluginContext *pContext, const cell_t *params)
 
 static cell_t AppendRequestQueryParam(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	char *name;
@@ -474,14 +498,10 @@ static cell_t AppendRequestQueryParam(IPluginContext *pContext, const cell_t *pa
 
 static cell_t SetRequestBasicAuth(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	char *username;
@@ -497,14 +517,10 @@ static cell_t SetRequestBasicAuth(IPluginContext *pContext, const cell_t *params
 
 static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	char *name;
@@ -525,14 +541,12 @@ static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
 
 static cell_t PerformGetRequest(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
@@ -546,28 +560,25 @@ static cell_t PerformGetRequest(IPluginContext *pContext, const cell_t *params)
 
 	request->Perform("GET", NULL, forward, value);
 
-	handlesys->FreeHandle(hndlRequest, &sec);
+	handlesys->FreeHandle(params[1], &sec);
 
 	return 1;
 }
 
 static cell_t PerformPostRequest(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
-	json_t *data;
-	Handle_t hndlData = static_cast<Handle_t>(params[2]);
-	if ((err=handlesys->ReadHandle(hndlData, htJSON, &sec, (void **)&data)) != HandleError_None)
+	json_t *data = GetJSONFromHandle(pContext, params[2]);
+	if (data == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndlData, err);
+		return 0;
 	}
 
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
@@ -581,28 +592,25 @@ static cell_t PerformPostRequest(IPluginContext *pContext, const cell_t *params)
 
 	request->Perform("POST", data, forward, value);
 
-	handlesys->FreeHandle(hndlRequest, &sec);
+	handlesys->FreeHandle(params[1], &sec);
 
 	return 1;
 }
 
 static cell_t PerformPutRequest(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
-	json_t *data;
-	Handle_t hndlData = static_cast<Handle_t>(params[2]);
-	if ((err=handlesys->ReadHandle(hndlData, htJSON, &sec, (void **)&data)) != HandleError_None)
+	json_t *data = GetJSONFromHandle(pContext, params[2]);
+	if (data == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndlData, err);
+		return 0;
 	}
 
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
@@ -616,28 +624,25 @@ static cell_t PerformPutRequest(IPluginContext *pContext, const cell_t *params)
 
 	request->Perform("PUT", data, forward, value);
 
-	handlesys->FreeHandle(hndlRequest, &sec);
+	handlesys->FreeHandle(params[1], &sec);
 
 	return 1;
 }
 
 static cell_t PerformPatchRequest(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
-	json_t *data;
-	Handle_t hndlData = static_cast<Handle_t>(params[2]);
-	if ((err=handlesys->ReadHandle(hndlData, htJSON, &sec, (void **)&data)) != HandleError_None)
+	json_t *data = GetJSONFromHandle(pContext, params[2]);
+	if (data == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndlData, err);
+		return 0;
 	}
 
 	IPluginFunction *callback = pContext->GetFunctionById(params[3]);
@@ -651,21 +656,19 @@ static cell_t PerformPatchRequest(IPluginContext *pContext, const cell_t *params
 
 	request->Perform("PATCH", data, forward, value);
 
-	handlesys->FreeHandle(hndlRequest, &sec);
+	handlesys->FreeHandle(params[1], &sec);
 
 	return 1;
 }
 
 static cell_t PerformDeleteRequest(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
@@ -679,21 +682,19 @@ static cell_t PerformDeleteRequest(IPluginContext *pContext, const cell_t *param
 
 	request->Perform("DELETE", NULL, forward, value);
 
-	handlesys->FreeHandle(hndlRequest, &sec);
+	handlesys->FreeHandle(params[1], &sec);
 
 	return 1;
 }
 
 static cell_t PerformDownloadFile(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	char *path;
@@ -710,21 +711,19 @@ static cell_t PerformDownloadFile(IPluginContext *pContext, const cell_t *params
 
 	request->DownloadFile(path, forward, value);
 
-	handlesys->FreeHandle(hndlRequest, &sec);
+	handlesys->FreeHandle(params[1], &sec);
 
 	return 1;
 }
 
 static cell_t PerformUploadFile(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
 	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
 
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	char *path;
@@ -741,21 +740,17 @@ static cell_t PerformUploadFile(IPluginContext *pContext, const cell_t *params)
 
 	request->UploadFile(path, forward, value);
 
-	handlesys->FreeHandle(hndlRequest, &sec);
+	handlesys->FreeHandle(params[1], &sec);
 
 	return 1;
 }
 
 static cell_t GetRequestConnectTimeout(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	return request->GetConnectTimeout();
@@ -763,14 +758,10 @@ static cell_t GetRequestConnectTimeout(IPluginContext *pContext, const cell_t *p
 
 static cell_t SetRequestConnectTimeout(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	request->SetConnectTimeout(params[2]);
@@ -780,14 +771,10 @@ static cell_t SetRequestConnectTimeout(IPluginContext *pContext, const cell_t *p
 
 static cell_t GetRequestMaxRedirects(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	return request->GetMaxRedirects();
@@ -795,14 +782,10 @@ static cell_t GetRequestMaxRedirects(IPluginContext *pContext, const cell_t *par
 
 static cell_t SetRequestMaxRedirects(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	request->SetMaxRedirects(params[2]);
@@ -812,14 +795,10 @@ static cell_t SetRequestMaxRedirects(IPluginContext *pContext, const cell_t *par
 
 static cell_t GetRequestMaxRecvSpeed(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	return request->GetMaxRecvSpeed();
@@ -827,14 +806,10 @@ static cell_t GetRequestMaxRecvSpeed(IPluginContext *pContext, const cell_t *par
 
 static cell_t SetRequestMaxRecvSpeed(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	request->SetMaxRecvSpeed(params[2]);
@@ -844,14 +819,10 @@ static cell_t SetRequestMaxRecvSpeed(IPluginContext *pContext, const cell_t *par
 
 static cell_t GetRequestMaxSendSpeed(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	return request->GetMaxSendSpeed();
@@ -859,14 +830,10 @@ static cell_t GetRequestMaxSendSpeed(IPluginContext *pContext, const cell_t *par
 
 static cell_t SetRequestMaxSendSpeed(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	request->SetMaxSendSpeed(params[2]);
@@ -876,14 +843,10 @@ static cell_t SetRequestMaxSendSpeed(IPluginContext *pContext, const cell_t *par
 
 static cell_t GetRequestTimeout(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	return request->GetTimeout();
@@ -891,14 +854,10 @@ static cell_t GetRequestTimeout(IPluginContext *pContext, const cell_t *params)
 
 static cell_t SetRequestTimeout(IPluginContext *pContext, const cell_t *params)
 {
-	HandleError err;
-	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
-
-	HTTPRequest *request;
-	Handle_t hndlRequest = static_cast<Handle_t>(params[1]);
-	if ((err=handlesys->ReadHandle(hndlRequest, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
 	{
-		return pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndlRequest, err);
+		return 0;
 	}
 
 	request->SetTimeout(params[2]);
