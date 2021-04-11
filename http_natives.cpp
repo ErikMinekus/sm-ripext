@@ -483,13 +483,13 @@ static cell_t AppendRequestQueryParam(IPluginContext *pContext, const cell_t *pa
 	char *name;
 	pContext->LocalToString(params[2], &name);
 
-	char *value;
-	pContext->LocalToString(params[3], &value);
-
 	if (name[0] == '\0')
 	{
 		return pContext->ThrowNativeError("Parameter name cannot be empty.");
 	}
+
+	char value[8192];
+	smutils->FormatString(value, sizeof(value), pContext, params, 3);
 
 	request->AppendQueryParam(name, value);
 
@@ -526,13 +526,13 @@ static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
 	char *name;
 	pContext->LocalToString(params[2], &name);
 
-	char *value;
-	pContext->LocalToString(params[3], &value);
-
 	if (name[0] == '\0')
 	{
 		return pContext->ThrowNativeError("Header name cannot be empty.");
 	}
+
+	char value[8192];
+	smutils->FormatString(value, sizeof(value), pContext, params, 3);
 
 	request->SetHeader(name, value);
 

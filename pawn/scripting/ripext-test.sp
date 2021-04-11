@@ -38,8 +38,8 @@ public void OnPluginStart()
     BuildPath(Path_SM, sImagePath, sizeof(sImagePath), "data/ripext-test.jpg");
 
     hHTTPRequest = new HTTPRequest(API_BASE_URL..."/get");
-    hHTTPRequest.AppendQueryParam("name[]", "%&✓");
-    hHTTPRequest.AppendQueryParam("name[]", "<=>");
+    hHTTPRequest.AppendQueryParam("name[]", "%s", "%&✓");
+    hHTTPRequest.AppendQueryParam("name[]", "%s", "<=>");
     hHTTPRequest.Get(OnHTTPResponse, 0);
 
     hHTTPRequest = new HTTPRequest(API_BASE_URL..."/post");
@@ -62,7 +62,7 @@ public void OnPluginStart()
     hHTTPRequest.Get(OnHTTPResponse, 6);
 
     hHTTPRequest = new HTTPRequest(API_BASE_URL..."/bearer");
-    hHTTPRequest.SetHeader("Authorization", "Bearer token");
+    hHTTPRequest.SetHeader("Authorization", "Bearer %s", "token");
     hHTTPRequest.Get(OnHTTPResponse, 7);
 
     hHTTPRequest = new HTTPRequest(API_BASE_URL..."/redirect/1");

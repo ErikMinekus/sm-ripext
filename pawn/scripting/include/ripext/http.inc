@@ -91,8 +91,9 @@ methodmap HTTPRequest < Handle
 	// The parameter name and value are encoded according to RFC 3986.
 	//
 	// @param name       Parameter name.
-	// @param value      String value.
-	public native void AppendQueryParam(const char[] name, const char[] value);
+    // @param format     Formatting rules.
+    // @param ...        Variable number of format parameters.
+	public native void AppendQueryParam(const char[] name, const char[] format, any ...);
 
 	// Sets the credentials for HTTP Basic authentication.
 	//
@@ -103,8 +104,9 @@ methodmap HTTPRequest < Handle
 	// Sets an HTTP header.
 	//
 	// @param name       Header name.
-	// @param value      String value.
-	public native void SetHeader(const char[] name, const char[] value);
+    // @param format     Formatting rules.
+    // @param ...        Variable number of format parameters.
+	public native void SetHeader(const char[] name, const char[] format, any ...);
 
 	// Performs an HTTP GET request.
 	//
