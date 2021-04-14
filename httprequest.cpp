@@ -23,11 +23,16 @@
 #include "httprequestcontext.h"
 #include "httpfilecontext.h"
 
+HTTPRequest::HTTPRequest(const std::string &url)
+: url(url)
+{
+	SetHeader("Accept", "application/json");
+	SetHeader("Content-Type", "applicaton/json");
+}
+
 void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value)
 {
 	struct curl_slist *headers = NULL;
-	SetHeader("Accept", "application/json");
-	SetHeader("Content-Type", "applicaton/json");
 	headers = this->BuildHeaders(headers);
 
 	HTTPRequestContext *context = new HTTPRequestContext(method, this->BuildURL(), data, headers, forward, value,
