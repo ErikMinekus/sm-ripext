@@ -24,7 +24,7 @@
 #include "httpfilecontext.h"
 
 HTTPRequest::HTTPRequest(const std::string &url)
-: url(url)
+	: url(url)
 {
 	SetHeader("Accept", "application/json");
 	SetHeader("Content-Type", "applicaton/json");
@@ -32,40 +32,30 @@ HTTPRequest::HTTPRequest(const std::string &url)
 
 void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value)
 {
-	struct curl_slist *headers = NULL;
-	headers = this->BuildHeaders(headers);
-
-	HTTPRequestContext *context = new HTTPRequestContext(method, this->BuildURL(), data, headers, forward, value,
-		this->connectTimeout, this->maxRedirects, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
-		this->useBasicAuth, this->username, this->password);
+	HTTPRequestContext *context = new HTTPRequestContext(method, BuildURL(), data, BuildHeaders(), forward, value,
+		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
 	g_RipExt.AddRequestToQueue(context);
 }
 
 void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, cell_t value)
 {
-	struct curl_slist *headers = NULL;
 	SetHeader("Accept", "*/*");
 	SetHeader("Content-Type", "application/octet-stream");
-	headers = this->BuildHeaders(headers);
 
-	HTTPFileContext *context = new HTTPFileContext(false, this->BuildURL(), path, headers, forward, value,
-		this->connectTimeout, this->maxRedirects, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
-		this->useBasicAuth, this->username, this->password);
+	HTTPFileContext *context = new HTTPFileContext(false, BuildURL(), path, BuildHeaders(), forward, value,
+		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
 	g_RipExt.AddRequestToQueue(context);
 }
 
 void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell_t value)
 {
-	struct curl_slist *headers = NULL;
 	SetHeader("Accept", "*/*");
 	SetHeader("Content-Type", "application/octet-stream");
-	headers = this->BuildHeaders(headers);
 
-	HTTPFileContext *context = new HTTPFileContext(true, this->BuildURL(), path, headers, forward, value,
-		this->connectTimeout, this->maxRedirects, this->timeout, this->maxSendSpeed, this->maxRecvSpeed,
-		this->useBasicAuth, this->username, this->password);
+	HTTPFileContext *context = new HTTPFileContext(true, BuildURL(), path, BuildHeaders(), forward, value,
+		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
 	g_RipExt.AddRequestToQueue(context);
 }
@@ -102,8 +92,9 @@ void HTTPRequest::AppendQueryParam(const char *name, const char *value)
 	curl_easy_cleanup(curl);
 }
 
-struct curl_slist *HTTPRequest::BuildHeaders(struct curl_slist *headers)
+struct curl_slist *HTTPRequest::BuildHeaders()
 {
+	struct curl_slist *headers = NULL;
 	char header[8192];
 
 	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())

@@ -36,7 +36,7 @@ public:
 	const std::string BuildURL() const;
 	void AppendQueryParam(const char *name, const char *value);
 
-	struct curl_slist *BuildHeaders(struct curl_slist *headers);
+	struct curl_slist *BuildHeaders();
 	void SetHeader(const char *name, const char *value);
 
 	bool UseBasicAuth() const;
