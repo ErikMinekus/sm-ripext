@@ -23,11 +23,16 @@
 #include "httprequestcontext.h"
 #include "httpfilecontext.h"
 
+HTTPRequest::HTTPRequest(const std::string &url)
+: url(url)
+{
+	SetHeader("Accept", "application/json");
+	SetHeader("Content-Type", "applicaton/json");
+}
+
 void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value)
 {
 	struct curl_slist *headers = NULL;
-	headers = curl_slist_append(headers, "Accept: application/json");
-	headers = curl_slist_append(headers, "Content-Type: application/json");
 	headers = this->BuildHeaders(headers);
 
 	HTTPRequestContext *context = new HTTPRequestContext(method, this->BuildURL(), data, headers, forward, value,
@@ -40,8 +45,8 @@ void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *
 void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, cell_t value)
 {
 	struct curl_slist *headers = NULL;
-	headers = curl_slist_append(headers, "Accept: */*");
-	headers = curl_slist_append(headers, "Content-Type: application/octet-stream");
+	SetHeader("Accept", "*/*");
+	SetHeader("Content-Type", "application/octet-stream");
 	headers = this->BuildHeaders(headers);
 
 	HTTPFileContext *context = new HTTPFileContext(false, this->BuildURL(), path, headers, forward, value,
@@ -54,8 +59,8 @@ void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, ce
 void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell_t value)
 {
 	struct curl_slist *headers = NULL;
-	headers = curl_slist_append(headers, "Accept: */*");
-	headers = curl_slist_append(headers, "Content-Type: application/octet-stream");
+	SetHeader("Accept", "*/*");
+	SetHeader("Content-Type", "application/octet-stream");
 	headers = this->BuildHeaders(headers);
 
 	HTTPFileContext *context = new HTTPFileContext(true, this->BuildURL(), path, headers, forward, value,

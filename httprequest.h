@@ -27,7 +27,7 @@
 class HTTPRequest
 {
 public:
-	HTTPRequest(const std::string &url) : url(url) {}
+	HTTPRequest(const std::string &url);
 
 	void Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value);
 	void DownloadFile(const char *path, IChangeableForward *forward, cell_t value);
