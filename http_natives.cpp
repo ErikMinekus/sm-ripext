@@ -489,7 +489,15 @@ static cell_t AppendRequestQueryParam(IPluginContext *pContext, const cell_t *pa
 	}
 
 	char value[8192];
-	smutils->FormatString(value, sizeof(value), pContext, params, 3);
+	{
+		DetectExceptions eh(pContext);
+		smutils->FormatString(value, sizeof(value), pContext, params, 3);
+
+		if (eh.HasException())
+		{
+			return 0;
+		}
+	}
 
 	request->AppendQueryParam(name, value);
 
@@ -532,7 +540,15 @@ static cell_t SetRequestHeader(IPluginContext *pContext, const cell_t *params)
 	}
 
 	char value[8192];
-	smutils->FormatString(value, sizeof(value), pContext, params, 3);
+	{
+		DetectExceptions eh(pContext);
+		smutils->FormatString(value, sizeof(value), pContext, params, 3);
+
+		if (eh.HasException())
+		{
+			return 0;
+		}
+	}
 
 	request->SetHeader(name, value);
 
