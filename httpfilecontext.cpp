@@ -103,6 +103,10 @@ bool HTTPFileContext::InitCurl()
 		curl_easy_setopt(curl, CURLOPT_PASSWORD, password.c_str());
 	}
 
+#if defined(WIN32)
+	curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+#endif
+
 	return true;
 }
 
