@@ -30,6 +30,7 @@ static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
 	if ((err=handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndl, err);
+		return NULL;
 	}
 
 	return json;

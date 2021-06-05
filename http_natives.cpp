@@ -32,6 +32,7 @@ static HTTPRequest *GetRequestFromHandle(IPluginContext *pContext, Handle_t hndl
 	if ((err=handlesys->ReadHandle(hndl, htHTTPRequest, &sec, (void **)&request)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid HTTPRequest handle %x (error %d)", hndl, err);
+		return NULL;
 	}
 
 	return request;
@@ -46,6 +47,7 @@ static json_t *GetJSONFromHandle(IPluginContext *pContext, Handle_t hndl)
 	if ((err=handlesys->ReadHandle(hndl, htJSON, &sec, (void **)&json)) != HandleError_None)
 	{
 		pContext->ThrowNativeError("Invalid JSON handle %x (error %d)", hndl, err);
+		return NULL;
 	}
 
 	return json;
@@ -472,6 +474,38 @@ static cell_t CreateRequest(IPluginContext *pContext, const cell_t *params)
 	return hndlRequest;
 }
 
+static cell_t AppendRequestFormParam(IPluginContext *pContext, const cell_t *params)
+{
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
+	{
+		return 0;
+	}
+
+	char *name;
+	pContext->LocalToString(params[2], &name);
+
+	if (name[0] == '\0')
+	{
+		return pContext->ThrowNativeError("Parameter name cannot be empty.");
+	}
+
+	char value[8192];
+	{
+		DetectExceptions eh(pContext);
+		smutils->FormatString(value, sizeof(value), pContext, params, 3);
+
+		if (eh.HasException())
+		{
+			return 0;
+		}
+	}
+
+	request->AppendFormParam(name, value);
+
+	return 1;
+}
+
 static cell_t AppendRequestQueryParam(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
@@ -761,6 +795,32 @@ static cell_t PerformUploadFile(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
+static cell_t PerformPostForm(IPluginContext *pContext, const cell_t *params)
+{
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
+	{
+		return 0;
+	}
+
+	IPluginFunction *callback = pContext->GetFunctionById(params[2]);
+	cell_t value = params[3];
+
+	IChangeableForward *forward = forwards->CreateForwardEx(NULL, ET_Ignore, 3, NULL, Param_Cell, Param_Cell, Param_String);
+	if (forward == NULL || !forward->AddFunction(callback))
+	{
+		return pContext->ThrowNativeError("Could not create forward.");
+	}
+
+	request->PostForm(forward, value);
+
+	handlesys->FreeHandle(params[1], &sec);
+
+	return 1;
+}
+
 static cell_t GetRequestConnectTimeout(IPluginContext *pContext, const cell_t *params)
 {
 	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
@@ -988,6 +1048,7 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPClient.MaxRecvSpeed.get",		GetClientMaxRecvSpeed},
 	{"HTTPClient.MaxRecvSpeed.set",		SetClientMaxRecvSpeed},
 	{"HTTPRequest.HTTPRequest",			CreateRequest},
+	{"HTTPRequest.AppendFormParam",		AppendRequestFormParam},
 	{"HTTPRequest.AppendQueryParam",	AppendRequestQueryParam},
 	{"HTTPRequest.SetBasicAuth",		SetRequestBasicAuth},
 	{"HTTPRequest.SetHeader",			SetRequestHeader},
@@ -998,6 +1059,7 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPRequest.Delete",				PerformDeleteRequest},
 	{"HTTPRequest.DownloadFile",		PerformDownloadFile},
 	{"HTTPRequest.UploadFile",			PerformUploadFile},
+	{"HTTPRequest.PostForm",			PerformPostForm},
 	{"HTTPRequest.ConnectTimeout.get",	GetRequestConnectTimeout},
 	{"HTTPRequest.ConnectTimeout.set",	SetRequestConnectTimeout},
 	{"HTTPRequest.MaxRedirects.get",	GetRequestMaxRedirects},

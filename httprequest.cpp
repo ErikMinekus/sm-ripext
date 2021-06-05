@@ -22,6 +22,7 @@
 #include "httprequest.h"
 #include "httprequestcontext.h"
 #include "httpfilecontext.h"
+#include "httpformcontext.h"
 
 HTTPRequest::HTTPRequest(const std::string &url)
 	: url(url)
@@ -60,6 +61,17 @@ void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell
 	g_RipExt.AddRequestToQueue(context);
 }
 
+void HTTPRequest::PostForm(IChangeableForward *forward, cell_t value)
+{
+	SetHeader("Accept", "application/json");
+	SetHeader("Content-Type", "application/x-www-form-urlencoded");
+
+	HTTPFormContext *context = new HTTPFormContext(BuildURL(), formData, BuildHeaders(), forward, value,
+		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
+
+	g_RipExt.AddRequestToQueue(context);
+}
+
 const std::string HTTPRequest::BuildURL() const
 {
 	std::string url(this->url);
@@ -85,6 +97,30 @@ void HTTPRequest::AppendQueryParam(const char *name, const char *value)
 		query.append(escapedName);
 		query.append("=");
 		query.append(escapedValue);
+	}
+
+	curl_free(escapedName);
+	curl_free(escapedValue);
+	curl_easy_cleanup(curl);
+}
+
+void HTTPRequest::AppendFormParam(const char *name, const char *value)
+{
+	CURL *curl = curl_easy_init();
+	if (curl == NULL)
+	{
+		return;
+	}
+
+	char *escapedName = curl_easy_escape(curl, name, 0);
+	char *escapedValue = curl_easy_escape(curl, value, 0);
+
+	if (escapedName != NULL && escapedValue != NULL)
+	{
+		formData.append(formData.size() == 0 ? "" : "&");
+		formData.append(escapedName);
+		formData.append("=");
+		formData.append(escapedValue);
 	}
 
 	curl_free(escapedName);

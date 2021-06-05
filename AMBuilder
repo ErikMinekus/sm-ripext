@@ -18,6 +18,7 @@ for cxx in builder.targets:
     'httprequest.cpp',
     'httprequestcontext.cpp',
     'httpfilecontext.cpp',
+    'httpformcontext.cpp',
     'http_natives.cpp',
     'json_natives.cpp',
     os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp'),

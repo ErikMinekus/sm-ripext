@@ -32,9 +32,12 @@ public:
 	void Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value);
 	void DownloadFile(const char *path, IChangeableForward *forward, cell_t value);
 	void UploadFile(const char *path, IChangeableForward *forward, cell_t value);
+	void PostForm(IChangeableForward *forward, cell_t value);
 
 	const std::string BuildURL() const;
 	void AppendQueryParam(const char *name, const char *value);
+
+	void AppendFormParam(const char *name, const char *value);
 
 	struct curl_slist *BuildHeaders();
 	void SetHeader(const char *name, const char *value);
@@ -62,6 +65,7 @@ public:
 private:
 	const std::string url;
 	std::string query;
+	std::string formData;
 	HTTPHeaderMap headers;
 	bool useBasicAuth = false;
 	std::string username;

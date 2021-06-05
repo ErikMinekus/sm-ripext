@@ -26,6 +26,7 @@ char sHTTPTags[][] = {
     "AUTH",
     "BEARER",
     "REDIRECT",
+    "FORM",
 };
 
 
@@ -67,6 +68,11 @@ public void OnPluginStart()
 
     hHTTPRequest = new HTTPRequest(API_BASE_URL..."/redirect/1");
     hHTTPRequest.Get(OnHTTPResponse, 8);
+
+    hHTTPRequest = new HTTPRequest(API_BASE_URL..."/post");
+    hHTTPRequest.AppendFormParam("name[]", "%s", "%&✓");
+    hHTTPRequest.AppendFormParam("name[]", "%s", "<=>");
+    hHTTPRequest.PostForm(OnHTTPResponse, 9);
 
     hHTTPRequest = new HTTPRequest(API_BASE_URL..."/image/jpeg");
     hHTTPRequest.DownloadFile(sImagePath, OnImageDownloaded);
