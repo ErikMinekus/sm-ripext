@@ -69,6 +69,8 @@ class ExtensionConfig(object):
     else:
       self.sm_root = ResolveEnvPath('SOURCEMOD18', 'sourcemod-1.8')
       if not self.sm_root:
+        self.sm_root = ResolveEnvPath('SOURCEMOD110', 'sourcemod-1.10')
+      if not self.sm_root:
         self.sm_root = ResolveEnvPath('SOURCEMOD', 'sourcemod')
       if not self.sm_root:
         self.sm_root = ResolveEnvPath('SOURCEMOD_DEV', 'sourcemod-central')

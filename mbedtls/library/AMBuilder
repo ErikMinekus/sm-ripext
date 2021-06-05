@@ -11,6 +11,9 @@ for cxx in builder.targets:
     os.path.join(builder.sourcePath, 'mbedtls', 'library'),
   ]
 
+  if binary.compiler.family == 'gcc' or binary.compiler.family == 'clang':
+    binary.compiler.cflags += ['-std=c11']
+
   if binary.compiler.family == 'clang':
     # https://llvm.org/bugs/show_bug.cgi?id=16428
     binary.compiler.cflags += ['-Wno-attributes']
