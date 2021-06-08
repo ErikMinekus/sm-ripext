@@ -19,6 +19,18 @@ enum
 	JSON_EMBED        = 0x10000		/**< Omit opening and closing braces of the top-level object */
 };
 
+enum JSONType
+{
+	JSON_OBJECT = 0,
+	JSON_ARRAY,
+	JSON_STRING,
+	JSON_INTEGER,
+	JSON_REAL,			/**< Float value */
+	JSON_TRUE,
+	JSON_FALSE,
+	JSON_NULL
+};
+
 // Maximum indentation
 static const int JSON_MAX_INDENT = 0x1F;
 
@@ -122,6 +134,13 @@ methodmap JSONObject < JSON
 	// @param maxlength  Maximum length of the string buffer.
 	// @return           True on success. False if the key was not found, or the value is not a string.
 	public native bool GetString(const char[] key, char[] buffer, int maxlength);
+
+	// Retrieves a type of value from the object.
+	//
+	// @param key        Key string.
+	// @return           Type value.
+	// @error            Invalid key.
+	public native JSONType GetType(const char[] key);
 
 	// Returns whether or not a value in the object is null.
 	//
@@ -287,6 +306,13 @@ methodmap JSONArray < JSON
 	// @return           True on success, false if the value is not a string.
 	// @error            Invalid index.
 	public native bool GetString(int index, char[] buffer, int maxlength);
+
+	// Retrieves a type of value from the array.
+	//
+	// @param index      Index in the array.
+	// @return           Type value.
+	// @error            Invalid index.
+	public native JSONType GetType(int index);
 
 	// Returns whether or not a value in the array is null.
 	//
