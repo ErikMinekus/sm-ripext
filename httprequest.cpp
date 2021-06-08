@@ -27,13 +27,11 @@
 HTTPRequest::HTTPRequest(const std::string &url)
 	: url(url)
 {
-	SetHeader("Accept", "application/json");
-	SetHeader("Content-Type", "applicaton/json");
 }
 
 void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value)
 {
-	HTTPRequestContext *context = new HTTPRequestContext(method, BuildURL(), data, BuildHeaders(), forward, value,
+	HTTPRequestContext *context = new HTTPRequestContext(std::string(method), BuildURL(), data, BuildHeaders("application/json", "application/json"), forward, value,
 		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -41,10 +39,7 @@ void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *
 
 void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, cell_t value)
 {
-	SetHeader("Accept", "*/*");
-	SetHeader("Content-Type", "application/octet-stream");
-
-	HTTPFileContext *context = new HTTPFileContext(false, BuildURL(), path, BuildHeaders(), forward, value,
+	HTTPFileContext *context = new HTTPFileContext(false, BuildURL(), path, BuildHeaders("*/*", "application/octet-stream"), forward, value,
 		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -52,10 +47,7 @@ void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, ce
 
 void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell_t value)
 {
-	SetHeader("Accept", "*/*");
-	SetHeader("Content-Type", "application/octet-stream");
-
-	HTTPFileContext *context = new HTTPFileContext(true, BuildURL(), path, BuildHeaders(), forward, value,
+	HTTPFileContext *context = new HTTPFileContext(true, BuildURL(), path, BuildHeaders("*/*", "application/octet-stream"), forward, value,
 		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -63,10 +55,7 @@ void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell
 
 void HTTPRequest::PostForm(IChangeableForward *forward, cell_t value)
 {
-	SetHeader("Accept", "application/json");
-	SetHeader("Content-Type", "application/x-www-form-urlencoded");
-
-	HTTPFormContext *context = new HTTPFormContext(BuildURL(), formData, BuildHeaders(), forward, value,
+	HTTPFormContext *context = new HTTPFormContext(BuildURL(), formData, BuildHeaders("application/json", "application/x-www-form-urlencoded"), forward, value,
 		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
 	g_RipExt.AddRequestToQueue(context);
@@ -128,10 +117,18 @@ void HTTPRequest::AppendFormParam(const char *name, const char *value)
 	curl_easy_cleanup(curl);
 }
 
-struct curl_slist *HTTPRequest::BuildHeaders()
+struct curl_slist *HTTPRequest::BuildHeaders(const char *acceptTypes, const char *contentType)
 {
+	// Accept and Content-Type headers must be located at the beginning!
+	// If they are not located correctly, sending data will be lost.
 	struct curl_slist *headers = NULL;
 	char header[8192];
+
+	snprintf(header, sizeof(header), "Accept: %s", acceptTypes);
+	headers = curl_slist_append(headers, header);
+
+	snprintf(header, sizeof(header), "Content-Type: %s", contentType);
+	headers = curl_slist_append(headers, header);
 
 	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
 	{
