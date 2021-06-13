@@ -39,7 +39,7 @@ public:
 
 	void AppendFormParam(const char *name, const char *value);
 
-	struct curl_slist *BuildHeaders();
+	struct curl_slist *BuildHeaders(const char *acceptTypes, const char *contentType);
 	void SetHeader(const char *name, const char *value);
 
 	bool UseBasicAuth() const;
