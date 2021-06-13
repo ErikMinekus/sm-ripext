@@ -125,14 +125,26 @@ struct curl_slist *HTTPRequest::BuildHeaders(const char *acceptTypes, const char
 	char header[8192];
 
 	auto result = this->headers.find("Accept");
+	bool result_is_found = result.found();
 
-	snprintf(header, sizeof(header), "Accept: %s", result.found() ? (*result).value.c_str() : acceptTypes);
+	snprintf(header, sizeof(header), "Accept: %s", result_is_found ? (*result).value.c_str() : acceptTypes);
 	headers = curl_slist_append(headers, header);
+
+	if(result_is_found)
+	{
+		this->headers.remove(result);
+	}
 
 	result = this->headers.find("Content-Type");
+	result_is_found = result.found();
 
-	snprintf(header, sizeof(header), "Content-Type: %s", result.found() ? (*result).value.c_str() : contentType);
+	snprintf(header, sizeof(header), "Content-Type: %s", result_is_found ? (*result).value.c_str() : contentType);
 	headers = curl_slist_append(headers, header);
+
+	if(result_is_found)
+	{
+		this->headers.remove(result);
+	}
 
 	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
 	{
