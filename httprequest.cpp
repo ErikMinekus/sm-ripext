@@ -28,7 +28,7 @@ HTTPRequest::HTTPRequest(const std::string &url)
 	: url(url)
 {
 	SetHeader("Accept", "application/json");
-	SetHeader("Content-Type", "applicaton/json");
+	SetHeader("Content-Type", "application/json");
 }
 
 void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *forward, cell_t value)
