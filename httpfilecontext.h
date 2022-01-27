@@ -58,4 +58,6 @@ private:
 	const std::string password;
 };
 
+off_t FileSize(FILE *fd);
+
 #endif // SM_RIPEXT_HTTPFILECONTEXT_H_

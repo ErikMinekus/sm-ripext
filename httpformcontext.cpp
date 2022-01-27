@@ -114,6 +114,10 @@ bool HTTPFormContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);
 
+#ifdef DEBUG
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+#endif
+
 	if (maxRecvSpeed > 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, maxRecvSpeed);

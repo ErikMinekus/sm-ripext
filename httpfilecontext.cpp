@@ -20,6 +20,7 @@
  */
 
 #include "httpfilecontext.h"
+#include <sys/stat.h>
 
 static size_t IgnoreResponseBody(void *body, size_t size, size_t nmemb, void *userdata)
 {
@@ -68,6 +69,7 @@ bool HTTPFileContext::InitCurl()
 		curl_easy_setopt(curl, CURLOPT_READFUNCTION, fread);
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &IgnoreResponseBody);
+        curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) FileSize(file));
 	}
 	else
 	{
@@ -89,6 +91,10 @@ bool HTTPFileContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
 
+#ifdef DEBUG
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+#endif
+
 	if (maxRecvSpeed > 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, maxRecvSpeed);
@@ -103,9 +109,7 @@ bool HTTPFileContext::InitCurl()
 		curl_easy_setopt(curl, CURLOPT_PASSWORD, password.c_str());
 	}
 
-#if defined(WIN32)
-	curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-#endif
+	curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
 
 	return true;
 }
@@ -127,4 +131,23 @@ void HTTPFileContext::OnCompleted()
 	forward->PushCell(value);
 	forward->PushString(error);
 	forward->Execute(NULL);
+}
+
+off_t FileSize(FILE *fd)
+{
+
+#ifdef WIN32
+    struct _stat file_info;
+    int stat_res = _fstat(fileno(fd), &file_info);
+#else
+    struct stat file_info;
+    int stat_res = fstat(fileno(fd), &file_info);
+#endif // WIN32
+
+    if (stat_res != 0)
+    {
+        return -1;
+    }
+
+    return file_info.st_size;
 }
