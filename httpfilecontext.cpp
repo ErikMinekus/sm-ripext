@@ -91,10 +91,6 @@ bool HTTPFileContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
 
-#ifdef DEBUG
-	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-#endif
-
 	if (maxRecvSpeed > 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_MAX_RECV_SPEED_LARGE, maxRecvSpeed);
@@ -108,6 +104,10 @@ bool HTTPFileContext::InitCurl()
 		curl_easy_setopt(curl, CURLOPT_USERNAME, username.c_str());
 		curl_easy_setopt(curl, CURLOPT_PASSWORD, password.c_str());
 	}
+
+#ifdef DEBUG
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+#endif
 
 #ifdef WIN32
 	curl_easy_setopt(curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
@@ -137,7 +137,6 @@ void HTTPFileContext::OnCompleted()
 
 off_t FileSize(FILE *fd)
 {
-
 #ifdef WIN32
 	struct _stat file_info;
 	int stat_res = _fstat(fileno(fd), &file_info);

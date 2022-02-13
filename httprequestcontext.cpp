@@ -116,15 +116,18 @@ bool HTTPRequestContext::InitCurl()
 	if (method.compare("POST") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) size);
 	}
 	else if (method.compare("PUT") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) size);
 	}
 	else if (method.compare("PATCH") == 0)
 	{
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) size);
 	}
 	else if (method.compare("DELETE") == 0)
 	{
@@ -150,12 +153,6 @@ bool HTTPRequestContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);
-	curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) ((size == 0) ? -1 : size));
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) ((size == 0) ? -1 : size));
-
-#ifdef DEBUG
-	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-#endif
 
 	if (maxRecvSpeed > 0)
 	{
@@ -170,6 +167,10 @@ bool HTTPRequestContext::InitCurl()
 		curl_easy_setopt(curl, CURLOPT_USERNAME, username.c_str());
 		curl_easy_setopt(curl, CURLOPT_PASSWORD, password.c_str());
 	}
+
+#ifdef DEBUG
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+#endif
 
 	return true;
 }
