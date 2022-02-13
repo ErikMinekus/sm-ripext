@@ -141,11 +141,12 @@ void HTTPFormContext::OnCompleted()
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response.status);
 
+	HandleError err;
 	HandleSecurity sec(NULL, myself->GetIdentity());
-	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponse, &response, &sec, NULL, NULL);
+	Handle_t hndlResponse = handlesys->CreateHandleEx(htHTTPResponse, &response, &sec, NULL, &err);
 	if (hndlResponse == BAD_HANDLE)
 	{
-		smutils->LogError(myself, "Could not create HTTP response handle.");
+		smutils->LogError(myself, "Could not create HTTP response handle (error %d)", err);
 		return;
 	}
 

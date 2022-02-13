@@ -66,12 +66,14 @@ static cell_t CreateClient(IPluginContext *pContext, const cell_t *params)
 
 	HTTPClient *client = new HTTPClient(baseURL);
 
-	Handle_t hndl = handlesys->CreateHandle(htHTTPClient, client, pContext->GetIdentity(), myself->GetIdentity(), NULL);
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+	Handle_t hndl = handlesys->CreateHandleEx(htHTTPClient, client, &sec, NULL, &err);
 	if (hndl == BAD_HANDLE)
 	{
 		delete client;
 
-		pContext->ThrowNativeError("Could not create HTTP client handle.");
+		pContext->ThrowNativeError("Could not create HTTP client handle (error %d)", err);
 		return BAD_HANDLE;
 	}
 
@@ -462,12 +464,14 @@ static cell_t CreateRequest(IPluginContext *pContext, const cell_t *params)
 
 	HTTPRequest *request = new HTTPRequest(url);
 
-	Handle_t hndlRequest = handlesys->CreateHandle(htHTTPRequest, request, pContext->GetIdentity(), myself->GetIdentity(), NULL);
+	HandleError err;
+	HandleSecurity sec(pContext->GetIdentity(), myself->GetIdentity());
+	Handle_t hndlRequest = handlesys->CreateHandleEx(htHTTPRequest, request, &sec, NULL, &err);
 	if (hndlRequest == BAD_HANDLE)
 	{
 		delete request;
 
-		pContext->ThrowNativeError("Could not create HTTPRequest handle.");
+		pContext->ThrowNativeError("Could not create HTTPRequest handle (error %d)", err);
 		return BAD_HANDLE;
 	}
 
@@ -965,12 +969,12 @@ static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 			return BAD_HANDLE;
 		}
 
-		response->hndlData = handlesys->CreateHandleEx(htJSON, response->data, &sec, NULL, NULL);
+		response->hndlData = handlesys->CreateHandleEx(htJSON, response->data, &sec, NULL, &err);
 		if (response->hndlData == BAD_HANDLE)
 		{
 			json_decref(response->data);
 
-			pContext->ThrowNativeError("Could not create data handle.");
+			pContext->ThrowNativeError("Could not create data handle (error %d)", err);
 			return BAD_HANDLE;
 		}
 	}
