@@ -150,11 +150,11 @@ bool HTTPRequestContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &WriteResponseBody);
-    curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) ((size == 0) ? -1 : size));
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) ((size == 0) ? -1 : size));
+	curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) ((size == 0) ? -1 : size));
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, (curl_off_t) ((size == 0) ? -1 : size));
 
 #ifdef DEBUG
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 #endif
 
 	if (maxRecvSpeed > 0)

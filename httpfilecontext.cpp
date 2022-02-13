@@ -69,7 +69,7 @@ bool HTTPFileContext::InitCurl()
 		curl_easy_setopt(curl, CURLOPT_READFUNCTION, fread);
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &IgnoreResponseBody);
-        curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) FileSize(file));
+		curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t) FileSize(file));
 	}
 	else
 	{
@@ -92,7 +92,7 @@ bool HTTPFileContext::InitCurl()
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, SM_RIPEXT_USER_AGENT);
 
 #ifdef DEBUG
-    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 #endif
 
 	if (maxRecvSpeed > 0)
@@ -139,17 +139,17 @@ off_t FileSize(FILE *fd)
 {
 
 #ifdef WIN32
-    struct _stat file_info;
-    int stat_res = _fstat(fileno(fd), &file_info);
+	struct _stat file_info;
+	int stat_res = _fstat(fileno(fd), &file_info);
 #else
-    struct stat file_info;
-    int stat_res = fstat(fileno(fd), &file_info);
+	struct stat file_info;
+	int stat_res = fstat(fileno(fd), &file_info);
 #endif // WIN32
 
-    if (stat_res != 0)
-    {
-        return -1;
-    }
+	if (stat_res != 0)
+	{
+		return -1;
+	}
 
-    return file_info.st_size;
+	return file_info.st_size;
 }
