@@ -128,6 +128,10 @@ bool HTTPFormContext::InitCurl()
 		curl_easy_setopt(curl, CURLOPT_PASSWORD, password.c_str());
 	}
 
+#ifdef DEBUG
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+#endif
+
 	return true;
 }
 
