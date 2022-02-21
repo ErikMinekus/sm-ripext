@@ -237,20 +237,23 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	uv_async_init(g_Loop, &g_AsyncStopLoop, &AsyncStopLoop);
 	uv_thread_create(&g_Thread, &EventLoop, NULL);
 
+	/* Set up access rights for the 'HTTPRequest' handle type */
+	HandleAccess haHTTPRequest;
+	handlesys->InitAccessDefaults(NULL, &haHTTPRequest);
+	haHTTPRequest.access[HandleAccess_Delete] = 0;
+
 	/* Set up access rights for the 'HTTPResponse' handle type */
 	HandleAccess haHTTPResponse;
-	haHTTPResponse.access[HandleAccess_Clone] = HANDLE_RESTRICT_IDENTITY|HANDLE_RESTRICT_OWNER;
-	haHTTPResponse.access[HandleAccess_Delete] = HANDLE_RESTRICT_IDENTITY;
-	haHTTPResponse.access[HandleAccess_Read] = HANDLE_RESTRICT_IDENTITY;
+	handlesys->InitAccessDefaults(NULL, &haHTTPResponse);
+	haHTTPResponse.access[HandleAccess_Clone] = HANDLE_RESTRICT_IDENTITY;
 
 	/* Set up access rights for the 'JSON' handle type */
 	HandleAccess haJSON;
-	haJSON.access[HandleAccess_Clone] = 0;
+	handlesys->InitAccessDefaults(NULL, &haJSON);
 	haJSON.access[HandleAccess_Delete] = 0;
-	haJSON.access[HandleAccess_Read] = 0;
 
 	htHTTPClient = handlesys->CreateType("HTTPClient", &g_HTTPClientHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
-	htHTTPRequest = handlesys->CreateType("HTTPRequest", &g_HTTPRequestHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
+	htHTTPRequest = handlesys->CreateType("HTTPRequest", &g_HTTPRequestHandler, 0, NULL, &haHTTPRequest, myself->GetIdentity(), NULL);
 	htHTTPResponse = handlesys->CreateType("HTTPResponse", &g_HTTPResponseHandler, 0, NULL, &haHTTPResponse, myself->GetIdentity(), NULL);
 	htJSON = handlesys->CreateType("JSON", &g_JSONHandler, 0, NULL, &haJSON, myself->GetIdentity(), NULL);
 	htJSONObjectKeys = handlesys->CreateType("JSONObjectKeys", &g_JSONObjectKeysHandler, 0, NULL, NULL, myself->GetIdentity(), NULL);
