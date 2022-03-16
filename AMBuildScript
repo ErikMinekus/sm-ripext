@@ -302,3 +302,6 @@ if builder.backend == 'amb2':
   ]
 
 builder.Build(BuildScripts, {'Extension': Extension})
+
+if builder.options.breakpad_dump:
+  builder.Build('BreakpadSymbols', {'Extension': Extension})

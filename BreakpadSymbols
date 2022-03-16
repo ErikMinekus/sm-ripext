@@ -1,0 +1,39 @@
+# vim: set ts=2 sw=2 tw=99 noet ft=python:
+import os
+import sys
+
+builder.SetBuildFolder('symbols')
+
+UPLOAD_SCRIPT = os.path.join(builder.sourcePath, 'tools', 'upload_symbols.py')
+
+for cxx_task in Extension.extensions:
+  breakpad_dir = os.path.join(builder.sourcePath, 'tools', 'breakpad', cxx_task.target.platform)
+
+  if cxx_task.target.platform == 'windows':
+    debug_entry = cxx_task.debug
+  else:
+    debug_entry = cxx_task.binary
+
+  debug_file = os.path.join(builder.buildPath, debug_entry.path)
+  if cxx_task.target.platform == 'linux':
+    argv = [os.path.join(breakpad_dir, 'dump_syms'), debug_file, os.path.dirname(debug_file)]
+  elif cxx_task.target.platform == 'mac':
+    argv = [os.path.join(breakpad_dir, 'dump_syms'), '-g', debug_file + '.dSYM', debug_file]
+  elif cxx_task.target.platform == 'windows':
+    argv = [os.path.join(breakpad_dir, 'dump_syms.exe'), debug_file]
+
+  plat_dir = os.path.dirname(debug_file)
+  bin_dir = os.path.split(plat_dir)[0]
+
+  symbol_file = '{}-{}-{}.breakpad'.format(
+    os.path.split(bin_dir)[1],
+    cxx_task.target.platform,
+    cxx_task.target.arch
+  )
+
+  argv = [sys.executable, UPLOAD_SCRIPT, symbol_file] + argv
+  builder.AddCommand(
+    inputs = [UPLOAD_SCRIPT, debug_entry],
+    argv = argv,
+    outputs = [symbol_file]
+  )
