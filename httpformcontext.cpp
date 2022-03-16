@@ -2,7 +2,7 @@
  * vim: set ts=4 :
  * =============================================================================
  * SourceMod REST in Pawn Extension
- * Copyright 2017-2021 Erik Minekus
+ * Copyright 2017-2022 Erik Minekus
  * =============================================================================
  *
  * This program is free software: you can redistribute it and/or modify it under
