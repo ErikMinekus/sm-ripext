@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2020, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2022, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -28,7 +28,6 @@
 #include "curlx.h"
 
 #include "tool_cfgable.h"
-#include "tool_convert.h"
 #include "tool_msgs.h"
 #include "tool_binmode.h"
 #include "tool_getparam.h"
@@ -126,21 +125,20 @@ static struct tool_mime *tool_mime_new_filedata(struct tool_mime *parent,
     else {  /* Not suitable for direct use, buffer stdin data. */
       size_t stdinsize = 0;
 
-      if(file2memory(&data, &stdinsize, stdin) != PARAM_OK) {
-        /* Out of memory. */
+      switch(file2memory(&data, &stdinsize, stdin)) {
+      case PARAM_NO_MEM:
         return m;
-      }
-
-      if(ferror(stdin)) {
+      case PARAM_READ_ERROR:
         result = CURLE_READ_ERROR;
-        Curl_safefree(data);
-        data = NULL;
-      }
-      else if(!stdinsize) {
-        /* Zero-length data has been freed. Re-create it. */
-        data = strdup("");
-        if(!data)
-          return m;
+        break;
+      default:
+        if(!stdinsize) {
+          /* Zero-length data has been freed. Re-create it. */
+          data = strdup("");
+          if(!data)
+            return m;
+        }
+        break;
       }
       size = curlx_uztoso(stdinsize);
       origin = 0;
@@ -268,25 +266,7 @@ static CURLcode tool2curlparts(CURL *curl, struct tool_mime *m,
         break;
 
       case TOOLMIME_DATA:
-#ifdef CURL_DOES_CONVERSIONS
-        /* Our data is always textual: convert it to ASCII. */
-        {
-          size_t size = strlen(m->data);
-          char *cp = malloc(size + 1);
-
-          if(!cp)
-            ret = CURLE_OUT_OF_MEMORY;
-          else {
-            memcpy(cp, m->data, size + 1);
-            ret = convert_to_network(cp, size);
-            if(!ret)
-              ret = curl_mime_data(part, cp, CURL_ZERO_TERMINATED);
-            free(cp);
-          }
-        }
-#else
         ret = curl_mime_data(part, m->data, CURL_ZERO_TERMINATED);
-#endif
         break;
 
       case TOOLMIME_FILE:
@@ -347,7 +327,8 @@ CURLcode tool2curlmime(CURL *curl, struct tool_mime *m, curl_mime **mime)
  * after call get_parm_word, str either point to string end
  * or point to any of end chars.
  */
-static char *get_param_word(char **str, char **end_pos, char endchar)
+static char *get_param_word(struct OperationConfig *config, char **str,
+                            char **end_pos, char endchar)
 {
   char *ptr = *str;
   /* the first non-space char is here */
@@ -369,6 +350,7 @@ static char *get_param_word(char **str, char **end_pos, char endchar)
         }
       }
       if(*ptr == '"') {
+        bool trailing_data = FALSE;
         *end_pos = ptr;
         if(escape) {
           /* has escape, we restore the unescaped string here */
@@ -381,8 +363,14 @@ static char *get_param_word(char **str, char **end_pos, char endchar)
           while(ptr < *end_pos);
           *end_pos = ptr2;
         }
-        while(*ptr && *ptr != ';' && *ptr != endchar)
+        ++ptr;
+        while(*ptr && *ptr != ';' && *ptr != endchar) {
+          if(!ISSPACE(*ptr))
+            trailing_data = TRUE;
           ++ptr;
+        }
+        if(trailing_data)
+          warnf(config->global, "Trailing data after quoted form parameter\n");
         *str = ptr;
         return word_begin + 1;
       }
@@ -501,7 +489,7 @@ static int get_param_part(struct OperationConfig *config, char endchar,
   while(ISSPACE(*p))
     p++;
   tp = p;
-  *pdata = get_param_word(&p, &endpos, endchar);
+  *pdata = get_param_word(config, &p, &endpos, endchar);
   /* If not quoted, strip trailing spaces. */
   if(*pdata == tp)
     while(endpos > *pdata && ISSPACE(endpos[-1]))
@@ -540,7 +528,7 @@ static int get_param_part(struct OperationConfig *config, char endchar,
       for(p += 9; ISSPACE(*p); p++)
         ;
       tp = p;
-      filename = get_param_word(&p, &endpos, endchar);
+      filename = get_param_word(config, &p, &endpos, endchar);
       /* If not quoted, strip trailing spaces. */
       if(filename == tp)
         while(endpos > filename && ISSPACE(endpos[-1]))
@@ -563,7 +551,7 @@ static int get_param_part(struct OperationConfig *config, char endchar,
           p++;
         } while(ISSPACE(*p));
         tp = p;
-        hdrfile = get_param_word(&p, &endpos, endchar);
+        hdrfile = get_param_word(config, &p, &endpos, endchar);
         /* If not quoted, strip trailing spaces. */
         if(hdrfile == tp)
           while(endpos > hdrfile && ISSPACE(endpos[-1]))
@@ -590,7 +578,7 @@ static int get_param_part(struct OperationConfig *config, char endchar,
         while(ISSPACE(*p))
           p++;
         tp = p;
-        hdr = get_param_word(&p, &endpos, endchar);
+        hdr = get_param_word(config, &p, &endpos, endchar);
         /* If not quoted, strip trailing spaces. */
         if(hdr == tp)
           while(endpos > hdr && ISSPACE(endpos[-1]))
@@ -612,7 +600,7 @@ static int get_param_part(struct OperationConfig *config, char endchar,
       for(p += 8; ISSPACE(*p); p++)
         ;
       tp = p;
-      encoder = get_param_word(&p, &endpos, endchar);
+      encoder = get_param_word(config, &p, &endpos, endchar);
       /* If not quoted, strip trailing spaces. */
       if(encoder == tp)
         while(endpos > encoder && ISSPACE(endpos[-1]))
@@ -629,7 +617,7 @@ static int get_param_part(struct OperationConfig *config, char endchar,
     }
     else {
       /* unknown prefix, skip to next block */
-      char *unknown = get_param_word(&p, &endpos, endchar);
+      char *unknown = get_param_word(config, &p, &endpos, endchar);
 
       sep = *p;
       *endpos = '\0';

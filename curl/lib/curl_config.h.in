@@ -42,6 +42,9 @@
 /* to disable Gopher */
 #undef CURL_DISABLE_GOPHER
 
+/* disable alt-svc */
+#undef CURL_DISABLE_HSTS
+
 /* to disable HTTP */
 #undef CURL_DISABLE_HTTP
 
@@ -68,6 +71,9 @@
 
 /* disable netrc parsing */
 #undef CURL_DISABLE_NETRC
+
+/* to disable NTLM support */
+#undef CURL_DISABLE_NTLM
 
 /* if the OpenSSL configuration won't be loaded automatically */
 #undef CURL_DISABLE_OPENSSL_AUTO_LOAD_CONFIG
@@ -128,12 +134,6 @@
 
 /* Define to the type of arg 2 for gethostname. */
 #undef GETHOSTNAME_TYPE_ARG2
-
-/* Specifies the number of arguments to getservbyport_r */
-#undef GETSERVBYPORT_R_ARGS
-
-/* Specifies the size of the buffer to pass to getservbyport_r */
-#undef GETSERVBYPORT_R_BUFSIZE
 
 /* Define to 1 if you have the alarm function. */
 #undef HAVE_ALARM
@@ -214,9 +214,6 @@
 /* Define to 1 if you have the freeaddrinfo function. */
 #undef HAVE_FREEADDRINFO
 
-/* Define to 1 if you have the freeifaddrs function. */
-#undef HAVE_FREEIFADDRS
-
 /* Define to 1 if you have the fsetxattr function. */
 #undef HAVE_FSETXATTR
 
@@ -229,9 +226,6 @@
 /* Define to 1 if you have the ftruncate function. */
 #undef HAVE_FTRUNCATE
 
-/* Define to 1 if you have the gai_strerror function. */
-#undef HAVE_GAI_STRERROR
-
 /* Define to 1 if you have a working getaddrinfo function. */
 #undef HAVE_GETADDRINFO
 
@@ -240,21 +234,6 @@
 
 /* Define to 1 if you have the `geteuid' function. */
 #undef HAVE_GETEUID
-
-/* Define to 1 if you have the gethostbyaddr function. */
-#undef HAVE_GETHOSTBYADDR
-
-/* Define to 1 if you have the gethostbyaddr_r function. */
-#undef HAVE_GETHOSTBYADDR_R
-
-/* gethostbyaddr_r() takes 5 args */
-#undef HAVE_GETHOSTBYADDR_R_5
-
-/* gethostbyaddr_r() takes 7 args */
-#undef HAVE_GETHOSTBYADDR_R_7
-
-/* gethostbyaddr_r() takes 8 args */
-#undef HAVE_GETHOSTBYADDR_R_8
 
 /* Define to 1 if you have the gethostbyname function. */
 #undef HAVE_GETHOSTBYNAME
@@ -294,9 +273,6 @@
 
 /* Define to 1 if you have the `getrlimit' function. */
 #undef HAVE_GETRLIMIT
-
-/* Define to 1 if you have the getservbyport_r function. */
-#undef HAVE_GETSERVBYPORT_R
 
 /* Define to 1 if you have the getsockname function. */
 #undef HAVE_GETSOCKNAME
@@ -345,15 +321,6 @@
 
 /* Define to 1 if you have the `if_nametoindex' function. */
 #undef HAVE_IF_NAMETOINDEX
-
-/* Define to 1 if you have the inet_ntoa_r function. */
-#undef HAVE_INET_NTOA_R
-
-/* inet_ntoa_r() takes 2 args */
-#undef HAVE_INET_NTOA_R_2
-
-/* inet_ntoa_r() takes 3 args */
-#undef HAVE_INET_NTOA_R_3
 
 /* Define to 1 if you have a IPv6 capable working inet_ntop function. */
 #undef HAVE_INET_NTOP
@@ -479,6 +446,9 @@
 /* Define to 1 if you have the MSG_NOSIGNAL flag. */
 #undef HAVE_MSG_NOSIGNAL
 
+/* Define to 1 if you have the <msh3.h> header file. */
+#undef HAVE_MSH3_H
+
 /* Define to 1 if you have the <netdb.h> header file. */
 #undef HAVE_NETDB_H
 
@@ -525,14 +495,12 @@
 /* Define to 1 if you have the <openssl/rsa.h> header file. */
 #undef HAVE_OPENSSL_RSA_H
 
-/* if you have the function SRP_Calc_client_key */
+/* if you have the functions SSL_CTX_set_srp_username and
+   SSL_CTX_set_srp_password */
 #undef HAVE_OPENSSL_SRP
 
 /* Define to 1 if you have the <openssl/ssl.h> header file. */
 #undef HAVE_OPENSSL_SSL_H
-
-/* Define to 1 if you have the `OpenSSL_version' function. */
-#undef HAVE_OPENSSL_VERSION
 
 /* Define to 1 if you have the <openssl/x509.h> header file. */
 #undef HAVE_OPENSSL_X509_H
@@ -606,9 +574,6 @@
 /* Define to 1 if you have a working setsockopt SO_NONBLOCK function. */
 #undef HAVE_SETSOCKOPT_SO_NONBLOCK
 
-/* Define to 1 if you have the <sgtty.h> header file. */
-#undef HAVE_SGTTY_H
-
 /* Define to 1 if you have the sigaction function. */
 #undef HAVE_SIGACTION
 
@@ -624,12 +589,6 @@
 /* Define to 1 if you have the sigsetjmp function or macro. */
 #undef HAVE_SIGSETJMP
 
-/* Define to 1 if sig_atomic_t is an available typedef. */
-#undef HAVE_SIG_ATOMIC_T
-
-/* Define to 1 if sig_atomic_t is already defined as volatile. */
-#undef HAVE_SIG_ATOMIC_T_VOLATILE
-
 /* Define to 1 if struct sockaddr_in6 has the sin6_scope_id member */
 #undef HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID
 
@@ -642,9 +601,6 @@
 /* Define to 1 if you have the <socket.h> header file. */
 #undef HAVE_SOCKET_H
 
-/* Define to 1 if you have the `SSLv2_client_method' function. */
-#undef HAVE_SSLV2_CLIENT_METHOD
-
 /* Define to 1 if you have the `SSL_get_ech_status' function. */
 #undef HAVE_SSL_GET_ECH_STATUS
 
@@ -656,6 +612,9 @@
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -680,9 +639,6 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
-
-/* Define to 1 if you have the strncasecmp function. */
-#undef HAVE_STRNCASECMP
 
 /* Define to 1 if you have the strncmpi function. */
 #undef HAVE_STRNCMPI
@@ -765,9 +721,6 @@
 /* Define to 1 if you have the <termio.h> header file. */
 #undef HAVE_TERMIO_H
 
-/* Define to 1 if you have the <time.h> header file. */
-#undef HAVE_TIME_H
-
 /* Define this if time_t is unsigned */
 #undef HAVE_TIME_T_UNSIGNED
 
@@ -795,6 +748,9 @@
 /* Define to 1 if you have the winber.h header file. */
 #undef HAVE_WINBER_H
 
+/* Define to 1 if you have the wincrypt.h header file. */
+#undef HAVE_WINCRYPT_H
+
 /* Define to 1 if you have the windows.h header file. */
 #undef HAVE_WINDOWS_H
 
@@ -804,14 +760,8 @@
 /* Define to 1 if you have the winsock2.h header file. */
 #undef HAVE_WINSOCK2_H
 
-/* Define to 1 if you have the winsock.h header file. */
-#undef HAVE_WINSOCK_H
-
 /* Define to 1 if you have the <wolfssh/ssh.h> header file. */
 #undef HAVE_WOLFSSH_SSH_H
-
-/* Define to 1 if you have the `wolfSSLv3_client_method' function. */
-#undef HAVE_WOLFSSLV3_CLIENT_METHOD
 
 /* if you have wolfSSL_DES_ecb_encrypt */
 #undef HAVE_WOLFSSL_DES_ECB_ENCRYPT
@@ -909,9 +859,6 @@
 /* Define to the function return type for recv. */
 #undef RECV_TYPE_RETV
 
-/* Define as the return type of signal handlers (`int' or `void'). */
-#undef RETSIGTYPE
-
 /* Define to the type qualifier of arg 5 for select. */
 #undef SELECT_QUAL_ARG5
 
@@ -969,14 +916,13 @@
 /* The number of bytes in type time_t */
 #undef SIZEOF_TIME_T
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 /* Define to the type of arg 3 for strerror_r. */
 #undef STRERROR_R_TYPE_ARG3
-
-/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-#undef TIME_WITH_SYS_TIME
 
 /* if AmiSSL is in use */
 #undef USE_AMISSL
@@ -993,11 +939,11 @@
 /* if GnuTLS is enabled */
 #undef USE_GNUTLS
 
-/* if GnuTLS uses nettle as crypto backend */
-#undef USE_GNUTLS_NETTLE
+/* GSASL support enabled */
+#undef USE_GSASL
 
-/* to enable HSTS */
-#undef USE_HSTS
+/* enable headers-api */
+#undef USE_HEADERS_API
 
 /* if hyper is in use */
 #undef USE_HYPER
@@ -1020,11 +966,8 @@
 /* if mbedTLS is enabled */
 #undef USE_MBEDTLS
 
-/* if MesaLink is enabled */
-#undef USE_MESALINK
-
-/* Define to enable metalink support */
-#undef USE_METALINK
+/* if msh3 is in use */
+#undef USE_MSH3
 
 /* if nghttp2 is in use */
 #undef USE_NGHTTP2
@@ -1053,6 +996,9 @@
 /* if quiche is in use */
 #undef USE_QUICHE
 
+/* if rustls is enabled */
+#undef USE_RUSTLS
+
 /* to enable Windows native SSL/TLS support */
 #undef USE_SCHANNEL
 
@@ -1070,6 +1016,10 @@
 
 /* Use Unix domain sockets */
 #undef USE_UNIX_SOCKETS
+
+/* Define to 1 if you are building a Windows target with crypto API support.
+   */
+#undef USE_WIN32_CRYPTO
 
 /* Define to 1 if you have the `normaliz' (WinIDN) library (-lnormaliz). */
 #undef USE_WIN32_IDN
@@ -1103,11 +1053,6 @@
 /* Define to 1 if OS is AIX. */
 #ifndef _ALL_SOURCE
 #  undef _ALL_SOURCE
-#endif
-
-/* Enable large inode numbers on Mac OS X 10.5.  */
-#ifndef _DARWIN_USE_64_BIT_INODE
-# define _DARWIN_USE_64_BIT_INODE 1
 #endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */

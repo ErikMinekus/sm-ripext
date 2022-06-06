@@ -6,7 +6,7 @@
 #                            | (__| |_| |  _ <| |___
 #                             \___|\___/|_| \_\_____|
 #
-# Copyright (C) 1998 - 2021, Daniel Stenberg, <daniel@haxx.se>, et al.
+# Copyright (C) 1998 - 2022, Daniel Stenberg, <daniel@haxx.se>, et al.
 #
 # This software is licensed as described in the file COPYING, which
 # you should have received as part of this distribution. The terms
@@ -45,6 +45,20 @@ my %redirlong;
 my %protolong;
 my %catlong;
 
+use POSIX qw(strftime);
+my $date = strftime "%B %d %Y", localtime;
+my $year = strftime "%Y", localtime;
+my $version = "unknown";
+
+open(INC, "<../../include/curl/curlver.h");
+while(<INC>) {
+    if($_ =~ /^#define LIBCURL_VERSION \"([0-9.]*)/) {
+        $version = $1;
+        last;
+    }
+}
+close(INC);
+
 # get the long name version, return the man page string
 sub manpageify {
     my ($k)=@_;
@@ -62,15 +76,46 @@ sub manpageify {
 
 sub printdesc {
     my @desc = @_;
+    my $exam = 0;
     for my $d (@desc) {
+        if($d =~ /\(Added in ([0-9.]+)\)/i) {
+            my $ver = $1;
+            if(too_old($ver)) {
+                $d =~ s/ *\(Added in $ver\)//gi;
+            }
+        }
+        if($d !~ /^.\\"/) {
+            # **bold**
+            $d =~ s/\*\*([^ ]*)\*\*/\\fB$1\\fP/g;
+            # *italics*
+            $d =~ s/\*([^ ]*)\*/\\fI$1\\fP/g;
+        }
+        if(!$exam && ($d =~ /^ /)) {
+            # start of example
+            $exam = 1;
+            print ".nf\n"; # no-fill
+        }
+        elsif($exam && ($d !~ /^ /)) {
+            # end of example
+            $exam = 0;
+            print ".fi\n"; # fill-in
+        }
         # skip lines starting with space (examples)
         if($d =~ /^[^ ]/) {
             for my $k (keys %optlong) {
                 my $l = manpageify($k);
-                $d =~ s/--$k([^a-z0-9_-])/$l$1/;
+                $d =~ s/--$k([^a-z0-9_-])(\W)/$l$1$2/;
             }
         }
+        # quote "bare" minuses in the output
+        $d =~ s/( |\\fI|^)--/$1\\-\\-/g;
+        $d =~ s/([ -]|\\fI|^)-/$1\\-/g;
+        # handle single quotes first on the line
+        $d =~ s/(\s*)\'/$1\\(aq/;
         print $d;
+    }
+    if($exam) {
+        print ".fi\n"; # fill-in
     }
 }
 
@@ -105,8 +150,29 @@ sub protocols {
     }
 }
 
+sub too_old {
+    my ($version)=@_;
+    my $a = 999999;
+    if($version =~ /^(\d+)\.(\d+)\.(\d+)/) {
+        $a = $1 * 1000 + $2 * 10 + $3;
+    }
+    elsif($version =~ /^(\d+)\.(\d+)/) {
+        $a = $1 * 1000 + $2 * 10;
+    }
+    if($a < 7300) {
+        # we consider everything before 7.30.0 to be too old to mention
+        # specific changes for
+        return 1;
+    }
+    return 0;
+}
+
 sub added {
     my ($standalone, $data)=@_;
+    if(too_old($data)) {
+        # don't mention ancient additions
+        return "";
+    }
     if($standalone) {
         return ".SH \"ADDED\"\nAdded in curl version $data\n";
     }
@@ -129,8 +195,11 @@ sub single {
     my $requires;
     my $category;
     my $seealso;
+    my @examples; # there can be more than one
     my $magic; # cmdline special option
+    my $line;
     while(<F>) {
+        $line++;
         if(/^Short: *(.)/i) {
             $short=$1;
         }
@@ -164,17 +233,32 @@ sub single {
         elsif(/^Category: *(.*)/i) {
             $category=$1;
         }
+        elsif(/^Example: *(.*)/i) {
+            push @examples, $1;
+        }
         elsif(/^Help: *(.*)/i) {
             ;
         }
         elsif(/^---/) {
             if(!$long) {
                 print STDERR "ERROR: no 'Long:' in $f\n";
-                exit 1;
+                return 1;
             }
             if(!$category) {
                 print STDERR "ERROR: no 'Category:' in $f\n";
-                exit 2;
+                return 2;
+            }
+            if(!$examples[0]) {
+                print STDERR "$f:$line:1:ERROR: no 'Example:' present\n";
+                return 2;
+            }
+            if(!$added) {
+                print STDERR "$f:$line:1:ERROR: no 'Added:' version present\n";
+                return 2;
+            }
+            if(!$seealso) {
+                print STDERR "$f:$line:1:ERROR: no 'See-also:' field present\n";
+                return 2;
             }
             last;
         }
@@ -203,6 +287,9 @@ sub single {
         $opt .= " $arg";
     }
 
+    # quote "bare" minuses in opt
+    $opt =~ s/( |^)--/$1\\-\\-/g;
+    $opt =~ s/( |^)-/$1\\-/g;
     if($standalone) {
         print ".TH curl 1 \"30 Nov 2016\" \"curl 7.52.0\" \"curl manual\"\n";
         print ".SH OPTION\n";
@@ -235,7 +322,7 @@ sub single {
         my $i = 0;
         for my $k (@m) {
             if(!$helplong{$k}) {
-                print STDERR "WARN: $f see-alsos a non-existing option: $k\n";
+                print STDERR "$f:$line:1:WARN: see-also a non-existing option: $k\n";
             }
             my $l = manpageify($k);
             my $sep = " and";
@@ -262,7 +349,18 @@ sub single {
             my $l = manpageify($k);
             $mstr .= sprintf "%s$l", $mstr?" and ":"";
         }
-        push @foot, overrides($standalone, "This option overrides $mstr. ");
+        push @foot, overrides($standalone,
+                              "This option is mutually exclusive to $mstr. ");
+    }
+    if($examples[0]) {
+        my $s ="";
+        $s="s" if($examples[1]);
+        print "\nExample$s:\n.nf\n";
+        foreach my $e (@examples) {
+            $e =~ s!\$URL!https://example.com!g;
+            print " curl $e\n";
+        }
+        print ".fi\n";
     }
     if($added) {
         push @foot, added($standalone, $added);
@@ -333,6 +431,8 @@ sub header {
     open(F, "<:crlf", "$f");
     my @d;
     while(<F>) {
+        s/%DATE/$date/g;
+        s/%VERSION/$version/g;
         push @d, $_;
     }
     close(F);
@@ -340,6 +440,42 @@ sub header {
 }
 
 sub listhelp {
+    print <<HEAD
+/***************************************************************************
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \\| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
+ *                             \\___|\\___/|_| \\_\\_____|
+ *
+ * Copyright (C) 1998 - $year, Daniel Stenberg, <daniel@haxx.se>, et al.
+ *
+ * This software is licensed as described in the file COPYING, which
+ * you should have received as part of this distribution. The terms
+ * are also available at https://curl.se/docs/copyright.html.
+ *
+ * You may opt to use, copy, modify, merge, publish, distribute and/or sell
+ * copies of the Software, and permit persons to whom the Software is
+ * furnished to do so, under the terms of the COPYING file.
+ *
+ * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
+ * KIND, either express or implied.
+ *
+ ***************************************************************************/
+#include "tool_setup.h"
+#include "tool_help.h"
+
+/*
+ * DO NOT edit tool_listhelp.c manually.
+ * This source file is generated with the following command:
+
+  cd \$srcroot/docs/cmdline-opts
+  ./gen.pl listhelp *.d > \$srcroot/src/tool_listhelp.c
+ */
+
+const struct helptxt helptext[] = {
+HEAD
+        ;
     foreach my $f (sort keys %helplong) {
         my $long = $f;
         my $short = $optlong{$long};
@@ -377,6 +513,11 @@ sub listhelp {
         }
         print $line;
     }
+    print <<FOOT
+  { NULL, NULL, CURLHELP_HIDDEN }
+};
+FOOT
+        ;
 }
 
 sub listcats {
@@ -400,17 +541,17 @@ sub listcats {
 
 sub mainpage {
     my (@files) = @_;
+    my $ret;
     # show the page header
     header("page-header");
 
     # output docs for all options
     foreach my $f (sort @files) {
-        if(single($f, 0)) {
-            print STDERR "Can't read $f?\n";
-        }
+        $ret += single($f, 0);
     }
 
     header("page-footer");
+    exit $ret if($ret);
 }
 
 sub showonly {

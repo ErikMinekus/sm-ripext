@@ -1,11 +1,11 @@
 # HSTS support
 
-curl features **EXPERIMENTAL** support for the Strict-Transport-Security: HTTP
-header. Added in curl 7.74.0
+HTTP Strict-Transport-Security. Added as experimental in curl
+7.74.0. Supported "for real" since 7.77.0.
 
 ## Standard
 
-[HTTP Strict Transport Security](https://tools.ietf.org/html/rfc6797)
+[HTTP Strict Transport Security](https://datatracker.ietf.org/doc/html/rfc6797)
 
 ## Behavior
 

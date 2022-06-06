@@ -62,7 +62,7 @@ jobs:
           BREAKPAD_SYMBOL_SERVER: ${{ secrets.BREAKPAD_SYMBOL_SERVER }}
         run: |
           mkdir build && cd build
-          perl ../curl/lib/mk-ca-bundle.pl
+          perl ../curl/scripts/mk-ca-bundle.pl
           python ../configure.py --enable-optimize --targets=${{ matrix.target-archs }} \
             ${{ github.ref == 'refs/heads/main' && '--breakpad-dump --symbol-files' || '' }}
           ambuild

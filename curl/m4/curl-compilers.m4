@@ -5,7 +5,7 @@
 #                            | (__| |_| |  _ <| |___
 #                             \___|\___/|_| \_\_____|
 #
-# Copyright (C) 1998 - 2020, Daniel Stenberg, <daniel@haxx.se>, et al.
+# Copyright (C) 1998 - 2022, Daniel Stenberg, <daniel@haxx.se>, et al.
 #
 # This software is licensed as described in the file COPYING, which
 # you should have received as part of this distribution. The terms
@@ -33,9 +33,7 @@ AC_DEFUN([CURL_CHECK_COMPILER], [
   compiler_id="unknown"
   compiler_num="0"
   #
-  flags_dbg_all="unknown"
   flags_dbg_yes="unknown"
-  flags_dbg_off="unknown"
   flags_opt_all="unknown"
   flags_opt_yes="unknown"
   flags_opt_off="unknown"
@@ -53,7 +51,6 @@ AC_DEFUN([CURL_CHECK_COMPILER], [
   CURL_CHECK_COMPILER_SGI_MIPS_C
   CURL_CHECK_COMPILER_SUNPRO_C
   CURL_CHECK_COMPILER_TINY_C
-  CURL_CHECK_COMPILER_WATCOM_C
   #
   if test "$compiler_id" = "unknown"; then
   cat <<_EOF 1>&2
@@ -66,7 +63,7 @@ AC_DEFUN([CURL_CHECK_COMPILER], [
 ***
 *** If you wish to help the curl project to better support your compiler
 *** you can report this and the required info on the libcurl development
-*** mailing list: https://cool.haxx.se/mailman/listinfo/curl-library/
+*** mailing list: https://lists.haxx.selistinfo/curl-library/
 ***
 _EOF
   fi
@@ -106,16 +103,7 @@ AC_DEFUN([CURL_CHECK_COMPILER_CLANG], [
     clangvhi=`echo $clangver | cut -d . -f1`
     clangvlo=`echo $clangver | cut -d . -f2`
     compiler_num=`(expr $clangvhi "*" 100 + $clangvlo) 2>/dev/null`
-    flags_dbg_all="-g -g0 -g1 -g2 -g3"
-    flags_dbg_all="$flags_dbg_all -ggdb"
-    flags_dbg_all="$flags_dbg_all -gstabs"
-    flags_dbg_all="$flags_dbg_all -gstabs+"
-    flags_dbg_all="$flags_dbg_all -gcoff"
-    flags_dbg_all="$flags_dbg_all -gxcoff"
-    flags_dbg_all="$flags_dbg_all -gdwarf-2"
-    flags_dbg_all="$flags_dbg_all -gvms"
     flags_dbg_yes="-g"
-    flags_dbg_off=""
     flags_opt_all="-O -O0 -O1 -O2 -Os -O3 -O4"
     flags_opt_yes="-Os"
     flags_opt_off="-O0"
@@ -137,9 +125,7 @@ AC_DEFUN([CURL_CHECK_COMPILER_DEC_C], [
     test "$curl_cv_have_def___DECC_VER" = "yes"; then
     AC_MSG_RESULT([yes])
     compiler_id="DEC_C"
-    flags_dbg_all="-g -g0 -g1 -g2 -g3"
     flags_dbg_yes="-g2"
-    flags_dbg_off=""
     flags_opt_all="-O -O0 -O1 -O2 -O3 -O4"
     flags_opt_yes="-O1"
     flags_opt_off="-O0"
@@ -175,16 +161,7 @@ AC_DEFUN([CURL_CHECK_COMPILER_GNU_C], [
     gccvhi=`echo $gccver | cut -d . -f1`
     gccvlo=`echo $gccver | cut -d . -f2`
     compiler_num=`(expr $gccvhi "*" 100 + $gccvlo) 2>/dev/null`
-    flags_dbg_all="-g -g0 -g1 -g2 -g3"
-    flags_dbg_all="$flags_dbg_all -ggdb"
-    flags_dbg_all="$flags_dbg_all -gstabs"
-    flags_dbg_all="$flags_dbg_all -gstabs+"
-    flags_dbg_all="$flags_dbg_all -gcoff"
-    flags_dbg_all="$flags_dbg_all -gxcoff"
-    flags_dbg_all="$flags_dbg_all -gdwarf-2"
-    flags_dbg_all="$flags_dbg_all -gvms"
     flags_dbg_yes="-g"
-    flags_dbg_off=""
     flags_opt_all="-O -O0 -O1 -O2 -O3 -Os -Og -Ofast"
     flags_opt_yes="-O2"
     flags_opt_off="-O0"
@@ -205,9 +182,7 @@ AC_DEFUN([CURL_CHECK_COMPILER_HPUX_C], [
   if test "$curl_cv_have_def___HP_cc" = "yes"; then
     AC_MSG_RESULT([yes])
     compiler_id="HP_UX_C"
-    flags_dbg_all="-g -s"
     flags_dbg_yes="-g"
-    flags_dbg_off="-s"
     flags_opt_all="-O +O0 +O1 +O2 +O3 +O4"
     flags_opt_yes="+O2"
     flags_opt_off="+O0"
@@ -227,9 +202,7 @@ AC_DEFUN([CURL_CHECK_COMPILER_IBM_C], [
   if test "$curl_cv_have_def___IBMC__" = "yes"; then
     AC_MSG_RESULT([yes])
     compiler_id="IBM_C"
-    flags_dbg_all="-g -g0 -g1 -g2 -g3"
     flags_dbg_yes="-g"
-    flags_dbg_off=""
     flags_opt_all="-O -O0 -O1 -O2 -O3 -O4 -O5"
     flags_opt_all="$flags_opt_all -qnooptimize"
     flags_opt_all="$flags_opt_all -qoptimize=0"
@@ -261,24 +234,13 @@ AC_DEFUN([CURL_CHECK_COMPILER_INTEL_C], [
     CURL_CHECK_DEF([__unix__], [], [silent])
     if test "$curl_cv_have_def___unix__" = "yes"; then
       compiler_id="INTEL_UNIX_C"
-      flags_dbg_all="-g -g0"
       flags_dbg_yes="-g"
-      flags_dbg_off=""
       flags_opt_all="-O -O0 -O1 -O2 -O3 -Os"
       flags_opt_yes="-O2"
       flags_opt_off="-O0"
     else
       compiler_id="INTEL_WINDOWS_C"
-      flags_dbg_all="/ZI /Zi /zI /zi /ZD /Zd /zD /zd /Z7 /z7 /Oy /Oy-"
-      flags_dbg_all="$flags_dbg_all /debug"
-      flags_dbg_all="$flags_dbg_all /debug:none"
-      flags_dbg_all="$flags_dbg_all /debug:minimal"
-      flags_dbg_all="$flags_dbg_all /debug:partial"
-      flags_dbg_all="$flags_dbg_all /debug:full"
-      flags_dbg_all="$flags_dbg_all /debug:semantic_stepping"
-      flags_dbg_all="$flags_dbg_all /debug:extended"
       flags_dbg_yes="/Zi /Oy-"
-      flags_dbg_off="/debug:none /Oy-"
       flags_opt_all="/O /O0 /O1 /O2 /O3 /Od /Og /Og- /Oi /Oi-"
       flags_opt_yes="/O2"
       flags_opt_off="/Od"
@@ -299,9 +261,7 @@ AC_DEFUN([CURL_CHECK_COMPILER_LCC], [
   if test "$curl_cv_have_def___LCC__" = "yes"; then
     AC_MSG_RESULT([yes])
     compiler_id="LCC"
-    flags_dbg_all="-g"
     flags_dbg_yes="-g"
-    flags_dbg_off=""
     flags_opt_all=""
     flags_opt_yes=""
     flags_opt_off=""
@@ -325,9 +285,7 @@ AC_DEFUN([CURL_CHECK_COMPILER_SGI_MIPS_C], [
     test "$compiler_id" = "unknown"; then
     AC_MSG_RESULT([yes])
     compiler_id="SGI_MIPS_C"
-    flags_dbg_all="-g -g0 -g1 -g2 -g3"
     flags_dbg_yes="-g"
-    flags_dbg_off=""
     flags_opt_all="-O -O0 -O1 -O2 -O3 -Ofast"
     flags_opt_yes="-O2"
     flags_opt_off="-O0"
@@ -352,9 +310,7 @@ AC_DEFUN([CURL_CHECK_COMPILER_SGI_MIPSPRO_C], [
      test "$curl_cv_have_def__COMPILER_VERSION" = "yes"); then
     AC_MSG_RESULT([yes])
     compiler_id="SGI_MIPSPRO_C"
-    flags_dbg_all="-g -g0 -g1 -g2 -g3"
     flags_dbg_yes="-g"
-    flags_dbg_off=""
     flags_opt_all="-O -O0 -O1 -O2 -O3 -Ofast"
     flags_opt_yes="-O2"
     flags_opt_off="-O0"
@@ -374,9 +330,7 @@ AC_DEFUN([CURL_CHECK_COMPILER_SUNPRO_C], [
   if test "$curl_cv_have_def___SUNPRO_C" = "yes"; then
     AC_MSG_RESULT([yes])
     compiler_id="SUNPRO_C"
-    flags_dbg_all="-g -s"
     flags_dbg_yes="-g"
-    flags_dbg_off="-s"
     flags_opt_all="-O -xO -xO1 -xO2 -xO3 -xO4 -xO5"
     flags_opt_yes="-xO2"
     flags_opt_off=""
@@ -396,9 +350,7 @@ AC_DEFUN([CURL_CHECK_COMPILER_TINY_C], [
   if test "$curl_cv_have_def___TINYC__" = "yes"; then
     AC_MSG_RESULT([yes])
     compiler_id="TINY_C"
-    flags_dbg_all="-g -b"
     flags_dbg_yes="-g"
-    flags_dbg_off=""
     flags_opt_all=""
     flags_opt_yes=""
     flags_opt_off=""
@@ -406,40 +358,6 @@ AC_DEFUN([CURL_CHECK_COMPILER_TINY_C], [
     AC_MSG_RESULT([no])
   fi
 ])
-
-
-dnl CURL_CHECK_COMPILER_WATCOM_C
-dnl -------------------------------------------------
-dnl Verify if compiler being used is Watcom C.
-
-AC_DEFUN([CURL_CHECK_COMPILER_WATCOM_C], [
-  AC_MSG_CHECKING([if compiler is Watcom C])
-  CURL_CHECK_DEF([__WATCOMC__], [], [silent])
-  if test "$curl_cv_have_def___WATCOMC__" = "yes"; then
-    AC_MSG_RESULT([yes])
-    CURL_CHECK_DEF([__UNIX__], [], [silent])
-    if test "$curl_cv_have_def___UNIX__" = "yes"; then
-      compiler_id="WATCOM_UNIX_C"
-      flags_dbg_all="-g1 -g1+ -g2 -g3"
-      flags_dbg_yes="-g2"
-      flags_dbg_off=""
-      flags_opt_all="-O0 -O1 -O2 -O3"
-      flags_opt_yes="-O2"
-      flags_opt_off="-O0"
-    else
-      compiler_id="WATCOM_WINDOWS_C"
-      flags_dbg_all=""
-      flags_dbg_yes=""
-      flags_dbg_off=""
-      flags_opt_all=""
-      flags_opt_yes=""
-      flags_opt_off=""
-    fi
-  else
-    AC_MSG_RESULT([no])
-  fi
-])
-
 
 dnl CURL_CONVERT_INCLUDE_TO_ISYSTEM
 dnl -------------------------------------------------
@@ -587,6 +505,9 @@ AC_DEFUN([CURL_SET_COMPILER_BASIC_OPTS], [
         dnl warn about compile-time arguments used during link-time, like
         dnl -O and -g and -pedantic.
         tmp_CFLAGS="$tmp_CFLAGS -Qunused-arguments"
+        dnl Disable pointer to bool conversion warnings since they cause
+        dnl lib/securetransp.c cause several warnings for checks we want.
+        tmp_CFLAGS="$tmp_CFLAGS -Wno-pointer-bool-conversion"
         ;;
         #
       DEC_C)
@@ -688,18 +609,6 @@ AC_DEFUN([CURL_SET_COMPILER_BASIC_OPTS], [
         tmp_CFLAGS="$tmp_CFLAGS"
         ;;
         #
-      WATCOM_UNIX_C)
-        #
-        dnl Placeholder
-        tmp_CFLAGS="$tmp_CFLAGS"
-        ;;
-        #
-      WATCOM_WINDOWS_C)
-        #
-        dnl Placeholder
-        tmp_CFLAGS="$tmp_CFLAGS"
-        ;;
-        #
     esac
     #
     squeeze tmp_CPPFLAGS
@@ -745,16 +654,10 @@ AC_DEFUN([CURL_SET_COMPILER_DEBUG_OPTS], [
     tmp_options=""
     tmp_CFLAGS="$CFLAGS"
     tmp_CPPFLAGS="$CPPFLAGS"
-    CURL_VAR_STRIP([tmp_CFLAGS],[$flags_dbg_all])
-    CURL_VAR_STRIP([tmp_CPPFLAGS],[$flags_dbg_all])
     #
     if test "$want_debug" = "yes"; then
       AC_MSG_CHECKING([if compiler accepts debug enabling options])
       tmp_options="$flags_dbg_yes"
-    fi
-    if test "$want_debug" = "no"; then
-      AC_MSG_CHECKING([if compiler accepts debug disabling options])
-      tmp_options="$flags_dbg_off"
     fi
     #
     if test "$flags_prefer_cppflags" = "yes"; then
@@ -766,17 +669,6 @@ AC_DEFUN([CURL_SET_COMPILER_DEBUG_OPTS], [
     fi
     squeeze CPPFLAGS
     squeeze CFLAGS
-    CURL_COMPILER_WORKS_IFELSE([
-      AC_MSG_RESULT([yes])
-      AC_MSG_NOTICE([compiler options added: $tmp_options])
-    ],[
-      AC_MSG_RESULT([no])
-      AC_MSG_WARN([compiler options rejected: $tmp_options])
-      dnl restore initial settings
-      CPPFLAGS="$tmp_save_CPPFLAGS"
-      CFLAGS="$tmp_save_CFLAGS"
-    ])
-    #
   fi
 ])
 
@@ -1101,7 +993,16 @@ AC_DEFUN([CURL_SET_COMPILER_WARNING_OPTS], [
             CURL_ADD_COMPILER_WARNINGS([tmp_CFLAGS], [alloc-zero])
             tmp_CFLAGS="$tmp_CFLAGS -Wformat-overflow=2"
             tmp_CFLAGS="$tmp_CFLAGS -Wformat-truncation=2"
-            tmp_CFLAGS="$tmp_CFLAGS -Wimplicit-fallthrough=4"
+            if test "$compiler_num" -lt "1200"; then
+              dnl gcc 12 doesn't acknowledge our comment markups
+              tmp_CFLAGS="$tmp_CFLAGS -Wimplicit-fallthrough=4"
+            fi
+          fi
+          #
+          dnl Only gcc 10 or later
+          if test "$compiler_num" -ge "1000"; then
+            CURL_ADD_COMPILER_WARNINGS([tmp_CFLAGS], [arith-conversion])
+            CURL_ADD_COMPILER_WARNINGS([tmp_CFLAGS], [enum-conversion])
           fi
           #
         fi
@@ -1123,10 +1024,6 @@ AC_DEFUN([CURL_SET_COMPILER_WARNING_OPTS], [
               tmp_CFLAGS="$tmp_CFLAGS -Wno-missing-prototypes"
             fi
           fi
-        fi
-        dnl Only gcc 10 or later
-        if test "$compiler_num" -ge "1000"; then
-          CURL_ADD_COMPILER_WARNINGS([tmp_CFLAGS], [enum-conversion])
         fi
         ;;
         #
@@ -1234,20 +1131,6 @@ AC_DEFUN([CURL_SET_COMPILER_WARNING_OPTS], [
           dnl Warn use of unsupported GCC features ignored by TCC
           CURL_ADD_COMPILER_WARNINGS([tmp_CFLAGS], [unsupported])
         fi
-        ;;
-        #
-      WATCOM_UNIX_C)
-        #
-        if test "$want_warnings" = "yes"; then
-          dnl Issue all warnings
-          tmp_CFLAGS="$tmp_CFLAGS -Wall -Wextra"
-        fi
-        ;;
-        #
-      WATCOM_WINDOWS_C)
-        #
-        dnl Placeholder
-        tmp_CFLAGS="$tmp_CFLAGS"
         ;;
         #
     esac

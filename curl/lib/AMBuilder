@@ -24,6 +24,11 @@ for cxx in builder.targets:
   if binary.compiler.target.platform == 'linux':
     binary.compiler.defines += ['_GNU_SOURCE']
   elif binary.compiler.target.platform == 'mac':
+    binary.compiler.cflags += [
+      '-lCoreFoundation',
+      '-lSystemConfiguration',
+    ]
+
     mac_version, ignore, ignore = platform.mac_ver()
     mac_tuple = mac_version.split('.')
     if int(mac_tuple[0]) >= 10 and int(mac_tuple[1]) >= 9:
@@ -41,6 +46,7 @@ for cxx in builder.targets:
     'asyn-ares.c',
     'asyn-thread.c',
     'base64.c',
+    'bufref.c',
     'c-hyper.c',
     'conncache.c',
     'connect.c',
@@ -80,10 +86,11 @@ for cxx in builder.targets:
     'getenv.c',
     'getinfo.c',
     'gopher.c',
+    'h2h3.c',
     'hash.c',
+    'headers.c',
     'hmac.c',
     'hostasyn.c',
-    'hostcheck.c',
     'hostip.c',
     'hostip4.c',
     'hostip6.c',
@@ -113,7 +120,6 @@ for cxx in builder.targets:
     'mqtt.c',
     'multi.c',
     'netrc.c',
-    'non-ascii.c',
     'nonblock.c',
     'openldap.c',
     'parsedate.c',
@@ -146,6 +152,7 @@ for cxx in builder.targets:
     'system_win32.c',
     'telnet.c',
     'tftp.c',
+    'timediff.c',
     'timeval.c',
     'transfer.c',
     'url.c',
@@ -154,13 +161,13 @@ for cxx in builder.targets:
     'version_win32.c',
     'warnless.c',
     'wildcard.c',
-    'x509asn1.c',
 
     # LIB_VAUTH_CFILES
     'vauth/cleartext.c',
     'vauth/cram.c',
     'vauth/digest.c',
     'vauth/digest_sspi.c',
+    'vauth/gsasl.c',
     'vauth/krb5_gssapi.c',
     'vauth/krb5_sspi.c',
     'vauth/ntlm.c',
@@ -171,6 +178,7 @@ for cxx in builder.targets:
     'vauth/vauth.c',
 
     # LIB_VQUIC_CFILES
+    'vquic/msh3.c',
     'vquic/ngtcp2.c',
     'vquic/quiche.c',
     'vquic/vquic.c',
@@ -184,17 +192,19 @@ for cxx in builder.targets:
     'vtls/bearssl.c',
     'vtls/gskit.c',
     'vtls/gtls.c',
+    'vtls/hostcheck.c',
     'vtls/keylog.c',
     'vtls/mbedtls.c',
     'vtls/mbedtls_threadlock.c',
-    'vtls/mesalink.c',
     'vtls/nss.c',
     'vtls/openssl.c',
+    'vtls/rustls.c',
     'vtls/schannel.c',
     'vtls/schannel_verify.c',
     'vtls/sectransp.c',
     'vtls/vtls.c',
     'vtls/wolfssl.c',
+    'vtls/x509asn1.c',
   ]
 
   rvalue[binary.compiler.target.arch] = builder.Add(binary)

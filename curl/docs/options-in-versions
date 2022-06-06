@@ -50,6 +50,8 @@
 --dns-ipv4-addr                      7.33.0
 --dns-ipv6-addr                      7.33.0
 --dns-servers                        7.33.0
+--doh-cert-status                    7.76.0
+--doh-insecure                       7.76.0
 --doh-url                            7.62.0
 --dump-header (-D)                   5.7
 --egd-file                           7.7
@@ -59,8 +61,10 @@
 --expect100-timeout                  7.47.0
 --fail (-f)                          4.0
 --fail-early                         7.52.0
+--fail-with-body                     7.76.0
 --false-start                        7.42.0
 --form (-F)                          5.0
+--form-escape                        7.81.0
 --form-string                        7.13.2
 --ftp-account                        7.13.0
 --ftp-alternative-to-user            7.15.5
@@ -81,6 +85,7 @@
 --header (-H)                        5.0
 --help (-h)                          4.0
 --hostpubmd5                         7.17.1
+--hostpubsha256                      7.80.0
 --hsts                               7.74.0
 --http0.9                            7.64.0
 --http1.0 (-0)                       7.9.1
@@ -94,6 +99,7 @@
 --interface                          7.3
 --ipv4 (-4)                          7.10.8
 --ipv6 (-6)                          7.10.8
+--json                               7.82.0
 --junk-session-cookies (-j)          7.9.7
 --keepalive-time                     7.18.0
 --key                                7.9.3
@@ -122,6 +128,7 @@
 --next (-:)                          7.36.0
 --no-alpn                            7.36.0
 --no-buffer (-N)                     6.5
+--no-clobber                         7.83.0
 --no-keepalive                       7.18.0
 --no-npn                             7.36.0
 --no-progress-meter                  7.67.0
@@ -166,6 +173,7 @@
 --proxy-pinnedpubkey                 7.59.0
 --proxy-service-name                 7.43.0
 --proxy-ssl-allow-beast              7.52.0
+--proxy-ssl-auto-client-cert         7.77.0
 --proxy-tls13-ciphers                7.61.0
 --proxy-tlsauthtype                  7.52.0
 --proxy-tlspassword                  7.52.0
@@ -184,6 +192,7 @@
 --remote-name (-O)                   4.0
 --remote-name-all                    7.19.0
 --remote-time (-R)                   7.9
+--remove-on-error                    7.83.0
 --request (-X)                       6.0
 --request-target                     7.55.0
 --resolve                            7.21.3
@@ -209,6 +218,7 @@
 --speed-time (-y)                    4.7
 --ssl                                7.20.0
 --ssl-allow-beast                    7.25.0
+--ssl-auto-client-cert               7.77.0
 --ssl-no-revoke                      7.44.0
 --ssl-reqd                           7.20.0
 --ssl-revoke-best-effort             7.70.0

@@ -4,9 +4,9 @@ Protocols: HTTPS
 Help: Enable HSTS with this cache file
 Added: 7.74.0
 Category: http
+Example: --hsts cache.txt $URL
+See-also: proto
 ---
-WARNING: this option is experimental. Do not use in production.
-
 This option enables HSTS for the transfer. If the file name points to an
 existing HSTS cache file, that will be used. After a completed transfer, the
 cache will be saved to the file name again if it has been modified.

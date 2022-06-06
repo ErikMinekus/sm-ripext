@@ -5,7 +5,7 @@
 .\" *                            | (__| |_| |  _ <| |___
 .\" *                             \___|\___/|_| \_\_____|
 .\" *
-.\" * Copyright (C) 1998 - 2014, 2017, Daniel Stenberg, <daniel@haxx.se>, et al.
+.\" * Copyright (C) 1998 - 2022, Daniel Stenberg, <daniel@haxx.se>, et al.
 .\" *
 .\" * This software is licensed as described in the file COPYING, which
 .\" * you should have received as part of this distribution. The terms
@@ -20,14 +20,16 @@
 .\" *
 .\" **************************************************************************
 .\"
-.TH CURLOPT_PORT 3 "November 04, 2020" "libcurl 7.75.0" "curl_easy_setopt options"
+.TH CURLOPT_PORT 3 "March 29, 2022" "libcurl 7.83.1" "curl_easy_setopt options"
 
 .SH NAME
-CURLOPT_PORT \- set remote port number to work with
+CURLOPT_PORT \- remote port number to connect to
 .SH SYNOPSIS
+.nf
 #include <curl/curl.h>
 
 CURLcode curl_easy_setopt(CURL *handle, CURLOPT_PORT, long number);
+.fi
 .SH DESCRIPTION
 This option sets \fInumber\fP to be the remote port number to connect to,
 instead of the one specified in the URL or the default port for the used
@@ -37,7 +39,7 @@ Usually, you just let the URL decide which port to use but this allows the
 application to override that.
 
 While this option accepts a 'long', a port number is usually a 16 bit number
-and therefore using a port number over 65535 will cause a run-time error.
+and therefore using a port number over 65535 will cause a runtime error.
 .SH DEFAULT
 By default this is 0 which makes it not used.
 .SH PROTOCOLS

@@ -44,7 +44,7 @@ in the curl-www repo
 
   (the website then updates its contents automatically)
 
-on github
+on GitHub
 ---------
 
 - edit the newly made release tag so that it is listed as the latest release
@@ -95,16 +95,12 @@ Coming dates
 Based on the description above, here are some planned release dates (at the
 time of this writing):
 
-- August 19, 2020 (7.72.0)
-- October 14, 2020
-- December 9, 2020
-- February 3, 2021
-- March 31, 2021
-- May 26, 2021
-- July 21, 2021
-- September 15, 2021
-- November 10, 2021
-
-The above (and more) curl-related dates are published in
-[iCalendar format](https://calendar.google.com/calendar/ical/c9u5d64odop9js55oltfarjk6g%40group.calendar.google.com/public/basic.ics)
-as well.
+- May 11, 2022 (7.83.1)
+- July 6, 2022
+- August 31, 2022
+- October 25, 2022
+- December 21, 2022
+- February 15, 2023 (last version 7 release, no feature window after)
+- March 20, 2023 (8.0.0 - curl 25 years)
+- April 17, 2023
+- July 12, 2023

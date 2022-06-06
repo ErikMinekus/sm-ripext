@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2021, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2022, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -41,7 +41,6 @@
 #include "curlx.h"
 
 #include "tool_cfgable.h"
-#include "tool_convert.h"
 #include "tool_doswin.h"
 #include "tool_msgs.h"
 #include "tool_operate.h"
@@ -118,7 +117,7 @@ static void memory_tracking_init(void)
     curl_free(env);
     curl_dbg_memdebug(fname);
     /* this weird stuff here is to make curl_free() get called before
-       curl_gdb_memdebug() as otherwise memory tracking will log a free()
+       curl_dbg_memdebug() as otherwise memory tracking will log a free()
        without an alloc! */
   }
   /* if CURL_MEMLIMIT is set, this enables fail-on-alloc-number-N feature */
@@ -211,11 +210,9 @@ static void main_free(struct GlobalConfig *config)
   /* Cleanup the easy handle */
   /* Main cleanup */
   curl_global_cleanup();
-  convert_cleanup();
-  metalink_cleanup();
 #ifdef USE_NSS
   if(PR_Initialized()) {
-    /* prevent valgrind from reporting still reachable mem from NSRP arenas */
+    /* prevent valgrind from reporting still reachable mem from NSPR arenas */
     PL_ArenaFinish();
     /* prevent valgrind from reporting possibly lost memory (fd cache, ...) */
     PR_Cleanup();
@@ -280,8 +277,13 @@ int main(int argc, char *argv[])
     main_free(&global);
   }
 
+#ifdef WIN32
+  /* Flush buffers of all streams opened in write or update mode */
+  fflush(NULL);
+#endif
+
 #ifdef __NOVELL_LIBC__
-  if(getenv("_IN_NETWARE_BASH_") == NULL)
+  if(!getenv("_IN_NETWARE_BASH_"))
     tool_pressanykey();
 #endif
 

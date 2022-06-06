@@ -7,7 +7,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2020, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2022, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -35,6 +35,7 @@ typedef enum {
   VAR_ERRORMSG,
   VAR_EXITCODE,
   VAR_FTP_ENTRY_PATH,
+  VAR_HEADER_JSON,
   VAR_HEADER_SIZE,
   VAR_HTTP_CODE,
   VAR_HTTP_CODE_PROXY,
@@ -54,6 +55,7 @@ typedef enum {
   VAR_REDIRECT_COUNT,
   VAR_REDIRECT_TIME,
   VAR_REDIRECT_URL,
+  VAR_REFERER,
   VAR_REQUEST_SIZE,
   VAR_SCHEME,
   VAR_SIZE_DOWNLOAD,
@@ -69,25 +71,16 @@ typedef enum {
   VAR_NUM_OF_VARS /* must be the last */
 } writeoutid;
 
-typedef enum {
-  JSON_NONE,
-  JSON_STRING,
-  JSON_LONG,
-  JSON_OFFSET,
-  JSON_TIME,
-  JSON_VERSION,
-  JSON_FILENAME
-} jsontype;
-
 struct writeoutvar {
   const char *name;
   writeoutid id;
-  int is_ctrl;
-  CURLINFO cinfo;
-  jsontype jsontype;
+  CURLINFO ci;
+  int (*writefunc)(FILE *stream, const struct writeoutvar *wovar,
+                   struct per_transfer *per, CURLcode per_result,
+                   bool use_json);
 };
 
-void ourWriteOut(CURL *curl, struct per_transfer *per, const char *writeinfo,
-                 CURLcode exitcode);
+void ourWriteOut(const char *writeinfo, struct per_transfer *per,
+                 CURLcode per_result);
 
 #endif /* HEADER_CURL_TOOL_WRITEOUT_H */

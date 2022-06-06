@@ -9,17 +9,16 @@ ABI - Application Binary Interface
 
 ## Upgrades
 
- In the vast majority of all cases, a typical libcurl upgrade does not break
- the ABI at all. Your application can remain using libcurl just as before,
- only with less bugs and possibly with added new features. You need to read
- the release notes, and if they mention an ABI break/soname bump, you may have
- to verify that your application still builds fine and uses libcurl as it now
- is defined to work.
+ A libcurl upgrade does not break the ABI or change established and documented
+ behavior. Your application can remain using libcurl just as before, only with
+ fewer bugs and possibly with added new features.
 
 ## Version Numbers
 
- In libcurl land, you really can't tell by the libcurl version number if that
- libcurl is binary compatible or not with another libcurl version.
+ In libcurl land, you cannot tell by the libcurl version number if that
+ libcurl is binary compatible or not with another libcurl version. As a rule,
+ we do not break the ABI so you can *always* upgrade to a later version without
+ any loss or change in functionality.
 
 ## Soname Bumps
 
@@ -39,18 +38,18 @@ ABI - Application Binary Interface
 
 ## Downgrades
 
- Going to an older libcurl version from one you're currently using can be a
+ Going to an older libcurl version from one you are currently using can be a
  tricky thing. Mostly we add features and options to newer libcurls as that
- won't break ABI or hamper existing applications. This has the implication
+ will not break ABI or hamper existing applications. This has the implication
  that going backwards may get you in a situation where you pick a libcurl that
- doesn't support the options your application needs. Or possibly you even
+ does not support the options your application needs. Or possibly you even
  downgrade so far so you cross an ABI break border and thus a different
  soname, and then your application may need to adapt to the modified ABI.
 
 ## History
 
  The previous major library soname number bumps (breaking backwards
- compatibility) have happened the following times:
+ compatibility) happened the following times:
 
  0 - libcurl 7.1,   August 2000
 
