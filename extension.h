@@ -175,6 +175,7 @@ public:
 #endif
 public:
 	void AddRequestToQueue(IHTTPContext *context);
+	void PerformRequest(IHTTPContext *context);
 
 	char caBundlePath[PLATFORM_MAX_PATH];
 };

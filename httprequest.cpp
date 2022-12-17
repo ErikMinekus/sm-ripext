@@ -36,7 +36,14 @@ void HTTPRequest::Perform(const char *method, json_t *data, IChangeableForward *
 	HTTPRequestContext *context = new HTTPRequestContext(method, BuildURL(), data, BuildHeaders(), forward, value,
 		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
-	g_RipExt.AddRequestToQueue(context);
+	if (sendImmediately)
+	{
+		g_RipExt.PerformRequest(context);
+	}
+	else 
+	{
+		g_RipExt.AddRequestToQueue(context);
+	}
 }
 
 void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, cell_t value)
@@ -47,7 +54,14 @@ void HTTPRequest::DownloadFile(const char *path, IChangeableForward *forward, ce
 	HTTPFileContext *context = new HTTPFileContext(false, BuildURL(), path, BuildHeaders(), forward, value,
 		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
-	g_RipExt.AddRequestToQueue(context);
+	if (sendImmediately)
+	{
+		g_RipExt.PerformRequest(context);
+	}
+	else 
+	{
+		g_RipExt.AddRequestToQueue(context);
+	}
 }
 
 void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell_t value)
@@ -58,7 +72,14 @@ void HTTPRequest::UploadFile(const char *path, IChangeableForward *forward, cell
 	HTTPFileContext *context = new HTTPFileContext(true, BuildURL(), path, BuildHeaders(), forward, value,
 		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
-	g_RipExt.AddRequestToQueue(context);
+	if (sendImmediately)
+	{
+		g_RipExt.PerformRequest(context);
+	}
+	else 
+	{
+		g_RipExt.AddRequestToQueue(context);
+	}
 }
 
 void HTTPRequest::PostForm(IChangeableForward *forward, cell_t value)
@@ -69,7 +90,14 @@ void HTTPRequest::PostForm(IChangeableForward *forward, cell_t value)
 	HTTPFormContext *context = new HTTPFormContext(BuildURL(), formData, BuildHeaders(), forward, value,
 		connectTimeout, maxRedirects, timeout, maxSendSpeed, maxRecvSpeed, useBasicAuth, username, password);
 
-	g_RipExt.AddRequestToQueue(context);
+	if (sendImmediately)
+	{
+		g_RipExt.PerformRequest(context);
+	}
+	else 
+	{
+		g_RipExt.AddRequestToQueue(context);
+	}
 }
 
 const std::string HTTPRequest::BuildURL() const
@@ -218,4 +246,14 @@ int HTTPRequest::GetTimeout() const
 void HTTPRequest::SetTimeout(int timeout)
 {
 	this->timeout = timeout;
+}
+
+bool HTTPRequest::GetSendImmediately() const
+{
+	return sendImmediately;
+}
+
+void HTTPRequest::SetSendImmediately(bool sendImmediately)
+{
+	this->sendImmediately = sendImmediately;
 }

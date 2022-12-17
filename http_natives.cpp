@@ -945,6 +945,30 @@ static cell_t SetRequestTimeout(IPluginContext *pContext, const cell_t *params)
 	return 1;
 }
 
+static cell_t GetRequestSendImmediately(IPluginContext *pContext, const cell_t *params)
+{
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
+	{
+		return 0;
+	}
+
+	return request->GetSendImmediately();
+}
+
+static cell_t SetRequestSendImmediately(IPluginContext *pContext, const cell_t *params)
+{
+	HTTPRequest *request = GetRequestFromHandle(pContext, params[1]);
+	if (request == NULL)
+	{
+		return 0;
+	}
+
+	request->SetSendImmediately(params[2]);
+
+	return 1;
+}
+
 static cell_t GetResponseData(IPluginContext *pContext, const cell_t *params)
 {
 	HandleError err;
@@ -1074,6 +1098,8 @@ const sp_nativeinfo_t http_natives[] =
 	{"HTTPRequest.MaxSendSpeed.set",	SetRequestMaxSendSpeed},
 	{"HTTPRequest.Timeout.get",			GetRequestTimeout},
 	{"HTTPRequest.Timeout.set",			SetRequestTimeout},
+	{"HTTPRequest.SendImmediately.get",	GetRequestSendImmediately},
+	{"HTTPRequest.SendImmediately.set",	SetRequestSendImmediately},
 	{"HTTPResponse.Data.get",			GetResponseData},
 	{"HTTPResponse.Status.get",			GetResponseStatus},
 	{"HTTPResponse.GetHeader",			GetResponseHeader},

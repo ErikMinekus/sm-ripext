@@ -216,6 +216,13 @@ methodmap HTTPRequest < Handle
 		public native get();
 		public native set(int timeout);
 	}
+
+	// Send the request immediately, rather than waiting for the next game tick. 
+	// Useful when sending the request before map change. Defaults to false.
+	property bool SendImmediately {
+		public native get();
+		public native set(bool Queued);
+	}
 }
 
 methodmap HTTPResponse
