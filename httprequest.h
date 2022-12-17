@@ -62,6 +62,9 @@ public:
 	int GetTimeout() const;
 	void SetTimeout(int timeout);
 
+	bool GetSendImmediately() const;
+	void SetSendImmediately(bool sendImmediately);
+
 private:
 	const std::string url;
 	std::string query;
@@ -75,6 +78,7 @@ private:
 	int maxRecvSpeed = 0;
 	int maxSendSpeed = 0;
 	int timeout = 30;
+	bool sendImmediately = false;
 };
 
 #endif // SM_RIPEXT_HTTPREQUEST_H_
