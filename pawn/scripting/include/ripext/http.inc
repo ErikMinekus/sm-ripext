@@ -221,7 +221,7 @@ methodmap HTTPRequest < Handle
 	// Useful when sending the request before map change. Defaults to false.
 	property bool SendImmediately {
 		public native get();
-		public native set(bool Queued);
+		public native set(bool sendImmediately);
 	}
 }
 
