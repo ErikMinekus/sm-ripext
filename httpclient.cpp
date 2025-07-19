@@ -45,7 +45,7 @@ struct curl_slist *HTTPClient::BuildHeaders(const char *acceptTypes, const char 
 
 	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
 	{
-		snprintf(header, sizeof(header), "%s: %s", iter->key.chars(), iter->value.c_str());
+		snprintf(header, sizeof(header), "%s: %s", iter->key.c_str(), iter->value.c_str());
 		headers = curl_slist_append(headers, header);
 	}
 
