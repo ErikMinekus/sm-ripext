@@ -211,6 +211,26 @@ static cell_t GetObjectStringValue(IPluginContext *pContext, const cell_t *param
 	return 1;
 }
 
+static cell_t GetObjectType(IPluginContext *pContext, const cell_t *params)
+{
+	json_t *object = GetJSONFromHandle(pContext, params[1]);
+	if (object == NULL)
+	{
+		return -1;
+	}
+
+	char *key;
+	pContext->LocalToString(params[2], &key);
+
+	json_t *value = json_object_get(object, key);
+	if (value == NULL)
+	{
+		return pContext->ThrowNativeError("Could not retrieve value for key '%s'", key);
+	}
+
+	return json_typeof(value);
+}
+
 static cell_t IsObjectNullValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
@@ -609,6 +629,25 @@ static cell_t GetArrayStringValue(IPluginContext *pContext, const cell_t *params
 	return 1;
 }
 
+static cell_t GetArrayType(IPluginContext *pContext, const cell_t *params)
+{
+	json_t *object = GetJSONFromHandle(pContext, params[1]);
+	if (object == NULL)
+	{
+		return -1;
+	}
+
+	int index = params[2];
+
+	json_t *value = json_array_get(object, index);
+	if (value == NULL)
+	{
+		return pContext->ThrowNativeError("Could not retrieve value at index %d", index);
+	}
+
+	return json_typeof(value);
+}
+
 static cell_t IsArrayNullValue(IPluginContext *pContext, const cell_t *params)
 {
 	json_t *object = GetJSONFromHandle(pContext, params[1]);
@@ -982,6 +1021,7 @@ const sp_nativeinfo_t json_natives[] =
 	{"JSONObject.GetInt",				GetObjectIntValue},
 	{"JSONObject.GetInt64",				GetObjectInt64Value},
 	{"JSONObject.GetString",			GetObjectStringValue},
+	{"JSONObject.GetType",				GetObjectType},
 	{"JSONObject.IsNull",				IsObjectNullValue},
 	{"JSONObject.HasKey",				IsObjectKeyValid},
 	{"JSONObject.Set",					SetObjectValue},
@@ -1006,6 +1046,7 @@ const sp_nativeinfo_t json_natives[] =
 	{"JSONArray.GetInt",				GetArrayIntValue},
 	{"JSONArray.GetInt64",				GetArrayInt64Value},
 	{"JSONArray.GetString",				GetArrayStringValue},
+	{"JSONArray.GetType",				GetArrayType},
 	{"JSONArray.IsNull",				IsArrayNullValue},
 	{"JSONArray.Set",					SetArrayValue},
 	{"JSONArray.SetBool",				SetArrayBoolValue},
