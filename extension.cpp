@@ -32,6 +32,7 @@ RipExt g_RipExt;		/**< Global singleton for extension's main interface */
 SMEXT_LINK(&g_RipExt);
 
 LockedQueue<IHTTPContext *> g_RequestQueue;
+LockedQueue<IHTTPContext *> g_RequestQueueImmediately;
 LockedQueue<IHTTPContext *> g_CompletedRequestQueue;
 
 CURLM *g_Curl;
@@ -40,6 +41,7 @@ uv_thread_t g_Thread;
 uv_timer_t g_Timeout;
 
 uv_async_t g_AsyncPerformRequests;
+uv_async_t g_AsyncPerformRequestsImmediately;
 uv_async_t g_AsyncStopLoop;
 
 HTTPClientHandler	g_HTTPClientHandler;
@@ -188,6 +190,27 @@ static void AsyncPerformRequests(uv_async_t *handle)
 	g_RequestQueue.Unlock();
 }
 
+static void AsyncPerformRequestsImmediately(uv_async_t *handle)
+{
+	g_RequestQueueImmediately.Lock();
+	IHTTPContext *context;
+
+	while (!g_RequestQueueImmediately.Empty())
+	{
+		context = g_RequestQueueImmediately.Pop();
+
+		if (!context->InitCurl())
+		{
+			delete context;
+			continue;
+		}
+		
+		curl_multi_add_handle(g_Curl, context->curl);
+	}
+
+	g_RequestQueueImmediately.Unlock();
+}
+
 static void AsyncStopLoop(uv_async_t *handle)
 {
 	uv_stop(g_Loop);
@@ -234,6 +257,7 @@ bool RipExt::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	g_Loop = uv_default_loop();
 	uv_timer_init(g_Loop, &g_Timeout);
 	uv_async_init(g_Loop, &g_AsyncPerformRequests, &AsyncPerformRequests);
+	uv_async_init(g_Loop, &g_AsyncPerformRequestsImmediately, &AsyncPerformRequestsImmediately);
 	uv_async_init(g_Loop, &g_AsyncStopLoop, &AsyncStopLoop);
 	uv_thread_create(&g_Thread, &EventLoop, NULL);
 
@@ -287,6 +311,14 @@ void RipExt::AddRequestToQueue(IHTTPContext *context)
 	g_RequestQueue.Lock();
 	g_RequestQueue.Push(context);
 	g_RequestQueue.Unlock();
+}
+
+void RipExt::PerformRequest(IHTTPContext *context)
+{
+	g_RequestQueueImmediately.Lock();
+	g_RequestQueueImmediately.Push(context);
+	g_RequestQueueImmediately.Unlock();
+	uv_async_send(&g_AsyncPerformRequestsImmediately);
 }
 
 void HTTPClientHandler::OnHandleDestroy(HandleType_t type, void *object)
