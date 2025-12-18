@@ -104,6 +104,7 @@ prepare_singleton_class(mrb_state *mrb, struct RBasic *o)
 {
   struct RClass *sc, *c;
 
+  mrb_assert(o->c);
   if (o->c->tt == MRB_TT_SCLASS) return;
   sc = (struct RClass*)mrb_obj_alloc(mrb, MRB_TT_SCLASS, mrb->class_class);
   sc->flags |= MRB_FL_CLASS_IS_INHERITED;
@@ -1284,6 +1285,7 @@ mrb_singleton_class_ptr(mrb_state *mrb, mrb_value v)
     break;
   }
   obj = mrb_basic_ptr(v);
+  if (obj->c == NULL) return NULL;
   prepare_singleton_class(mrb, obj);
   return obj->c;
 }
