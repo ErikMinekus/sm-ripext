@@ -10,7 +10,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, windows-2022]
-        sourcemod-version: [1.12-dev]
+        # Keep stable release builds on 1.12; validate the 1.13 SDK separately.
+        sourcemod-version: [1.12-dev, master]
         include:
           - os: ubuntu-22.04
             target-archs: x86,x86_64
@@ -29,7 +30,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: '3.11'
 
       - name: Install Python dependencies
         run: |
@@ -55,9 +56,7 @@ jobs:
           path: ambuild
 
       - name: Install AMBuild
-        uses: BSFishy/pip-action@v1
-        with:
-          packages: ./ambuild
+        run: python -m pip install ./ambuild
 
       - name: Build
         working-directory: extension
@@ -68,13 +67,13 @@ jobs:
           mkdir build && cd build
           perl ../curl/lib/mk-ca-bundle.pl
           python ../configure.py --enable-optimize --targets=${{ matrix.target-archs }} \
-            ${{ github.ref == 'refs/heads/main' && '--breakpad-dump --symbol-files' || '' }}
+            ${{ github.ref == 'refs/heads/main' && matrix.sourcemod-version == '1.12-dev' && '--breakpad-dump --symbol-files' || '' }}
           ambuild
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ runner.os }}
+          name: ${{ matrix.sourcemod-version == '1.12-dev' && runner.os || format('{0}-sm1.13', runner.os) }}
           path: extension/build/package
 
 

@@ -133,9 +133,9 @@ struct curl_slist *HTTPRequest::BuildHeaders()
 	struct curl_slist *headers = NULL;
 	char header[8192];
 
-	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
+	for (const auto &headerEntry : this->headers)
 	{
-		snprintf(header, sizeof(header), "%s: %s", iter->key.c_str(), iter->value.c_str());
+		snprintf(header, sizeof(header), "%s: %s", headerEntry.first.c_str(), headerEntry.second.c_str());
 		headers = curl_slist_append(headers, header);
 	}
 
@@ -145,7 +145,7 @@ struct curl_slist *HTTPRequest::BuildHeaders()
 void HTTPRequest::SetHeader(const char *name, const char *value)
 {
 	std::string vstr(value);
-	headers.replace(name, std::move(vstr));
+	headers[name] = std::move(vstr);
 }
 
 bool HTTPRequest::UseBasicAuth() const
