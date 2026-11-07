@@ -23,9 +23,10 @@
 #define _INCLUDE_SOURCEMOD_EXTENSION_PROPER_H_
 
 #include <string>
+#include <unordered_map>
+#include <utility>
 #include <curl/curl.h>
 #include <jansson.h>
-#include <sm_stringhashmap.h>
 #include <stdlib.h>
 #include <string.h>
 #include <uv.h>
@@ -36,7 +37,8 @@
 
 extern uv_loop_t *g_Loop;
 
-typedef StringHashMap<std::string> HTTPHeaderMap;
+// Keep header storage independent of SourceMod's internal container headers.
+typedef std::unordered_map<std::string, std::string> HTTPHeaderMap;
 
 class IHTTPContext
 {

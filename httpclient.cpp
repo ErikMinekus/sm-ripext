@@ -43,9 +43,9 @@ struct curl_slist *HTTPClient::BuildHeaders(const char *acceptTypes, const char 
 	snprintf(header, sizeof(header), "Content-Type: %s", contentType);
 	headers = curl_slist_append(headers, header);
 
-	for (HTTPHeaderMap::iterator iter = this->headers.iter(); !iter.empty(); iter.next())
+	for (const auto &headerEntry : this->headers)
 	{
-		snprintf(header, sizeof(header), "%s: %s", iter->key.c_str(), iter->value.c_str());
+		snprintf(header, sizeof(header), "%s: %s", headerEntry.first.c_str(), headerEntry.second.c_str());
 		headers = curl_slist_append(headers, header);
 	}
 
@@ -106,7 +106,7 @@ void HTTPClient::UploadFile(const char *endpoint, const char *path, IPluginFunct
 void HTTPClient::SetHeader(const char *name, const char *value)
 {
 	std::string vstr(value);
-	this->headers.replace(name, std::move(vstr));
+	this->headers[name] = std::move(vstr);
 }
 
 int HTTPClient::GetConnectTimeout() const

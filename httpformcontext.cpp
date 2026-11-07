@@ -62,7 +62,7 @@ static size_t ReceiveResponseHeader(char *buffer, size_t size, size_t nmemb, voi
 		name[i] = tolower(name[i]);
 	}
 
-	response->headers.replace(name.c_str(), std::move(value));
+	response->headers[name] = std::move(value);
 
 	return total;
 }

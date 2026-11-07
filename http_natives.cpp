@@ -1018,13 +1018,13 @@ static cell_t GetResponseHeader(IPluginContext *pContext, const cell_t *params)
 		lowercaseName[i] = tolower(lowercaseName[i]);
 	}
 
-	HTTPHeaderMap::Result header = response->headers.find(lowercaseName.c_str());
-	if (!header.found())
+	auto header = response->headers.find(lowercaseName);
+	if (header == response->headers.end())
 	{
 		return 0;
 	}
 
-	pContext->StringToLocalUTF8(params[3], params[4], header->value.c_str(), NULL);
+	pContext->StringToLocalUTF8(params[3], params[4], header->second.c_str(), NULL);
 
 	return 1;
 }
